@@ -152,11 +152,16 @@
 -- ```
 ---@field server "off" | "messages" | "verbose"
 
+---@class _.lspconfig.settings.astro.UpdateImportsOnFileMove
+-- Controls whether the extension updates imports when a file is moved to a new location. In most cases, you'll want to keep this disabled as TypeScript and the Astro TypeScript plugin already handles this for you. Having multiple tools updating imports at the same time can lead to corrupted files.
+---@field enabled boolean
+
 ---@class _.lspconfig.settings.astro.Astro
 -- Enable experimental support for content collection intellisense inside Markdown, MDX and Markdoc. Note that this require also enabling the feature in your Astro config (experimental.contentCollectionIntellisense) (Astro 4.14+)
 ---@field content-intellisense boolean
 ---@field language-server _.lspconfig.settings.astro.Language-server
 ---@field trace _.lspconfig.settings.astro.Trace
+---@field updateImportsOnFileMove _.lspconfig.settings.astro.UpdateImportsOnFileMove
 
 ---@class lspconfig.settings.astro
 ---@field astro _.lspconfig.settings.astro.Astro
@@ -712,6 +717,26 @@
 -- ```
 ---@field reportWildcardImportFromLibrary "none" | "information" | "warning" | "error" | true | false
 
+---@class _.lspconfig.settings.basedpyright.InlayHints
+-- Whether to show inlay hints on function arguments.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field callArgumentNames boolean
+-- Whether to show inlay hints on function return types.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field functionReturnTypes boolean
+-- Whether to show inlay hints on assignments to variables.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field variableTypes boolean
+
 ---@class _.lspconfig.settings.basedpyright.Analysis
 -- Offer auto-import completions.
 -- 
@@ -755,6 +780,7 @@
 -- default = {}
 -- ```
 ---@field include string[]
+---@field inlayHints _.lspconfig.settings.basedpyright.InlayHints
 -- Specifies the level of logging for the Output panel
 -- 
 -- ```lua
@@ -10306,6 +10332,12 @@
 ---@field directory string
 -- %configuration.razor.languageServer.forceRuntimeCodeGeneration%
 ---@field forceRuntimeCodeGeneration boolean
+-- %configuration.razor.languageServer.suppressLspErrorToasts%
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field suppressLspErrorToasts boolean
 
 ---@class _.lspconfig.settings.omnisharp.Plugin
 -- %configuration.omnisharp.razor.plugin.path%
