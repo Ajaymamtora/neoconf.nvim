@@ -271,6 +271,22 @@
             "boolean"
           ]
         },
+        "reportImplicitAbstractClass": {
+          "default": "none",
+          "description": "Diagnostics for abstract classes that do not explicitly extend `ABC`",
+          "enum": [
+            "none",
+            "information",
+            "warning",
+            "error",
+            true,
+            false
+          ],
+          "type": [
+            "string",
+            "boolean"
+          ]
+        },
         "reportImplicitOverride": {
           "default": "none",
           "description": "Diagnostics for overridden methods that do not include an `@override` decorator.",
@@ -1539,13 +1555,14 @@
       "type": "string"
     },
     "basedpyright.analysis.typeCheckingMode": {
-      "default": "all",
+      "default": "recommended",
       "description": "Defines the default rule set for type checking.",
       "enum": [
         "off",
         "basic",
         "standard",
         "strict",
+        "recommended",
         "all"
       ],
       "scope": "resource",

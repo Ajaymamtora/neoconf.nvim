@@ -272,6 +272,12 @@
 -- default = "none"
 -- ```
 ---@field reportIgnoreCommentWithoutRule "none" | "information" | "warning" | "error" | true | false
+-- Diagnostics for abstract classes that do not explicitly extend `ABC`
+-- 
+-- ```lua
+-- default = "none"
+-- ```
+---@field reportImplicitAbstractClass "none" | "information" | "warning" | "error" | true | false
 -- Diagnostics for overridden methods that do not include an `@override` decorator.
 -- 
 -- ```lua
@@ -796,9 +802,9 @@
 -- Defines the default rule set for type checking.
 -- 
 -- ```lua
--- default = "all"
+-- default = "recommended"
 -- ```
----@field typeCheckingMode "off" | "basic" | "standard" | "strict" | "all"
+---@field typeCheckingMode "off" | "basic" | "standard" | "strict" | "recommended" | "all"
 -- Paths to look for typeshed modules.
 -- 
 -- ```lua
@@ -950,6 +956,12 @@
 -- default = true
 -- ```
 ---@field enableCodeCompletion boolean
+-- Enable hovers provided by the language server
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enableHover boolean
 -- Extra clang flags used to parse files when no compilation database is found.
 -- 
 -- ```lua
@@ -2055,7 +2067,7 @@
 -- default = true
 -- ```
 ---@field insertArgumentPlaceholders boolean
--- The maximum length of a line of code. This is used by the document formatter. If you change this value, you may wish to update `editor.rulers` (which draws vertical lines in the editor) in the `["dart"]` section if your settings to match.
+-- The maximum length of a line of code. This is used by the document formatter. If you change this value, you may wish to update `editor.rulers` (which draws vertical lines in the editor) in the `["dart"]` section of your settings to match.
 -- 
 -- ```lua
 -- default = 80
@@ -2411,6 +2423,14 @@
 -- ```
 ---@field args string[]
 
+---@class _.lspconfig.settings.denols.Trace
+-- Traces the communication between VS Code and the Deno Language Server.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "messages" | "off" | "verbose"
+
 ---@class _.lspconfig.settings.denols.Deno
 -- A path to the cache directory for Deno. By default, the operating system's cache path plus `deno` is used, or the `DENO_DIR` environment variable, but if set, this path will be used instead.
 ---@field cache string
@@ -2508,6 +2528,7 @@
 ---@field testing _.lspconfig.settings.denols.Testing
 -- A path to a PEM certificate to use as the certificate authority when validating TLS certificates when fetching and caching remote resources. This is like using `--cert` on the Deno CLI and overrides the `DENO_CERT` environment variable if set.
 ---@field tlsCertificate string
+---@field trace _.lspconfig.settings.denols.Trace
 -- **DANGER** disables verification of TLS certificates for the hosts provided. There is likely a better way to deal with any errors than use this option. This is like using `--unsafely-ignore-certificate-errors` in the Deno CLI.
 ---@field unsafelyIgnoreCertificateErrors string[]
 -- Controls which `--unstable-*` features tests will be run with when running them via the explorer.
@@ -3952,34 +3973,22 @@
 -- ```lua
 -- default = {
 --   conditionals = false,
---   functionReturnTypes = true,
---   parameterNames = true,
+--   functionReturnTypes = false,
+--   parameterNames = false,
 --   parameterTypes = false,
---   variableTypes = true
+--   variableTypes = false
 -- }
 -- ```
 ---@class _.lspconfig.settings.haxe_language_server.InlayHints
 -- Show inlay hints for conditionals
 ---@field conditionals boolean
 -- Show inlay hints for function return types
--- 
--- ```lua
--- default = true
--- ```
 ---@field functionReturnTypes boolean
 -- Show inlay hints for parameter names
--- 
--- ```lua
--- default = true
--- ```
 ---@field parameterNames boolean
 -- Show inlay hints for parameter types
 ---@field parameterTypes boolean
 -- Show inlay hints for variables
--- 
--- ```lua
--- default = true
--- ```
 ---@field variableTypes boolean
 
 -- Options for postfix completion
@@ -4181,10 +4190,10 @@
 -- ```lua
 -- default = {
 --   conditionals = false,
---   functionReturnTypes = true,
---   parameterNames = true,
+--   functionReturnTypes = false,
+--   parameterNames = false,
 --   parameterTypes = false,
---   variableTypes = true
+--   variableTypes = false
 -- }
 -- ```
 ---@field inlayHints _.lspconfig.settings.haxe_language_server.InlayHints
@@ -5645,6 +5654,12 @@
 -- default = true
 -- ```
 ---@field enabled boolean
+-- [Experimental] Select code completion engine
+-- 
+-- ```lua
+-- default = "ecj"
+-- ```
+---@field engine "ecj" | "dom"
 -- Defines a list of static members or types with static members. Content assist will propose those static members even if the import is missing.
 -- 
 -- ```lua
@@ -5965,6 +5980,14 @@
 -- "java.jdt.ls.java.home":"C:\\Program Files\\Java\\jdk-17.0_3"
 ---@field home string
 
+---@class _.lspconfig.settings.jdtls.Javac
+-- [Experimental] Specify whether to enable Javac-based compilation in the language server. Requires running this extension with Java 23
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field enabled "on" | "off"
+
 ---@class _.lspconfig.settings.jdtls.LombokSupport
 -- Whether to load lombok processors from project classpath
 -- 
@@ -5986,6 +6009,7 @@
 ---@class _.lspconfig.settings.jdtls.Ls
 ---@field androidSupport _.lspconfig.settings.jdtls.AndroidSupport
 ---@field java _.lspconfig.settings.jdtls.Java
+---@field javac _.lspconfig.settings.jdtls.Javac
 ---@field lombokSupport _.lspconfig.settings.jdtls.LombokSupport
 ---@field protobufSupport _.lspconfig.settings.jdtls.ProtobufSupport
 -- Specifies extra VM arguments used to launch the Java Language Server. Eg. use `-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx1G -Xms100m -Xlog:disable` to optimize memory usage with the parallel garbage collector
@@ -9937,6 +9961,8 @@
 ---@field startTimeout number
 -- %configuration.dotnet.server.suppressLspErrorToasts%
 ---@field suppressLspErrorToasts boolean
+-- %configuration.dotnet.server.suppressMiscellaneousFilesToasts%
+---@field suppressMiscellaneousFilesToasts boolean
 -- %configuration.dotnet.server.trace%
 -- 
 -- ```lua
@@ -10834,6 +10860,12 @@
 ---@class _.lspconfig.settings.powershell_es.Debugging
 -- Creates a temporary PowerShell Extension Terminal for each debugging session. This is useful for debugging PowerShell classes and binary modules.
 ---@field createTemporaryIntegratedConsole boolean
+-- Sets the operator used to launch scripts.
+-- 
+-- ```lua
+-- default = "DotSource"
+-- ```
+---@field executeMode "DotSource" | "Call"
 
 ---@class _.lspconfig.settings.powershell_es.Developer
 -- Specifies an alternative path to the folder containing modules that are bundled with the PowerShell extension, that is: PowerShell Editor Services, PSScriptAnalyzer and PSReadLine. **This setting is only meant for extension developers and requires the extension to be run in development mode!**
@@ -10958,7 +10990,9 @@
 ---@field osx boolean
 
 ---@class _.lspconfig.settings.powershell_es.Trace
--- Traces the communication between VS Code and the PowerShell Editor Services language server. **This setting is only meant for extension developers!**
+-- Traces the communication between VS Code and the PowerShell Editor Services [DAP Server](https://microsoft.github.io/debug-adapter-protocol/). **This setting is only meant for extension developers and issue troubleshooting!**
+---@field dap boolean
+-- Traces the communication between VS Code and the PowerShell Editor Services [LSP Server](https://microsoft.github.io/language-server-protocol/). **only for extension developers and issue troubleshooting!**
 -- 
 -- ```lua
 -- default = "off"
@@ -13979,7 +14013,7 @@
 ---@class _.lspconfig.settings.rust_analyzer.References
 -- Exclude imports from find-all-references.
 ---@field excludeImports boolean
--- Exclude tests from find-all-references.
+-- Exclude tests from find-all-references and call-hierarchy.
 ---@field excludeTests boolean
 
 ---@class _.lspconfig.settings.rust_analyzer.Runnables
@@ -14324,6 +14358,8 @@
 ---@field highlightRelated _.lspconfig.settings.rust_analyzer.HighlightRelated
 ---@field hover _.lspconfig.settings.rust_analyzer.Hover
 ---@field imports _.lspconfig.settings.rust_analyzer.Imports
+-- Do not start rust-analyzer server when the extension is activated.
+---@field initializeStopped boolean
 ---@field inlayHints _.lspconfig.settings.rust_analyzer.InlayHints
 ---@field interpret _.lspconfig.settings.rust_analyzer.Interpret
 ---@field joinLines _.lspconfig.settings.rust_analyzer.JoinLines
@@ -15708,6 +15744,139 @@
 ---@class lspconfig.settings.terraformls
 ---@field terraform _.lspconfig.settings.terraformls.Terraform
 
+---@class _.lspconfig.settings.tinymist.Preview
+-- (Experimental) Show typst cursor indicator in preview.
+---@field cursorIndicator boolean
+-- List of *additional* paths to font assets used by typst-preview.
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field fontPaths string[]
+-- Invert colors of the preview (useful for dark themes without cost). Please note you could see the origin colors when you hover elements in the preview. It is also possible to specify strategy to each element kind by an object map in JSON format.
+---@field invertColors "never" | "auto" | "always"|table
+-- Only render visible part of the document. This can improve performance but still being experimental.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field partialRendering boolean
+-- Declare current previewing file as entrypoint for typst-lsp or tinymist. This will make typst-lsp or tinymist to use this file as entrypoint instead of the file opened in vscode. This can improve diagnostics messages and auto completion but still being experimental.
+---@field pinPreviewFile boolean
+-- Refresh preview when the document is saved or when the document is changed
+-- 
+-- ```lua
+-- default = "onType"
+-- ```
+---@field refresh "onSave" | "onType"
+-- Configure scroll sync mode.
+-- 
+-- ```lua
+-- default = "onSelectionChangeByMouse"
+-- ```
+---@field scrollSync "never" | "onSelectionChangeByMouse" | "onSelectionChange"
+-- key-value pairs visible through `sys.inputs`, corresponds to `--input` argument of typst cli
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field sysInputs table
+-- Whether to load system fonts. If disabled, only fonts in `typst-preview.fontPaths` is loaded
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field systemFonts boolean
+
+---@class _.lspconfig.settings.tinymist.Trace
+-- Traces the communication between VS Code and the language server.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "off" | "messages" | "verbose"
+
+---@class _.lspconfig.settings.tinymist.Tinymist
+-- In VSCode, enable compile status meaning that the extension will show the compilation status in the status bar. Since Neovim and Helix don't have a such feature, it is disabled by default at the language server label.
+-- 
+-- ```lua
+-- default = "enable"
+-- ```
+---@field compileStatus "enable" | "disable"
+-- Whether to handle drag-and-drop of resources into the editing typst document. Note: restarting the editor is required to change this setting.
+-- 
+-- ```lua
+-- default = "enable"
+-- ```
+---@field dragAndDrop "enable" | "disable"
+-- The extension can export PDFs of your Typst files. This setting controls whether this feature is enabled and how often it runs.
+-- 
+-- ```lua
+-- default = "never"
+-- ```
+---@field exportPdf "never" | "onSave" | "onType" | "onDocumentHasTitle"
+-- A list of file or directory path to fonts. Note: The configuration source in higher priority will **override** the configuration source in lower priority. The order of precedence is: Configuration `tinymist.fontPaths` > Configuration `tinymist.typstExtraArgs.fontPaths` > LSP's CLI Argument `--font-path` > The environment variable `TYPST_FONT_PATHS` (a path list separated by `;` (on Windows) or `:` (Otherwise)). Note: If the path to fonts is a relative path, it will be resolved based on the root directory. Note: In VSCode, you can use VSCode variables in the path, e.g. `${workspaceFolder}/fonts`.
+---@field fontPaths any[]
+-- The extension can format Typst files using typstfmt or typstyle.
+-- 
+-- ```lua
+-- default = "disable"
+-- ```
+---@field formatterMode "disable" | "typstyle" | "typstfmt"
+-- Set the print width for the formatter, which is a **soft limit** of characters per line. See [the definition of *Print Width*](https://prettier.io/docs/en/options.html#print-width). Note: this has lower priority than the formatter's specific configurations.
+-- 
+-- ```lua
+-- default = 120
+-- ```
+---@field formatterPrintWidth number
+-- Enable or disable [experimental/onEnter](https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#on-enter) (LSP onEnter feature) to allow automatic insertion of characters on enter, such as `///` for comments. Note: restarting the editor is required to change this setting.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field onEnterEvent boolean
+-- The path pattern to store Typst artifacts, you can use `$root` or `$dir` or `$name` to do magic configuration, e.g. `$dir/$name` (default) and `$root/target/$dir/$name`.
+-- 
+-- ```lua
+-- default = ""
+-- ```
+---@field outputPath string
+---@field preview _.lspconfig.settings.tinymist.Preview
+-- Enable or disable preview features of Typst. Note: restarting the editor is required to change this setting.
+-- 
+-- ```lua
+-- default = "enable"
+-- ```
+---@field previewFeature "enable" | "disable"
+-- Configure the root for absolute paths in typst. Hint: you can set the rootPath to `-`, so that tinymist will always use parent directory of the file as the root path. Note: for neovim users, if it complains root not found, you must set `require("lspconfig")["tinymist"].setup { root_dir }` as well, see [tinymist#528](https://github.com/Myriad-Dreamin/tinymist/issues/528).
+---@field rootPath string
+-- Enable or disable semantic tokens (LSP syntax highlighting)
+-- 
+-- ```lua
+-- default = "enable"
+-- ```
+---@field semanticTokens "enable" | "disable"
+-- The extension can use a local tinymist executable instead of the one bundled with the extension. This setting controls the path to the executable.
+---@field serverPath string
+-- Configures way of opening exported files, e.g. inside of editor tabs or using system application.
+---@field showExportFileIn "editorTab" | "systemDefault"
+-- A flag that determines whether to load system fonts for Typst compiler, which is useful for ensuring reproducible compilation. If set to null or not set, the extension will use the default behavior of the Typst compiler. Note: You need to restart LSP to change this options. 
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field systemFonts boolean
+---@field trace _.lspconfig.settings.tinymist.Trace
+-- You can pass any arguments as you like, and we will try to follow behaviors of the **same version** of typst-cli. Note: the arguments may be overridden by other settings. For example, `--font-path` will be overridden by `tinymist.fontPaths`.
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field typstExtraArgs string[]
+
+---@class lspconfig.settings.tinymist
+---@field tinymist _.lspconfig.settings.tinymist.Tinymist
+
 ---@class _.lspconfig.settings.ts_ls.Experimental
 -- Automatically update imports when pasting code. Requires TypeScript 5.7+.
 ---@field updateImportsOnPaste boolean
@@ -16125,7 +16294,7 @@
 ---@field npmIsInstalled boolean
 
 ---@class _.lspconfig.settings.ts_ls.Experimental
--- (Experimental) Enable/disable expanding on hover.
+-- Enable/disable expanding on hover.
 ---@field expandableHover boolean
 -- Automatically update imports when pasting code. Requires TypeScript 5.7+.
 ---@field updateImportsOnPaste boolean
@@ -16501,7 +16670,7 @@
 ---@field autoDetect "on" | "off" | "build" | "watch"
 
 ---@class _.lspconfig.settings.ts_ls.Experimental
--- (Experimental) Enables project wide error reporting.
+-- Enables project wide error reporting.
 ---@field enableProjectDiagnostics boolean
 -- Use VS Code's file watchers instead of TypeScript's. Requires using TypeScript 5.4+ in the workspace.
 -- 
@@ -16666,6 +16835,42 @@
 ---@field javascript _.lspconfig.settings.ts_ls.Javascript
 ---@field js/ts _.lspconfig.settings.ts_ls.Js/ts
 ---@field typescript _.lspconfig.settings.ts_ls.Typescript
+
+---@class _.lspconfig.settings.typst_lsp.Trace
+-- Traces the communication between VS Code and the language server.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "off" | "messages" | "verbose"
+
+---@class _.lspconfig.settings.typst_lsp.Typst-lsp
+-- The extension can format Typst files using typstfmt (experimental).
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field experimentalFormatterMode "off" | "on"
+-- The extension can export PDFs of your Typst files. This setting controls whether this feature is enabled and how often it runs.
+-- 
+-- ```lua
+-- default = "onSave"
+-- ```
+---@field exportPdf "never" | "onSave" | "onPinnedMainSave" | "onType" | "onPinnedMainType"
+-- Configure the root for absolute paths in typst
+---@field rootPath string
+-- Enable or disable semantic tokens (LSP syntax highlighting)
+-- 
+-- ```lua
+-- default = "enable"
+-- ```
+---@field semanticTokens "enable" | "disable"
+-- The extension can use a local typst-lsp executable instead of the one bundled with the extension. This setting controls the path to the executable.
+---@field serverPath string
+---@field trace _.lspconfig.settings.typst_lsp.Trace
+
+---@class lspconfig.settings.typst_lsp
+---@field typst-lsp _.lspconfig.settings.typst_lsp.Typst-lsp
 
 ---@class _.lspconfig.settings.volar.AutoInsert
 -- Auto add space between double curly brackets: {{|}} -> {{ | }}
