@@ -1,3 +1,5 @@
+local Editor = require("neoconf.editor")
+local Settings = require("neoconf.settings")
 local Util = require("neoconf.util")
 
 local M = {}
@@ -69,7 +71,7 @@ function M.show_lsp_settings()
       if Util.exists(item.file) then
         local line = "* " .. vim.fn.fnamemodify(item.file, ":~")
         if item.is_global then
-          line = line .. "  "
+          line = line .. "  "
         end
         table.insert(content, line)
       end
@@ -88,7 +90,7 @@ function M.show_settings()
     if Util.exists(item.file) then
       local line = "* " .. vim.fn.fnamemodify(item.file, ":~")
       if item.is_global then
-        line = line .. "  "
+        line = line .. "  "
       end
       table.insert(content, line)
     end
@@ -98,6 +100,65 @@ function M.show_settings()
 
   table.insert(content, "```lua\n" .. vim.inspect(settings) .. "\n```\n")
   M.show(table.concat(content, "\n"))
+end
+
+-- Display LSP client settings
+function M.show_client_settings(client)
+  local client_settings = client.config.settings
+  local neoconf_settings = require("neoconf").get()
+
+  if next(client_settings) ~= nil or next(neoconf_settings) ~= nil then
+    local merged = vim.tbl_deep_extend("force", {}, neoconf_settings, client_settings)
+    Editor.open(merged, {
+      on_save = function()
+        Settings.refresh()
+      end,
+    })
+  else
+    Util.warn("No settings found for " .. client.name .. " or in neoconf")
+  end
+end
+
+-- Choose and display LSP client settings
+function M.choose_client()
+  local clients = vim.lsp.get_clients()
+
+  if #clients == 0 then
+    M.show_local_settings()
+  else
+    local choices = {
+      { name = "Local Settings (No LSP merge)", action = M.show_local_settings },
+    }
+    for _, client in ipairs(clients) do
+      table.insert(choices, {
+        name = client.name,
+        action = function()
+          M.show_client_settings(client)
+        end,
+      })
+    end
+
+    vim.ui.select(choices, {
+      prompt = "Choose settings to modify:",
+      format_item = function(choice)
+        return choice.name
+      end,
+    }, function(choice)
+      if choice then
+        choice.action()
+      end
+    end)
+  end
+end
+
+-- Show local settings
+function M.show_local_settings()
+  local settings = Settings.get_local(vim.uv.cwd()):get()
+  Editor.open(settings or {}, {
+    on_save = function()
+      Settings.refresh()
+    end,
+  })
 end
 
 return M

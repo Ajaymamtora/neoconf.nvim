@@ -295,13 +295,11 @@ function M.notify(msg, level)
   vim.notify(msg, level, {
     title = "settings.nvim",
     on_open = function(win)
-      vim.api.nvim_set_option_value("conceallevel", 3, {
-        win = win,
-        scope = "local",
-      })
       local buf = vim.api.nvim_win_get_buf(win)
-      vim.api.nvim_set_option_value("filetype", "markdown", { buf = buf, scope = "local" })
-      vim.api.nvim_set_option_value("spell", false, { buf = buf, scope = "local" })
+      -- Set window option
+      vim.wo[win].conceallevel = 3
+      -- Set buffer options
+      vim.bo[buf].filetype = "markdown"
     end,
   })
 end

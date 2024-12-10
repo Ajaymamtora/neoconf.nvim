@@ -163,6 +163,16 @@ function M.get_global()
   return settings
 end
 
+---Write settings to local config file
+---@param content table The settings to write
+---@return boolean success
+function M.write_local(content)
+  local root_dir = require("neoconf.workspace").find_root({})
+  local local_file = root_dir .. "/" .. require("neoconf.config").options.local_settings
+
+  return require("neoconf.utils.json").write(local_file, content, { sort = true, format = false })
+end
+
 function M.refresh()
   local Workspace = require("neoconf.workspace")
   -- Clear the internal state
