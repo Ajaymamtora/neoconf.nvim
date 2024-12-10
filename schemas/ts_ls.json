@@ -8,15 +8,6 @@
       "scope": "language-overridable",
       "type": "boolean"
     },
-    "javascript.experimental.updateImportsOnPaste": {
-      "default": false,
-      "description": "Automatically update imports when pasting code. Requires TypeScript 5.7+.",
-      "scope": "window",
-      "tags": [
-        "experimental"
-      ],
-      "type": "boolean"
-    },
     "javascript.format.enable": {
       "default": true,
       "description": "Enable/disable default JavaScript formatter.",
@@ -203,7 +194,7 @@
     },
     "javascript.preferGoToSourceDefinition": {
       "default": false,
-      "description": "Makes Go to Definition avoid type declaration files when possible by triggering Go to Source Definition instead. This allows Go to Source Definition to be triggered with the mouse gesture.",
+      "description": "Makes `Go to Definition` avoid type declaration files when possible by triggering `Go to Source Definition` instead. This allows `Go to Source Definition` to be triggered with the mouse gesture.",
       "scope": "window",
       "type": "boolean"
     },
@@ -274,7 +265,7 @@
         "none"
       ],
       "markdownEnumDescriptions": [
-        "Insert `={}` or `=\"\"` after attribute names based on the prop type. See `javascript.preferences.quoteStyle` to control the type of quotes used for string attributes.",
+        "Insert `={}` or `=\"\"` after attribute names based on the prop type. See `#javascript.preferences.quoteStyle#` to control the type of quotes used for string attributes.",
         "Insert `={}` after attribute names.",
         "Only insert attribute names."
       ],
@@ -285,7 +276,7 @@
       "markdownDescription": "Advanced preferences that control how imports are ordered.",
       "properties": {
         "accentCollation": {
-          "markdownDescription": "Compare characters with diacritical marks as unequal to base character.",
+          "markdownDescription": "Requires `organizeImports.unicodeCollation: 'unicode'`. Compare characters with diacritical marks as unequal to base character.",
           "type": "boolean"
         },
         "caseFirst": {
@@ -295,7 +286,12 @@
             "upper",
             "lower"
           ],
-          "markdownDescription": "Indicates whether upper-case comes before lower-case. Only applies to `organizeImportsCollation: 'unicode'`.",
+          "markdownDescription": "Requires `organizeImports.unicodeCollation: 'unicode'`, and `organizeImports.caseSensitivity` is not `caseInsensitive`. Indicates whether upper-case will sort before lower-case.",
+          "markdownEnumDescriptions": [
+            "Default order given by `locale`.",
+            "Upper-case comes before lower-case. E.g. ` A, a, B, b`.",
+            "Lower-case comes before upper-case. E.g.` a, A, z, Z`."
+          ],
           "type": "string"
         },
         "caseSensitivity": {
@@ -305,6 +301,7 @@
             "caseInsensitive",
             "caseSensitive"
           ],
+          "markdownDescription": "Specifies how imports should be sorted with regards to case-sensitivity. If `auto` or unspecified, we will detect the case-sensitivity per file",
           "markdownEnumDescriptions": [
             "Detect case-sensitivity for import sorting.",
             "Sort imports case-insensitively.",
@@ -313,11 +310,11 @@
           "type": "string"
         },
         "locale": {
-          "markdownDescription": "Overrides the locale used for collation. Specify `auto` to use the UI locale. Only applies to `organizeImportsCollation: 'unicode'`.",
+          "markdownDescription": "Requires `organizeImports.unicodeCollation: 'unicode'`. Overrides the locale used for collation. Specify `auto` to use the UI locale.",
           "type": "string"
         },
         "numericCollation": {
-          "markdownDescription": "Sort numeric strings by integer value.",
+          "markdownDescription": "Requires `organizeImports.unicodeCollation: 'unicode'`. Sort numeric strings by integer value.",
           "type": "boolean"
         },
         "typeOrder": {
@@ -328,11 +325,12 @@
             "inline",
             "first"
           ],
+          "markdownDescription": "Specify how type-only named imports should be sorted.",
           "markdownEnumDescriptions": [
             "Detect where type-only named imports should be sorted.",
-            "Type only named imports are sorted to the end of the import list.",
-            "Named imports are sorted by name only.",
-            "Type only named imports are sorted to the end of the import list."
+            "Type only named imports are sorted to the end of the import list. E.g. `import { B, Z, type A, type Y } from 'module';`",
+            "Named imports are sorted by name only. E.g. `import { type A, B, type Y, Z } from 'module';`",
+            "Type only named imports are sorted to the beginning of the import list. E.g. `import { type A, type Y, B, Z } from 'module';`"
           ],
           "type": "string"
         },
@@ -342,6 +340,7 @@
             "ordinal",
             "unicode"
           ],
+          "markdownDescription": "Specify whether to sort imports using Unicode or Ordinal collation.",
           "markdownEnumDescriptions": [
             "Sort imports using the numeric value of each code point.",
             "Sort imports using the Unicode code collation."
@@ -480,6 +479,12 @@
       "scope": "resource",
       "type": "string"
     },
+    "javascript.updateImportsOnPaste.enabled": {
+      "default": true,
+      "markdownDescription": "Enable updating imports when pasting code. Requires TypeScript 5.7+.\n\nBy default this shows a option to update imports after pasting. You can use the `#editor.pasteAs.preferences#` setting to update imports automatically when pasting: `\"editor.pasteAs.preferences\": [ \"text.updateImports.jsts\" ]`.",
+      "scope": "window",
+      "type": "boolean"
+    },
     "javascript.validate.enable": {
       "default": true,
       "description": "Enable/disable JavaScript validation.",
@@ -581,16 +586,7 @@
     },
     "typescript.experimental.expandableHover": {
       "default": false,
-      "description": "Enable/disable expanding on hover.",
-      "scope": "window",
-      "tags": [
-        "experimental"
-      ],
-      "type": "boolean"
-    },
-    "typescript.experimental.updateImportsOnPaste": {
-      "default": false,
-      "description": "Automatically update imports when pasting code. Requires TypeScript 5.7+.",
+      "description": "Enable expanding/contracting the hover to reveal more/less information from the TS server.",
       "scope": "window",
       "tags": [
         "experimental"
@@ -807,7 +803,7 @@
         "zh-TW"
       ],
       "enumDescriptions": [
-        "Use VS Code's configured display language",
+        "Use VS Code's configured display language.",
         "Deutsch",
         "español",
         "English",
@@ -830,7 +826,7 @@
     },
     "typescript.preferGoToSourceDefinition": {
       "default": false,
-      "description": "Makes Go to Definition avoid type declaration files when possible by triggering Go to Source Definition instead. This allows Go to Source Definition to be triggered with the mouse gesture.",
+      "description": "Makes `Go to Definition` avoid type declaration files when possible by triggering `Go to Source Definition` instead. This allows `Go to Source Definition` to be triggered with the mouse gesture.",
       "scope": "window",
       "type": "boolean"
     },
@@ -917,7 +913,7 @@
         "none"
       ],
       "markdownEnumDescriptions": [
-        "Insert `={}` or `=\"\"` after attribute names based on the prop type. See `typescript.preferences.quoteStyle` to control the type of quotes used for string attributes.",
+        "Insert `={}` or `=\"\"` after attribute names based on the prop type. See `#typescript.preferences.quoteStyle#` to control the type of quotes used for string attributes.",
         "Insert `={}` after attribute names.",
         "Only insert attribute names."
       ],
@@ -928,7 +924,7 @@
       "markdownDescription": "Advanced preferences that control how imports are ordered.",
       "properties": {
         "accentCollation": {
-          "markdownDescription": "Compare characters with diacritical marks as unequal to base character.",
+          "markdownDescription": "Requires `organizeImports.unicodeCollation: 'unicode'`. Compare characters with diacritical marks as unequal to base character.",
           "type": "boolean"
         },
         "caseFirst": {
@@ -938,7 +934,12 @@
             "upper",
             "lower"
           ],
-          "markdownDescription": "Indicates whether upper-case comes before lower-case. Only applies to `organizeImportsCollation: 'unicode'`.",
+          "markdownDescription": "Requires `organizeImports.unicodeCollation: 'unicode'`, and `organizeImports.caseSensitivity` is not `caseInsensitive`. Indicates whether upper-case will sort before lower-case.",
+          "markdownEnumDescriptions": [
+            "Default order given by `locale`.",
+            "Upper-case comes before lower-case. E.g. ` A, a, B, b`.",
+            "Lower-case comes before upper-case. E.g.` a, A, z, Z`."
+          ],
           "type": "string"
         },
         "caseSensitivity": {
@@ -948,6 +949,7 @@
             "caseInsensitive",
             "caseSensitive"
           ],
+          "markdownDescription": "Specifies how imports should be sorted with regards to case-sensitivity. If `auto` or unspecified, we will detect the case-sensitivity per file",
           "markdownEnumDescriptions": [
             "Detect case-sensitivity for import sorting.",
             "Sort imports case-insensitively.",
@@ -956,11 +958,11 @@
           "type": "string"
         },
         "locale": {
-          "markdownDescription": "Overrides the locale used for collation. Specify `auto` to use the UI locale. Only applies to `organizeImportsCollation: 'unicode'`.",
+          "markdownDescription": "Requires `organizeImports.unicodeCollation: 'unicode'`. Overrides the locale used for collation. Specify `auto` to use the UI locale.",
           "type": "string"
         },
         "numericCollation": {
-          "markdownDescription": "Sort numeric strings by integer value.",
+          "markdownDescription": "Requires `organizeImports.unicodeCollation: 'unicode'`. Sort numeric strings by integer value.",
           "type": "boolean"
         },
         "typeOrder": {
@@ -971,11 +973,12 @@
             "inline",
             "first"
           ],
+          "markdownDescription": "Specify how type-only named imports should be sorted.",
           "markdownEnumDescriptions": [
             "Detect where type-only named imports should be sorted.",
-            "Type only named imports are sorted to the end of the import list.",
-            "Named imports are sorted by name only.",
-            "Type only named imports are sorted to the end of the import list."
+            "Type only named imports are sorted to the end of the import list. E.g. `import { B, Z, type A, type Y } from 'module';`",
+            "Named imports are sorted by name only. E.g. `import { type A, B, type Y, Z } from 'module';`",
+            "Type only named imports are sorted to the beginning of the import list. E.g. `import { type A, type Y, B, Z } from 'module';`"
           ],
           "type": "string"
         },
@@ -985,6 +988,7 @@
             "ordinal",
             "unicode"
           ],
+          "markdownDescription": "Specify whether to sort imports using Unicode or Ordinal collation.",
           "markdownEnumDescriptions": [
             "Sort imports using the numeric value of each code point.",
             "Sort imports using the Unicode code collation."
@@ -1338,6 +1342,12 @@
       "scope": "resource",
       "type": "string"
     },
+    "typescript.updateImportsOnPaste.enabled": {
+      "default": true,
+      "markdownDescription": "Enable updating imports when pasting code. Requires TypeScript 5.7+.\n\nBy default this shows a option to update imports after pasting. You can use the `#editor.pasteAs.preferences#` setting to update imports automatically when pasting: `\"editor.pasteAs.preferences\": [ \"text.updateImports.jsts\" ]`.",
+      "scope": "window",
+      "type": "boolean"
+    },
     "typescript.validate.enable": {
       "default": true,
       "description": "Enable/disable TypeScript validation.",
@@ -1346,7 +1356,7 @@
     },
     "typescript.workspaceSymbols.excludeLibrarySymbols": {
       "default": true,
-      "markdownDescription": "Exclude symbols that come from library files in Go to Symbol in Workspace results. Requires using TypeScript 5.3+ in the workspace.",
+      "markdownDescription": "Exclude symbols that come from library files in `Go to Symbol in Workspace` results. Requires using TypeScript 5.3+ in the workspace.",
       "scope": "window",
       "type": "boolean"
     },

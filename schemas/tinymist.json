@@ -12,6 +12,36 @@
       "title": "Show/Report compilation status",
       "type": "string"
     },
+    "tinymist.completion.postfix": {
+      "default": true,
+      "markdownDescription": "Whether to enable postfix code completion. For example, `[A].box|` will be completed to `box[A]|`. Hint: Restarting the editor is required to change this setting.",
+      "title": "Enable Postfix Code Completion",
+      "type": "boolean"
+    },
+    "tinymist.completion.postfixUfcs": {
+      "default": true,
+      "markdownDescription": "Whether to enable UFCS-style completion. For example, `[A].box|` will be completed to `box[A]|`. Hint: Restarting the editor is required to change this setting.",
+      "title": "Completion: Convert Field Access to Call",
+      "type": "boolean"
+    },
+    "tinymist.completion.postfixUfcsLeft": {
+      "default": true,
+      "markdownDescription": "Whether to enable left-variant UFCS-style completion. For example, `[A].table|` will be completed to `table(|)[A]`. Hint: Restarting the editor is required to change this setting.",
+      "title": "Completion: Convert Field Access to Call (Left Variant)",
+      "type": "boolean"
+    },
+    "tinymist.completion.postfixUfcsRight": {
+      "default": true,
+      "description": "Whether to enable right-variant UFCS-style completion. For example, `[A].table|` will be completed to `table([A], |)`. Hint: Restarting the editor is required to change this setting.",
+      "title": "Completion: Convert Field Access to Call (Right Variant)",
+      "type": "boolean"
+    },
+    "tinymist.completion.triggerOnSnippetPlaceholders": {
+      "default": false,
+      "markdownDescription": "Whether to trigger completions on arguments (placeholders) of snippets. For example, `box` will be completed to `box(|)`, and server will request the editor (lsp client) to request completion after moving cursor to the placeholder in the snippet. Note: this has no effect if the editor doesn't support `editor.action.triggerSuggest` or `tinymist.triggerSuggestAndParameterHints` command. Hint: Restarting the editor is required to change this setting.",
+      "title": "Trigger LSP Completion on Snippet Placeholders",
+      "type": "boolean"
+    },
     "tinymist.dragAndDrop": {
       "default": "enable",
       "description": "Whether to handle drag-and-drop of resources into the editing typst document. Note: restarting the editor is required to change this setting.",
@@ -221,6 +251,16 @@
       "title": "Enable preview features",
       "type": "string"
     },
+    "tinymist.renderDocs": {
+      "default": "enable",
+      "description": "(Experimental) Whether to render typst elements in (hover) docs. In VS Code, when this feature is enabled, tinymist will store rendered results in the filesystem's temporary storage to show them in the hover content. Note: Please disable this feature if the editor doesn't support/handle image previewing in docs.",
+      "enum": [
+        "enable",
+        "disable"
+      ],
+      "title": "(Experimental) Render Docs",
+      "type": "string"
+    },
     "tinymist.rootPath": {
       "default": null,
       "markdownDescription": "Configure the root for absolute paths in typst. Hint: you can set the rootPath to `-`, so that tinymist will always use parent directory of the file as the root path. Note: for neovim users, if it complains root not found, you must set `require(\"lspconfig\")[\"tinymist\"].setup { root_dir }` as well, see [tinymist#528](https://github.com/Myriad-Dreamin/tinymist/issues/528).",
@@ -246,7 +286,7 @@
     },
     "tinymist.serverPath": {
       "default": null,
-      "description": "The extension can use a local tinymist executable instead of the one bundled with the extension. This setting controls the path to the executable.",
+      "description": "The extension can use a local tinymist executable instead of the one bundled with the extension. This setting controls the path to the executable. The string \"tinymist\" means look up Tinymist in PATH.",
       "title": "Path to server executable",
       "type": [
         "string",
@@ -288,6 +328,12 @@
       ],
       "scope": "window",
       "type": "string"
+    },
+    "tinymist.typingContinueCommentsOnNewline": {
+      "default": true,
+      "markdownDescription": "Whether to prefix newlines after comments with the corresponding comment prefix.",
+      "title": "Continue Comments on Newline",
+      "type": "boolean"
     },
     "tinymist.typstExtraArgs": {
       "default": [],
