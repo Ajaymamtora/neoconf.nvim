@@ -107,11 +107,30 @@ end
 ---Helper function to toggle LSP inlay hints
 ---@return boolean|nil new_state
 function M.toggle_inlay_hints()
-  local new_state = M.toggle("lsp.inlay_hint")
-  if new_state ~= nil then
-    vim.lsp.inlay_hint.enable(0, new_state)
-    Util.info("Inlay hints " .. (new_state and "enabled" or "disabled"))
+  -- Get current settings
+  local current_settings = Settings.get_local(vim.uv.cwd()):get() or {}
+  local current = Settings.get_local(vim.uv.cwd()):get("lsp.inlay_hint")
+
+  -- Convert current value to explicit boolean
+  local current_bool = current == true
+  local new_state = not current_bool
+
+  -- Create path in settings
+  local node = current_settings
+  node.lsp = node.lsp or {}
+  node.lsp.inlay_hint = new_state
+
+  -- Write to local settings
+  local success = Settings.write_local(current_settings)
+  if not success then
+    return nil
   end
+
+  -- Toggle hints in Neovim
+  vim.lsp.inlay_hint.enable(new_state, { bufnr = 0 })
+  Util.info("Inlay hints " .. (new_state and "enabled" or "disabled"))
+
+  Settings.refresh()
   return new_state
 end
 
