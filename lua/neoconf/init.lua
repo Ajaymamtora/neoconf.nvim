@@ -27,26 +27,27 @@ end
 ---@return boolean|nil new_value The new value after toggling
 ---@return string|nil error
 function M.toggle(path)
-  local settings = Settings.get_local(vim.uv.cwd())
-  local current = settings:get(path)
+  -- Get current settings first
+  local current_settings = Settings.get_local(vim.uv.cwd()):get() or {}
+  local current = Settings.get_local(vim.uv.cwd()):get(path)
 
   -- If value doesn't exist, start with false
   if type(current) ~= "boolean" then
     current = false
   end
 
-  -- Create new settings with toggled value
-  local new_settings = {}
+  -- Create path to the setting
   local parts = vim.split(path, ".", { plain = true })
-  local node = new_settings
+  local node = current_settings
   for i = 1, #parts - 1 do
-    node[parts[i]] = {}
+    node[parts[i]] = node[parts[i]] or {}
     node = node[parts[i]]
   end
+  -- Toggle the value
   node[parts[#parts]] = not current
 
-  -- Write to local settings
-  local success = Settings.write_local(new_settings)
+  -- Write updated settings back to file
+  local success = Settings.write_local(current_settings)
   if not success then
     return nil, "Failed to write settings"
   end
