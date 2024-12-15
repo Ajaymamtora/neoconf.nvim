@@ -62,39 +62,40 @@ end
 ---@return boolean|nil success
 ---@return string|nil error
 function M.toggle_string_in_table(str, path)
-  local settings = Settings.get_local(vim.uv.cwd())
-  local current = settings:get(path)
+  -- Get current settings first
+  local current_settings = Settings.get_local(vim.uv.cwd()):get() or {}
+  local current_array = Settings.get_local(vim.uv.cwd()):get(path)
 
-  if type(current) ~= "table" then
-    current = {}
+  -- Ensure we have an array to work with
+  if type(current_array) ~= "table" then
+    current_array = {}
   end
 
   -- Toggle string in array
   local found = false
-  for i, v in ipairs(current) do
+  for i, v in ipairs(current_array) do
     if v == str then
-      table.remove(current, i)
+      table.remove(current_array, i)
       found = true
       break
     end
   end
 
   if not found then
-    table.insert(current, str)
+    table.insert(current_array, str)
   end
 
-  -- Create new settings
-  local new_settings = {}
+  -- Update the value at path in existing settings
   local parts = vim.split(path, ".", { plain = true })
-  local node = new_settings
+  local node = current_settings
   for i = 1, #parts - 1 do
-    node[parts[i]] = {}
+    node[parts[i]] = node[parts[i]] or {}
     node = node[parts[i]]
   end
-  node[parts[#parts]] = current
+  node[parts[#parts]] = current_array
 
-  -- Write to local settings
-  local success = Settings.write_local(new_settings)
+  -- Write updated settings back to file
+  local success = Settings.write_local(current_settings)
   if not success then
     return nil, "Failed to write settings"
   end
