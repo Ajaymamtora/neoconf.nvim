@@ -107,12 +107,14 @@ end
 ---Helper function to toggle LSP inlay hints
 ---@return boolean|nil new_state
 function M.toggle_inlay_hints()
-  -- Get current settings
-  local current_settings = Settings.get_local(vim.uv.cwd()):get() or {}
-  local current = Settings.get_local(vim.uv.cwd()):get("lsp.inlay_hint")
-
-  -- Convert current value to explicit boolean
+  -- Get the resolved value (from both global and local settings)
+  local current = M.get("lsp.inlay_hint")
   local current_bool = current == true
+
+  -- Get current local settings to update
+  local current_settings = Settings.get_local(vim.uv.cwd()):get() or {}
+
+  -- Set new state as opposite of current resolved value
   local new_state = not current_bool
 
   -- Create path in settings
