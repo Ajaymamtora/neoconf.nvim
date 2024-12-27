@@ -21,6 +21,9 @@ function M.setup()
     checkhealth = function()
       vim.cmd([[checkhealth neoconf]])
     end,
+    choose_client = function()
+      require("neoconf.view").choose_client()
+    end,
   }
 
   vim.api.nvim_create_user_command("Neoconf", function(args)
