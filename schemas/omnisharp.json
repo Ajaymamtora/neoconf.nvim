@@ -389,6 +389,11 @@
       "scope": "machine-overridable",
       "type": "boolean"
     },
+    "dotnet.formatting.organizeImportsOnFormat": {
+      "default": false,
+      "description": "%configuration.dotnet.formatting.organizeImportsOnFormat%",
+      "type": "boolean"
+    },
     "dotnet.highlighting.highlightRelatedJsonComponents": {
       "default": "true",
       "description": "%configuration.dotnet.highlighting.highlightRelatedJsonComponents%",
@@ -896,11 +901,6 @@
       "scope": "machine",
       "type": "string"
     },
-    "omnisharp.organizeImportsOnFormat": {
-      "default": false,
-      "description": "%configuration.omnisharp.organizeImportsOnFormat%",
-      "type": "boolean"
-    },
     "omnisharp.projectFilesExcludePattern": {
       "default": "**/node_modules/**,**/.git/**,**/bower_components/**",
       "description": "%configuration.omnisharp.projectFilesExcludePattern%",
@@ -976,7 +976,7 @@
       "type": "string"
     },
     "razor.languageServer.forceRuntimeCodeGeneration": {
-      "default": false,
+      "default": null,
       "description": "%configuration.razor.languageServer.forceRuntimeCodeGeneration%",
       "order": 90,
       "scope": "machine-overridable",
@@ -987,11 +987,9 @@
       "description": "%configuration.razor.languageServer.suppressLspErrorToasts%",
       "type": "boolean"
     },
-    "razor.languageServer.useRoslynTokenizer": {
-      "default": false,
-      "markdownDescription": "%configuration.razor.languageServer.useRoslynTokenizer%",
-      "order": 90,
-      "scope": "machine-overridable",
+    "razor.languageServer.useNewFormattingEngine": {
+      "default": true,
+      "description": "%configuration.razor.languageServer.useNewFormattingEngine%",
       "type": "boolean"
     },
     "razor.plugin.path": {

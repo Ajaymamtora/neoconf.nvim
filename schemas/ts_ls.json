@@ -14,6 +14,12 @@
       "scope": "window",
       "type": "boolean"
     },
+    "javascript.format.indentSwitchCase": {
+      "default": true,
+      "description": "Indent case clauses in switch statements. Requires using TypeScript 5.1+ in the workspace.",
+      "scope": "resource",
+      "type": "boolean"
+    },
     "javascript.format.insertSpaceAfterCommaDelimiter": {
       "default": true,
       "description": "Defines space handling after a comma delimiter.",
@@ -132,12 +138,6 @@
       "markdownDeprecationMessage": "This setting has been deprecated in favor of `js/ts.implicitProjectConfig.experimentalDecorators`.",
       "markdownDescription": "Enable/disable `experimentalDecorators` in JavaScript files that are not part of a project. Existing `jsconfig.json` or `tsconfig.json` files override this setting.",
       "scope": "window",
-      "type": "boolean"
-    },
-    "javascript.inlayHints.enumMemberValues.enabled": {
-      "default": false,
-      "markdownDescription": "Enable/disable inlay hints for member values in enum declarations:\n```typescript\n\nenum MyValue {\n\tA /* = 0 */;\n\tB /* = 1 */;\n}\n \n```\n\nThe text inside the ``` block is code and should not be localized.",
-      "scope": "resource",
       "type": "boolean"
     },
     "javascript.inlayHints.functionLikeReturnTypes.enabled": {

@@ -590,7 +590,7 @@
     "java.home": {
       "default": null,
       "deprecationMessage": "This setting is deprecated, please use 'java.jdt.ls.java.home' instead.",
-      "description": "Specifies the folder path to the JDK (17 or more recent) used to launch the Java Language Server.\nOn Windows, backslashes must be escaped, i.e.\n\"java.home\":\"C:\\\\Program Files\\\\Java\\\\jdk-17.0_3\"",
+      "description": "Specifies the folder path to the JDK (21 or more recent) used to launch the Java Language Server.\nOn Windows, backslashes must be escaped, i.e.\n\"java.home\":\"C:\\\\Program Files\\\\Java\\\\jdk-21.0_5\"",
       "order": 0,
       "scope": "machine-overridable",
       "type": [
@@ -598,12 +598,24 @@
         "null"
       ]
     },
-    "java.implementationsCodeLens.enabled": {
-      "default": false,
-      "description": "Enable/disable the implementations code lens.",
+    "java.implementationCodeLens": {
+      "default": "none",
+      "description": "Enable/disable the implementations code lens for the provided categories.",
+      "enum": [
+        "none",
+        "types",
+        "methods",
+        "all"
+      ],
+      "enumDescriptions": [
+        "Disable the implementations code lens",
+        "Enable the implementations code lens only for types",
+        "Enable the implementations code lens only for methods",
+        "Enable the implementations code lens for types and methods"
+      ],
       "order": 20,
       "scope": "window",
-      "type": "boolean"
+      "type": "string"
     },
     "java.import.exclusions": {
       "default": [
@@ -795,7 +807,7 @@
     },
     "java.jdt.ls.java.home": {
       "default": null,
-      "description": "Specifies the folder path to the JDK (17 or more recent) used to launch the Java Language Server. This setting will replace the Java extension's embedded JRE to start the Java Language Server. \n\nOn Windows, backslashes must be escaped, i.e.\n\"java.jdt.ls.java.home\":\"C:\\\\Program Files\\\\Java\\\\jdk-17.0_3\"",
+      "description": "Specifies the folder path to the JDK (21 or more recent) used to launch the Java Language Server. This setting will replace the Java extension's embedded JRE to start the Java Language Server. \n\nOn Windows, backslashes must be escaped, i.e.\n\"java.jdt.ls.java.home\":\"C:\\\\Program Files\\\\Java\\\\jdk-21.0_5\"",
       "order": 10,
       "scope": "machine-overridable",
       "type": [

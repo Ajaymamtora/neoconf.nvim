@@ -57,7 +57,7 @@
     },
     "swift.SDK": {
       "default": "",
-      "markdownDescription": "The path of the SDK to compile against (`--sdk` parameter). This is of use when supporting non-standard SDK layouts on Windows and using custom SDKs. The default SDK is determined by the environment on macOS and Windows.",
+      "markdownDescription": "The path of the SDK to compile against (`--sdk` parameter). This is of use when supporting non-standard SDK layouts on Windows and using custom SDKs. The default SDK is determined by the environment on macOS and Windows.\n\nFor SwiftPM projects, prefer using `swift.swiftSDK` with a triple (such as `arm64-apple-ios`) or Swift SDK name instead.",
       "order": 3,
       "type": "string"
     },
@@ -84,6 +84,12 @@
       "scope": "machine-overridable",
       "type": "array"
     },
+    "swift.attachmentsPath": {
+      "default": ".build/attachments",
+      "markdownDescription": "The path to a directory that will be used to store attachments produced during a test run.\n\nA relative path resolves relative to the root directory of the workspace running the test(s)",
+      "scope": "machine-overridable",
+      "type": "string"
+    },
     "swift.autoGenerateLaunchConfigurations": {
       "default": true,
       "markdownDescription": "When loading a `Package.swift`, auto-generate `launch.json` configurations for running any executables.",
@@ -100,7 +106,7 @@
       "items": {
         "type": "string"
       },
-      "markdownDescription": "Additional arguments to pass to `swift` commands such as `swift build`, `swift package`, `swift test`, etc... Keys and values should be provided as individual entries in the list. If you have created a copy of the build task in `tasks.json` then these build arguments will not be propogated to that task.",
+      "markdownDescription": "Additional arguments to pass to `swift` commands such as `swift build`, `swift package`, `swift test`, etc... Keys and values should be provided as individual entries in the list. If you have created a copy of the build task in `tasks.json` then these build arguments will not be propagated to that task.",
       "type": "array"
     },
     "swift.buildPath": {
@@ -217,6 +223,46 @@
       "markdownDescription": "Override the default path of the folder containing the Swift executables. The default is to look in the `PATH` environment variable. This path is also used to search for other executables used by the extension like `sourcekit-lsp` and `lldb`.",
       "type": "string"
     },
+    "swift.pluginPermissions": {
+      "default": {},
+      "markdownDescription": "Configures a list of permissions to be used when running a command plugins.\n\nPermissions objects are defined in the form:\n\n`{ \"PluginName:command\": { \"allowWritingToPackageDirectory\": true } }`.\n\nA key of `PluginName:command` will set permissions for a specific command. A key of `PluginName` will set permissions for all commands in the plugin.",
+      "patternProperties": {
+        "^([a-zA-Z0-9_-]+(:[a-zA-Z0-9_-]+)?)$": {
+          "properties": {
+            "allowNetworkConnections": {
+              "description": "Allow the plugin to make network connections",
+              "type": "string"
+            },
+            "allowWritingToDirectory": {
+              "oneOf": [
+                {
+                  "description": "Allow the plugin to write to an additional directory",
+                  "type": "string"
+                },
+                {
+                  "description": "Allow the plugin to write to additional directories",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              ]
+            },
+            "allowWritingToPackageDirectory": {
+              "description": "Allow the plugin to write to the package directory",
+              "type": "boolean"
+            },
+            "disableSandbox": {
+              "description": "Disable using the sandbox when executing plugins",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "scope": "machine-overridable",
+      "type": "object"
+    },
     "swift.runtimePath": {
       "default": "",
       "markdownDescription": "The path of the folder containing the Swift runtime libraries. This is of use when supporting non-standard SDK layouts on Windows. On Windows the runtime path is added to the `Path` environment variable. This is of less use on macOS and Linux but will be added to `DYLD_LIBRARY_PATH` and `LD_LIBRARY_PATH` environment variables respectively on each platform. ",
@@ -275,7 +321,7 @@
     },
     "swift.sourcekit-lsp.disable": {
       "default": false,
-      "markdownDescription": "Disable SourceKit-LSP",
+      "markdownDescription": "Disable SourceKit-LSP. This will turn off features like code completion, error diagnostics and jump-to-definition. Features like swift-testing test discovery will not work correctly.",
       "order": 6,
       "type": "boolean"
     },
@@ -337,6 +383,12 @@
         }
       },
       "type": "object"
+    },
+    "swift.swiftSDK": {
+      "default": "",
+      "markdownDescription": "The [Swift SDK](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0387-cross-compilation-destinations.md) to compile against (`--swift-sdk` parameter).",
+      "order": 4,
+      "type": "string"
     },
     "swift.testEnvironmentVariables": {
       "default": {},

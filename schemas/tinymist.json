@@ -9,7 +9,7 @@
         "enable",
         "disable"
       ],
-      "title": "Show/Report compilation status",
+      "title": "Show/Report Compile Status",
       "type": "string"
     },
     "tinymist.completion.postfix": {
@@ -41,6 +41,20 @@
       "markdownDescription": "Whether to trigger completions on arguments (placeholders) of snippets. For example, `box` will be completed to `box(|)`, and server will request the editor (lsp client) to request completion after moving cursor to the placeholder in the snippet. Note: this has no effect if the editor doesn't support `editor.action.triggerSuggest` or `tinymist.triggerSuggestAndParameterHints` command. Hint: Restarting the editor is required to change this setting.",
       "title": "Trigger LSP Completion on Snippet Placeholders",
       "type": "boolean"
+    },
+    "tinymist.configureDefaultWordSeparator": {
+      "default": "enable",
+      "description": "Whether to configure default word separators on startup",
+      "enum": [
+        "enable",
+        "disable"
+      ],
+      "enumDescriptions": [
+        "Override the default word separators on startup",
+        "Do not override the default word separators on startup"
+      ],
+      "title": "Configure default word separators",
+      "type": "string"
     },
     "tinymist.dragAndDrop": {
       "default": "enable",
@@ -251,6 +265,19 @@
       "title": "Enable preview features",
       "type": "string"
     },
+    "tinymist.projectResolution": {
+      "default": "singleFile",
+      "enum": [
+        "singleFile",
+        "lockDatabase"
+      ],
+      "enumDescriptions": [
+        "Manage typst documents like what we did in Markdown. Each single file is an individual document and no project resolution is needed.",
+        "Manage typst documents like what we did in Rust. For each workspace, tinymist tracks your preview and compilation history, and stores the information in a lock file. Tinymist will automatically selects the main file to use according to the lock file. This also allows other tools push preview and export tasks to language server by updating the lock file."
+      ],
+      "markdownDescription": "This configuration specifies the way to resolved projects.",
+      "type": "string"
+    },
     "tinymist.renderDocs": {
       "default": "enable",
       "description": "(Experimental) Whether to render typst elements in (hover) docs. In VS Code, when this feature is enabled, tinymist will store rendered results in the filesystem's temporary storage to show them in the hover content. Note: Please disable this feature if the editor doesn't support/handle image previewing in docs.",
@@ -311,6 +338,12 @@
       ],
       "description": "Configures way of opening exported files, e.g. inside of editor tabs or using system application.",
       "title": "(Experimental) Show Exported Files in Some Place"
+    },
+    "tinymist.statusBarFormat": {
+      "default": "{compileStatusIcon} {wordCount} [{fileName}]",
+      "markdownDescription": "Set format string of the server status. For example, `{compileStatusIcon}{wordCount} [{fileName}]` will format the status as `$(check) 123 words [main]`. Valid placeholders are:\n\n- `{compileStatusIcon}`: Icon indicating the compile status\n- `{wordCount}`: Number of words in the document\n- `{fileName}`: Name of the file being compiled\n\nNote: The status bar will be hidden if the format string is empty.",
+      "title": "Format of the Server Status in the Status Bar",
+      "type": "string"
     },
     "tinymist.systemFonts": {
       "default": true,

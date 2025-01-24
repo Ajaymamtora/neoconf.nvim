@@ -32,6 +32,10 @@
 ---@field foldComments boolean
 -- Controls the Ada Language Server normalizes the file paths received from the client.
 ---@field followSymlinks boolean
+-- GPR configuration file (*.cgpr) for this workspace.
+-- 
+-- It is recommended to set this to a relative path starting at the root of the workspace.
+---@field gprConfigurationFile string
 -- Enable insertion of missing with-clauses when accepting completion for invisible symbols.
 ---@field insertWithClauses boolean
 -- Controls the maximum number of trace files preserved in the ALS log directory (which defaults to `~/.als`). When this threshold is reached, old trace files get deleted automatically. The default number of preserved trace files is `10`.
@@ -971,6 +975,8 @@
 ---@field serverCompletionRanking boolean
 -- Names a file that clangd should log a performance trace to, in chrome trace-viewer JSON format.
 ---@field trace string
+-- Allows the path to be a script e.g.: clangd.sh.
+---@field useScriptAsExecutable boolean
 
 ---@class lspconfig.settings.clangd
 ---@field clangd _.lspconfig.settings.clangd.Clangd
@@ -1016,7 +1022,7 @@
 -- default = true
 -- ```
 ---@field newlineBetweenSelectors boolean
--- Whether existing line breaks before elements should be preserved.
+-- Whether existing line breaks before rules and declarations should be preserved.
 -- 
 -- ```lua
 -- default = true
@@ -1233,7 +1239,7 @@
 -- default = true
 -- ```
 ---@field newlineBetweenSelectors boolean
--- Whether existing line breaks before elements should be preserved.
+-- Whether existing line breaks before rules and declarations should be preserved.
 -- 
 -- ```lua
 -- default = true
@@ -1431,7 +1437,7 @@
 -- default = true
 -- ```
 ---@field newlineBetweenSelectors boolean
--- Whether existing line breaks before elements should be preserved.
+-- Whether existing line breaks before rules and declarations should be preserved.
 -- 
 -- ```lua
 -- default = true
@@ -2015,6 +2021,10 @@
 -- default = "flutter-default"
 -- ```
 ---@field flutterWebRenderer "flutter-default" | "canvaskit" | "html" | "auto"
+-- Get the Dart SDK path from a command. Useful when using tools such as direnv, asdf, mise... The command should exit with a 0 status code and it should print to the standard output just the path to the SDK. If the command fails (non zero exit or bad path), the extension will keep looking for other SDK paths. Some configuration examples can be found in: https://github.com/Dart-Code/Dart-Code/pull/5377
+---@field getDartSdkCommand table
+-- Get the Flutter SDK path from a command. Useful when using tools such as direnv, asdf, mise... The command should exit with a 0 status code and it should print to the standard output just the path to the SDK. If the command fails (non zero exit or bad path), the extension will keep looking for other SDK paths. Some configuration examples can be found in: https://github.com/Dart-Code/Dart-Code/pull/5377
+---@field getFlutterSdkCommand table
 -- Whether to automatically send a Hot Reload request to Dart apps during a debug session when saving files. Flutter apps are controlled by the flutterHotReloadOnSave setting.
 -- 
 -- ```lua
@@ -3414,6 +3424,10 @@
 -- ```
 ---@field unionCaseStubGenerationBody string
 -- Enables detection of unnecessary parentheses
+-- 
+-- ```lua
+-- default = true
+-- ```
 ---@field unnecessaryParenthesesAnalyzer boolean
 -- Enables detection of unused declarations
 -- 
@@ -4084,6 +4098,8 @@
 -- default = "${workspaceRoot}"
 -- ```
 ---@field diagnosticsPathFilter string
+-- Disable refactor / rename cache. Will also disbale all rename and refactor options.
+---@field disableRefactorCache boolean
 -- ```lua
 -- default = {}
 -- ```
@@ -5163,6 +5179,12 @@
 -- default = true
 -- ```
 ---@field languageConstraints boolean
+-- Enables reporting of errors associated with type member access.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field memberAccess boolean
 -- This setting turns off type checking for the `mixed` type. This is useful for projects that may have incomplete or innacurate typings. Set to `false` to make type checking more thorough by not allowing `mixed` to satisy any type constraint. This setting has no effect when `relaxedTypeCheck` is `true`.
 -- 
 -- ```lua
@@ -5256,7 +5278,7 @@
 -- A semver compatible string that represents the target PHP version. Used for providing version appropriate suggestions and diagnostics. PHP 5.3.0 and greater supported.
 -- 
 -- ```lua
--- default = "8.3.0"
+-- default = "8.4.0"
 -- ```
 ---@field phpVersion string
 -- When enabled '<?' will be parsed as a PHP open tag. Defaults to true.
@@ -5806,10 +5828,6 @@
 ---@field onType _.lspconfig.settings.jdtls.OnType
 ---@field settings _.lspconfig.settings.jdtls.Settings
 
----@class _.lspconfig.settings.jdtls.ImplementationsCodeLens
--- Enable/disable the implementations code lens.
----@field enabled boolean
-
 ---@class _.lspconfig.settings.jdtls.AnnotationProcessing
 -- Enable/disable the annotation processing on Gradle projects and delegate Annotation Processing to JDT APT. Only works for Gradle 5.2 or higher.
 -- 
@@ -5946,10 +5964,10 @@
 ---@field enabled "auto" | "on" | "off"
 
 ---@class _.lspconfig.settings.jdtls.Java
--- Specifies the folder path to the JDK (17 or more recent) used to launch the Java Language Server. This setting will replace the Java extension's embedded JRE to start the Java Language Server. 
+-- Specifies the folder path to the JDK (21 or more recent) used to launch the Java Language Server. This setting will replace the Java extension's embedded JRE to start the Java Language Server. 
 -- 
 -- On Windows, backslashes must be escaped, i.e.
--- "java.jdt.ls.java.home":"C:\\Program Files\\Java\\jdk-17.0_3"
+-- "java.jdt.ls.java.home":"C:\\Program Files\\Java\\jdk-21.0_5"
 ---@field home string
 
 ---@class _.lspconfig.settings.jdtls.Javac
@@ -6235,11 +6253,16 @@
 ---@field errors _.lspconfig.settings.jdtls.Errors
 ---@field foldingRange _.lspconfig.settings.jdtls.FoldingRange
 ---@field format _.lspconfig.settings.jdtls.Format
--- Specifies the folder path to the JDK (17 or more recent) used to launch the Java Language Server.
+-- Specifies the folder path to the JDK (21 or more recent) used to launch the Java Language Server.
 -- On Windows, backslashes must be escaped, i.e.
--- "java.home":"C:\\Program Files\\Java\\jdk-17.0_3"
+-- "java.home":"C:\\Program Files\\Java\\jdk-21.0_5"
 ---@field home string
----@field implementationsCodeLens _.lspconfig.settings.jdtls.ImplementationsCodeLens
+-- Enable/disable the implementations code lens for the provided categories.
+-- 
+-- ```lua
+-- default = "none"
+-- ```
+---@field implementationCodeLens "none" | "types" | "methods" | "all"
 ---@field import _.lspconfig.settings.jdtls.Import
 ---@field imports _.lspconfig.settings.jdtls.Imports
 ---@field inlayHints _.lspconfig.settings.jdtls.InlayHints
@@ -6581,12 +6604,6 @@
 ---@field focusPlotNavigator boolean
 ---@field inlayHints _.lspconfig.settings.julials.InlayHints
 ---@field lint _.lspconfig.settings.julials.Lint
--- A workspace relative path to a Julia file that contains the tests that should be run for live testing.
--- 
--- ```lua
--- default = "test/runtests.jl"
--- ```
----@field liveTestFile string
 -- Number of processes to use for testing.
 -- 
 -- ```lua
@@ -8740,6 +8757,8 @@
 -- default = true
 -- ```
 ---@field await boolean
+-- Enable the propagation of `await`. When a function calls a function marked `---@async`,it will be automatically marked as `---@async`.
+---@field awaitPropagate boolean
 -- Enable inlay hint.
 ---@field enable boolean
 -- Show hints of parameter name at the function call.
@@ -8786,7 +8805,7 @@
 -- When hovering to view a table, limits the maximum number of previews for fields.
 -- 
 -- ```lua
--- default = 50
+-- default = 10
 -- ```
 ---@field previewFields integer
 -- Hover to view numeric content (only if literal is not decimal).
@@ -9089,6 +9108,12 @@
 -- When this setting is `false`, the type of the parameter is `any` when it is not annotated.
 -- 
 ---@field inferParamType boolean
+-- TODO: Needs documentation
+-- 
+-- ```lua
+-- default = 10
+-- ```
+---@field inferTableSize integer
 -- When checking the type of union type, ignore the `nil` in it.
 -- 
 -- When this setting is `false`, the `number|nil` type cannot be assigned to the `number` type. It can be with `true`.
@@ -9413,6 +9438,14 @@
 ---@class _.lspconfig.settings.luau_lsp.InlayHints
 -- Show inlay hints for function return types
 ---@field functionReturnTypes boolean
+-- Whether type hints should be hidden if they resolve to an error type
+---@field hideHintsForErrorTypes boolean
+-- Whether type hints should be hidden if the resolved variable name matches the parameter name
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field hideHintsForMatchingParameterNames boolean
 -- Whether type annotation inlay hints can be made insertable by clicking
 -- 
 -- ```lua
@@ -9877,6 +9910,10 @@
 -- ```
 ---@field triggerCompletionInArgumentLists boolean
 
+---@class _.lspconfig.settings.omnisharp.Formatting
+-- %configuration.dotnet.formatting.organizeImportsOnFormat%
+---@field organizeImportsOnFormat boolean
+
 ---@class _.lspconfig.settings.omnisharp.Highlighting
 -- %configuration.dotnet.highlighting.highlightRelatedJsonComponents%
 -- 
@@ -10236,6 +10273,7 @@
 -- default = true
 -- ```
 ---@field enableXamlTools boolean
+---@field formatting _.lspconfig.settings.omnisharp.Formatting
 ---@field highlighting _.lspconfig.settings.omnisharp.Highlighting
 ---@field inlayHints _.lspconfig.settings.omnisharp.InlayHints
 ---@field navigation _.lspconfig.settings.omnisharp.Navigation
@@ -10307,8 +10345,6 @@
 ---@field minFindSymbolsFilterLength number
 -- %configuration.omnisharp.monoPath%
 ---@field monoPath string
--- %configuration.omnisharp.organizeImportsOnFormat%
----@field organizeImportsOnFormat boolean
 -- %configuration.omnisharp.projectFilesExcludePattern%
 -- 
 -- ```lua
@@ -10371,8 +10407,12 @@
 -- default = true
 -- ```
 ---@field suppressLspErrorToasts boolean
--- %configuration.razor.languageServer.useRoslynTokenizer%
----@field useRoslynTokenizer boolean
+-- %configuration.razor.languageServer.useNewFormattingEngine%
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field useNewFormattingEngine boolean
 
 ---@class _.lspconfig.settings.omnisharp.Plugin
 -- %configuration.omnisharp.razor.plugin.path%
@@ -13112,9 +13152,9 @@
 -- List of cfg options to enable with the given values.
 -- 
 -- ```lua
--- default = {}
+-- default = { "debug_assertions", "miri" }
 -- ```
----@field cfgs table
+---@field cfgs string[]
 -- Extra arguments that are passed to every cargo invocation.
 -- 
 -- ```lua
@@ -13149,19 +13189,12 @@
 -- default = "discover"
 -- ```
 ---@field sysroot string
--- How to query metadata for the sysroot crate. Using cargo metadata allows rust-analyzer
--- to analyze third-party dependencies of the standard libraries.
--- 
--- ```lua
--- default = "cargo_metadata"
--- ```
----@field sysrootQueryMetadata "none" | "cargo_metadata"
 -- Relative path to the sysroot library sources. If left unset, this will default to
 -- `{cargo.sysroot}/lib/rustlib/src/rust/library`.
 -- 
 -- This option does not take effect until rust-analyzer is restarted.
 ---@field sysrootSrc string
--- Compilation target override (target triple).
+-- Compilation target override (target tuple).
 ---@field target string
 -- Optional path to a rust-analyzer specific target directory.
 -- This prevents rust-analyzer's `cargo check` and initial build-script and proc-macro
@@ -13263,7 +13296,8 @@
 -- Aliased as `"checkOnSave.targets"`.
 ---@field targets any|string|string[]
 -- Whether `--workspace` should be passed to `cargo check`.
--- If false, `-p <package>` will be passed instead.
+-- If false, `-p <package>` will be passed instead if applicable. In case it is not, no
+-- check will be performed.
 -- 
 -- ```lua
 -- default = true
@@ -13278,6 +13312,28 @@
 -- default = true
 -- ```
 ---@field enable boolean
+-- A list of full paths to items to exclude from auto-importing completions.
+-- 
+-- Traits in this list won't have their methods suggested in completions unless the trait
+-- is in scope.
+-- 
+-- You can either specify a string path which defaults to type "always" or use the more verbose
+-- form `{ "path": "path::to::item", type: "always" }`.
+-- 
+-- For traits the type "methods" can be used to only exclude the methods but not the trait itself.
+-- 
+-- This setting also inherits `#rust-analyzer.completion.excludeTraits#`.
+-- 
+-- ```lua
+-- default = { {
+--     path = "core::borrow::Borrow",
+--     type = "methods"
+--   }, {
+--     path = "core::borrow::BorrowMut",
+--     type = "methods"
+--   } }
+-- ```
+---@field exclude any[]
 
 ---@class _.lspconfig.settings.rust_analyzer.Autoself
 -- Toggles the additional completions that automatically show method calls and field accesses
@@ -13382,6 +13438,16 @@
 ---@field autoimport _.lspconfig.settings.rust_analyzer.Autoimport
 ---@field autoself _.lspconfig.settings.rust_analyzer.Autoself
 ---@field callable _.lspconfig.settings.rust_analyzer.Callable
+-- A list of full paths to traits whose methods to exclude from completion.
+-- 
+-- Methods from these traits won't be completed, even if the trait is in scope. However, they will still be suggested on expressions whose type is `dyn Trait`, `impl Trait` or `T where T: Trait`.
+-- 
+-- Note that the trait themselves can still be completed.
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field excludeTraits string[]
 ---@field fullFunctionSignatures _.lspconfig.settings.rust_analyzer.FullFunctionSignatures
 -- Whether to omit deprecated items from autocompletion. By default they are marked as deprecated but not hidden.
 ---@field hideDeprecated boolean
@@ -13576,6 +13642,15 @@
 -- ```
 ---@field enable boolean
 
+---@class _.lspconfig.settings.rust_analyzer.UpdateTest
+-- Whether to show `Update Test` action. Only applies when
+-- `#rust-analyzer.hover.actions.enable#` and `#rust-analyzer.hover.actions.run.enable#` are set.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+
 ---@class _.lspconfig.settings.rust_analyzer.Actions
 ---@field debug _.lspconfig.settings.rust_analyzer.Debug
 -- Whether to show HoverActions in Rust files.
@@ -13588,6 +13663,7 @@
 ---@field implementations _.lspconfig.settings.rust_analyzer.Implementations
 ---@field references _.lspconfig.settings.rust_analyzer.References
 ---@field run _.lspconfig.settings.rust_analyzer.Run
+---@field updateTest _.lspconfig.settings.rust_analyzer.UpdateTest
 
 ---@class _.lspconfig.settings.rust_analyzer.Keywords
 -- Whether to show keyword hover popups. Only applies when
@@ -13663,6 +13739,16 @@
 ---@field actions _.lspconfig.settings.rust_analyzer.Actions
 ---@field documentation _.lspconfig.settings.rust_analyzer.Documentation
 ---@field links _.lspconfig.settings.rust_analyzer.Links
+-- Whether to show what types are used as generic arguments in calls etc. on hover, and what is their max length to show such types, beyond it they will be shown with ellipsis.
+-- 
+-- This can take three values: `null` means "unlimited", the string `"hide"` means to not show generic substitutions at all, and a number means to limit them to X characters.
+-- 
+-- The default is 20 characters.
+-- 
+-- ```lua
+-- default = 20
+-- ```
+---@field maxSubstitutionLength any|"hide"|integer
 ---@field memoryLayout _.lspconfig.settings.rust_analyzer.MemoryLayout
 ---@field show _.lspconfig.settings.rust_analyzer.Show
 
@@ -13797,6 +13883,10 @@
 -- Whether to show implicit drop hints.
 ---@field enable boolean
 
+---@class _.lspconfig.settings.rust_analyzer.ImplicitSizedBoundHints
+-- Whether to show inlay hints for the implied type parameter `Sized` bound.
+---@field enable boolean
+
 ---@class _.lspconfig.settings.rust_analyzer.LifetimeElisionHints
 -- Whether to show inlay type hints for elided lifetimes in function signatures.
 -- 
@@ -13858,6 +13948,7 @@
 ---@field expressionAdjustmentHints _.lspconfig.settings.rust_analyzer.ExpressionAdjustmentHints
 ---@field genericParameterHints _.lspconfig.settings.rust_analyzer.GenericParameterHints
 ---@field implicitDrops _.lspconfig.settings.rust_analyzer.ImplicitDrops
+---@field implicitSizedBoundHints _.lspconfig.settings.rust_analyzer.ImplicitSizedBoundHints
 ---@field lifetimeElisionHints _.lspconfig.settings.rust_analyzer.LifetimeElisionHints
 -- Maximum length for inlay hints. Set to null to have an unlimited length.
 -- 
@@ -13959,6 +14050,15 @@
 -- ```
 ---@field enable boolean
 
+---@class _.lspconfig.settings.rust_analyzer.UpdateTest
+-- Whether to show `Update Test` lens. Only applies when
+-- `#rust-analyzer.lens.enable#` and `#rust-analyzer.lens.run.enable#` are set.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+
 ---@class _.lspconfig.settings.rust_analyzer.Lens
 ---@field debug _.lspconfig.settings.rust_analyzer.Debug
 -- Whether to show CodeLens in Rust files.
@@ -13976,6 +14076,7 @@
 ---@field location "above_name" | "above_whole_item"
 ---@field references _.lspconfig.settings.rust_analyzer.References
 ---@field run _.lspconfig.settings.rust_analyzer.Run
+---@field updateTest _.lspconfig.settings.rust_analyzer.UpdateTest
 
 ---@class _.lspconfig.settings.rust_analyzer.Query
 -- Sets the LRU capacity of the specified queries.
@@ -14032,6 +14133,12 @@
 ---@field excludeTests boolean
 
 ---@class _.lspconfig.settings.rust_analyzer.Runnables
+-- Ask before updating the test when running it.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field askBeforeUpdateTest boolean
 -- Command to be executed instead of 'cargo' for runnables.
 ---@field command string
 -- Additional arguments to be passed to cargo for runnables such as
@@ -14208,18 +14315,28 @@
 -- default = "openLogs"
 -- ```
 ---@field clickAction "stopServer" | "openLogs"
--- Determines when to show the extension status bar item based on the currently open file. Use `{ "pattern": "**" }` to always show. Use `null` to never show.
+-- When to show the extension status bar.
+-- 
+-- `"always"` Always show the status bar.
+-- 
+-- `"never"` Never show the status bar.
+-- 
+-- `{ documentSelector: <DocumentSelector>[] }` Show the status bar if the open file matches any of the given document selectors.
+-- 
+-- See [VS Code -- DocumentSelector](https://code.visualstudio.com/api/references/document-selector) for more information.
 -- 
 -- ```lua
--- default = { {
---     language = "rust"
---   }, {
---     pattern = "**/Cargo.toml"
---   }, {
---     pattern = "**/Cargo.lock"
---   } }
+-- default = {
+--   documentSelector = { {
+--       language = "rust"
+--     }, {
+--       pattern = "**/Cargo.toml"
+--     }, {
+--       pattern = "**/Cargo.lock"
+--     } }
+-- }
 -- ```
----@field documentSelector object[]
+---@field showStatusBar "always" | "never"|table
 
 ---@class _.lspconfig.settings.rust_analyzer.Trace
 -- Enable logging of VS Code extensions itself.
@@ -14238,12 +14355,30 @@
 -- default = true
 -- ```
 ---@field continueCommentsOnNewline boolean
--- Specify the characters to exclude from triggering typing assists. The default trigger characters are `.`, `=`, `<`, `>`, `{`, and `(`.
+-- Specify the characters allowed to invoke special on typing triggers.
+-- - typing `=` after `let` tries to smartly add `;` if `=` is followed by an existing expression
+-- - typing `=` between two expressions adds `;` when in statement position
+-- - typing `=` to turn an assignment into an equality comparison removes `;` when in expression position
+-- - typing `.` in a chain method call auto-indents
+-- - typing `{` or `(` in front of an expression inserts a closing `}` or `)` after the expression
+-- - typing `{` in a use item adds a closing `}` in the right place
+-- - typing `>` to complete a return type `->` will insert a whitespace after it
+-- - typing `<` in a path or type position inserts a closing `>` after the path or type.
 -- 
 -- ```lua
--- default = "|<"
+-- default = "=."
 -- ```
----@field excludeChars string
+---@field triggerChars string
+
+---@class _.lspconfig.settings.rust_analyzer.Vfs
+-- Additional paths to include in the VFS. Generally for code that is
+-- generated or otherwise managed by a build system outside of Cargo,
+-- though Cargo might be the eventual consumer.
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field extraIncludes string[]
 
 ---@class _.lspconfig.settings.rust_analyzer.Search
 -- Workspace symbol search kind.
@@ -14428,6 +14563,8 @@
 -- default = true
 -- ```
 ---@field showRequestFailedErrorNotification boolean
+-- Whether to show the syntax tree view.
+---@field showSyntaxTree boolean
 -- Whether to show a notification for unlinked files asking the user to add the corresponding Cargo.toml to the linked projects setting.
 -- 
 -- ```lua
@@ -14440,6 +14577,7 @@
 ---@field testExplorer boolean
 ---@field trace _.lspconfig.settings.rust_analyzer.Trace
 ---@field typing _.lspconfig.settings.rust_analyzer.Typing
+---@field vfs _.lspconfig.settings.rust_analyzer.Vfs
 ---@field workspace _.lspconfig.settings.rust_analyzer.Workspace
 
 ---@class lspconfig.settings.rust_analyzer
@@ -14697,6 +14835,152 @@
 ---@class lspconfig.settings.solidity_ls
 ---@field solidity _.lspconfig.settings.solidity_ls.Solidity
 
+---@class _.lspconfig.settings.sonarlint.Connections
+-- Connect SonarQube for VS Code to SonarQube Cloud to apply the same Clean Code standards as your team. Analyze more languages, detect more issues **on the whole project**, receive notifications about the quality gate status, and more. Quality Profiles and file exclusion settings defined on the server are shared between all connected users. Please find the documentation [here](https://docs.sonarsource.com/sonarqube-for-ide/vs-code/team-features/connected-mode/)
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field sonarcloud object[]
+-- Connect SonarQube for VS Code to SonarQube Server to apply the same Clean Code standards as your team. Analyze more languages, detect more issues **on the whole project**, receive notifications about the quality gate status, and more. Quality Profiles and file exclusion settings defined on the server are shared between all connected users. Please find the documentation [here](https://docs.sonarsource.com/sonarqube-for-ide/vs-code/team-features/connected-mode/)
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field sonarqube object[]
+
+---@class _.lspconfig.settings.sonarlint.ConnectedMode
+---@field connections _.lspconfig.settings.sonarlint.Connections
+-- Bind the current workspace folder to a [SonarQube Server](command:SonarLint.HelpAndFeedbackLinkClicked?%22sonarQubeProductPage%22) or [SonarQube Cloud](command:SonarLint.HelpAndFeedbackLinkClicked?%22sonarCloudProductPage%22) project. Requires connection details to be defined in the setting `#sonarlint.connectedMode.connections.sonarqube#` or `#sonarlint.connectedMode.connections.sonarcloud#`.
+-- 
+-- Binding a workspace folder to a server project allows SonarQube for VS Code to match, as much as possible, the same rules and settings as found on the server, and hence share the analysis configuration with other contributors.
+-- 
+-- Example:
+-- 
+--     "sonarlint.connectedMode.project": {
+--       "projectKey": "my_project",
+--       "connectionId":"my_connection_id"
+--     }
+-- 
+-- 
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field project table|table
+-- Configure one or more connection(s) to SonarQube (Server, Cloud). For security reasons, the token should not be stored in SCM with workspace settings. The `serverId` can be any identifier and will be referenced in `#sonarlint.connectedMode.project#`.
+-- 
+-- Example for SonarQube Cloud:
+-- 
+--     "sonarlint.connectedMode.servers": [
+--       {
+--         "serverId": "my_orga_in_sonarcloud.io",
+--         "serverUrl": "https://sonarcloud.io",
+--         "organizationKey": "my_organization",
+--         "token": "V2VkIE1..."
+--       }
+--     ]
+-- 
+-- Example for SonarQube Server:
+-- 
+--     "sonarlint.connectedMode.servers": [
+--       {
+--         "serverId": "my_sonarqube",
+--         "serverUrl": "https://sonar.mycompany.com",
+--         "token": "V2VkIE1..."
+--       }
+--     ]
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field servers any[]
+
+---@class _.lspconfig.settings.sonarlint.Ls
+-- Path to a Java Runtime Environment (17 or more recent) used to launch the SonarQube for VS Code Language Server.
+-- * On Windows, backslashes must be escaped, e.g. `C:\\Program Files\\Java\\jdk-17` 
+-- * On macOS, this path should include the `/Contents/Home` directory, e.g `/Library/Java/JavaVirtualMachines/corretto-17.0.5/Contents/Home`
+---@field javaHome string
+-- Extra JVM arguments used to launch the SonarLint Language Server. e.g. `-Xmx1024m`
+---@field vmargs string
+
+---@class _.lspconfig.settings.sonarlint.Output
+-- Show analyzer's logs in the SonarQube for IDE output.
+---@field showAnalyzerLogs boolean
+-- Enable verbose log level in the SonarQube for IDE output.
+---@field showVerboseLogs boolean
+
+---@class _.lspconfig.settings.sonarlint.Trace
+-- Traces the communication between VS Code and the SonarLint language server.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "off" | "messages" | "verbose"|table
+
+---@class _.lspconfig.settings.sonarlint.Sonarlint
+-- Files whose name match this [glob pattern](https://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob) will not be processed by analyzers. In [Connected Mode](command:SonarLint.HelpAndFeedbackLinkClicked?%22connectedModeDocs%22) with SonarQube Server or SonarQube Cloud, this property will be ignored and the server's exclusion settings will be applied. No rules are evaluated on excluded files. Example: `**/lib/**,**/*generated*`
+-- 
+-- ```lua
+-- default = ""
+-- ```
+---@field analysisExcludesStandalone string
+-- Extra properties that could be passed to the code analyzers. Only for advanced use cases.
+---@field analyzerProperties table
+---@field connectedMode _.lspconfig.settings.sonarlint.ConnectedMode
+-- Disable sending anonymous usage statistics to SonarSource. Click [here](https://github.com/SonarSource/sonarlint-vscode/blob/master/telemetry-sample.md) to see a sample of the data that are collected.
+---@field disableTelemetry boolean
+-- Highlight issues in new code.
+-- 
+-- Focusing on new code helps you practice [Clean as You Code](https://docs.sonarsource.com/sonarqube-for-ide/vs-code/clean-as-you-code-in-the-ide/).
+-- 
+-- In [Connected Mode](https://docs.sonarsource.com/sonarqube-for-ide/vs-code/team-features/connected-mode/) you benefit from a more accurate new code definition based on your SonarQube (Server, Cloud) settings.
+-- 
+-- Without Connected Mode (in standalone mode), any code added or changed in the **last 30 days** is considered new code.
+---@field focusOnNewCode boolean
+---@field ls _.lspconfig.settings.sonarlint.Ls
+---@field output _.lspconfig.settings.sonarlint.Output
+-- Path to the active compilation database, e.g. `C:\\Repos\\MyProject\\compile_commands.json`
+---@field pathToCompileCommands string
+-- Path to a Node.js executable (18.18 or more recent) used to analyze JavaScript and TypeScript code. 
+-- On Windows, backslashes must be escaped, e.g. `C:\\Program Files\\NodeJS\\20-lts\\bin\\node.exe`
+---@field pathToNodeExecutable string
+-- Customize applied rule set. This property contains a list of rules whose activation level or parameter values differ from the one provided by default. In [Connected Mode](command:SonarLint.HelpAndFeedbackLinkClicked?%22connectedModeDocs%22), this configuration is overridden by the projects's Quality Profile, as configured on server side and can be **shared among contributors**. See [SonarLint Rules](command:SonarLint.AllRules.focus) view for the list of **locally** available rules.
+-- 
+-- Example:
+-- 
+--     "sonarlint.rules": {
+--         "javascript:S1481": {
+--             "level": "off",
+--          },
+--         "javascript:S103": {
+--             "level": "on",
+--             "parameters": {
+--                 "maximumLineLength": "120"
+--             }
+--         }
+--     }
+-- 
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field rules table
+-- Files whose name match this [glob pattern](https://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob) are considered as test files by analyzers. Most rules are *not* evaluated on test files.
+-- 
+-- In [Connected Mode](command:SonarLint.HelpAndFeedbackLinkClicked?%22connectedModeDocs%22), this setting is configured **on the server-side** and shared among all contributors.
+-- 
+-- Example: `**/test/**,**/*test*,**/*Test*`
+-- 
+-- ```lua
+-- default = ""
+-- ```
+---@field testFilePattern string
+---@field trace _.lspconfig.settings.sonarlint.Trace
+
+---@class lspconfig.settings.sonarlint
+---@field sonarlint _.lspconfig.settings.sonarlint.Sonarlint
+
 ---@class _.lspconfig.settings.sorbet.Sorbet
 -- List of workspace file patterns that contribute to Sorbet's configuration.  Changes to any of those files should trigger a restart of any actively running Sorbet language server.
 -- 
@@ -14817,7 +15101,7 @@
 -- default = "auto"
 -- ```
 ---@field backgroundIndexing "on" | "off" | "auto"
--- Disable SourceKit-LSP
+-- Disable SourceKit-LSP. This will turn off features like code completion, error diagnostics and jump-to-definition. Features like swift-testing test discovery will not work correctly.
 ---@field disable boolean
 -- Arguments to pass to SourceKit-LSP. Keys and values should be provided as individual entries in the list. e.g. `['--log-level', 'debug']`
 -- 
@@ -14838,6 +15122,8 @@
 ---@class _.lspconfig.settings.sourcekit.Swift
 -- The path of the SDK to compile against (`--sdk` parameter). This is of use when supporting non-standard SDK layouts on Windows and using custom SDKs. The default SDK is determined by the environment on macOS and Windows.
 -- 
+-- For SwiftPM projects, prefer using `swift.swiftSDK` with a triple (such as `arm64-apple-ios`) or Swift SDK name instead.
+-- 
 -- ```lua
 -- default = ""
 -- ```
@@ -14854,6 +15140,14 @@
 -- default = {}
 -- ```
 ---@field additionalTestArguments string[]
+-- The path to a directory that will be used to store attachments produced during a test run.
+-- 
+-- A relative path resolves relative to the root directory of the workspace running the test(s)
+-- 
+-- ```lua
+-- default = ".build/attachments"
+-- ```
+---@field attachmentsPath string
 -- When loading a `Package.swift`, auto-generate `launch.json` configurations for running any executables.
 -- 
 -- ```lua
@@ -14862,7 +15156,7 @@
 ---@field autoGenerateLaunchConfigurations boolean
 -- **Experimental**: Run `swift build` in the background whenever a file is saved. It is possible the background compilation will already be running when you attempt a compile yourself, so this is disabled by default.
 ---@field backgroundCompilation boolean
--- Additional arguments to pass to `swift` commands such as `swift build`, `swift package`, `swift test`, etc... Keys and values should be provided as individual entries in the list. If you have created a copy of the build task in `tasks.json` then these build arguments will not be propogated to that task.
+-- Additional arguments to pass to `swift` commands such as `swift build`, `swift package`, `swift test`, etc... Keys and values should be provided as individual entries in the list. If you have created a copy of the build task in `tasks.json` then these build arguments will not be propagated to that task.
 -- 
 -- ```lua
 -- default = {}
@@ -14925,6 +15219,18 @@
 -- default = ""
 -- ```
 ---@field path string
+-- Configures a list of permissions to be used when running a command plugins.
+-- 
+-- Permissions objects are defined in the form:
+-- 
+-- `{ "PluginName:command": { "allowWritingToPackageDirectory": true } }`.
+-- 
+-- A key of `PluginName:command` will set permissions for a specific command. A key of `PluginName` will set permissions for all commands in the plugin.
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field pluginPermissions table
 -- The path of the folder containing the Swift runtime libraries. This is of use when supporting non-standard SDK layouts on Windows. On Windows the runtime path is added to the `Path` environment variable. This is of less use on macOS and Linux but will be added to `DYLD_LIBRARY_PATH` and `LD_LIBRARY_PATH` environment variables respectively on each platform. 
 -- 
 -- ```lua
@@ -14958,6 +15264,12 @@
 -- default = {}
 -- ```
 ---@field swiftEnvironmentVariables table
+-- The [Swift SDK](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0387-cross-compilation-destinations.md) to compile against (`--swift-sdk` parameter).
+-- 
+-- ```lua
+-- default = ""
+-- ```
+---@field swiftSDK string
 -- Environment variables to set when running tests. To set environment variables when debugging an application you should edit the `env` field in the relevant `launch.json` configuration.
 -- 
 -- ```lua
@@ -15239,6 +15551,14 @@
 -- ```
 ---@field enable boolean
 
+---@class _.lspconfig.settings.svelte.DocumentHighlight
+-- Enable document highlight support. Requires a restart.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+
 ---@class _.lspconfig.settings.svelte.Config
 -- Maximum line width after which code is tried to be broken up. This is a Prettier core option. If you have the Prettier extension installed, this option is ignored and the corresponding option of that extension is used instead. This option is also ignored if there's any kind of configuration file, for example a `.prettierrc` file.
 -- 
@@ -15332,6 +15652,7 @@
 -- ```
 ---@field defaultScriptLanguage "none" | "ts"
 ---@field diagnostics _.lspconfig.settings.svelte.Diagnostics
+---@field documentHighlight _.lspconfig.settings.svelte.DocumentHighlight
 -- Enable the Svelte plugin
 -- 
 -- ```lua
@@ -15873,6 +16194,12 @@
 -- ```
 ---@field compileStatus "enable" | "disable"
 ---@field completion _.lspconfig.settings.tinymist.Completion
+-- Whether to configure default word separators on startup
+-- 
+-- ```lua
+-- default = "enable"
+-- ```
+---@field configureDefaultWordSeparator "enable" | "disable"
 -- Whether to handle drag-and-drop of resources into the editing typst document. Note: restarting the editor is required to change this setting.
 -- 
 -- ```lua
@@ -15918,6 +16245,12 @@
 -- default = "enable"
 -- ```
 ---@field previewFeature "enable" | "disable"
+-- This configuration specifies the way to resolved projects.
+-- 
+-- ```lua
+-- default = "singleFile"
+-- ```
+---@field projectResolution "singleFile" | "lockDatabase"
 -- (Experimental) Whether to render typst elements in (hover) docs. In VS Code, when this feature is enabled, tinymist will store rendered results in the filesystem's temporary storage to show them in the hover content. Note: Please disable this feature if the editor doesn't support/handle image previewing in docs.
 -- 
 -- ```lua
@@ -15936,6 +16269,18 @@
 ---@field serverPath string
 -- Configures way of opening exported files, e.g. inside of editor tabs or using system application.
 ---@field showExportFileIn "editorTab" | "systemDefault"
+-- Set format string of the server status. For example, `{compileStatusIcon}{wordCount} [{fileName}]` will format the status as `$(check) 123 words [main]`. Valid placeholders are:
+-- 
+-- - `{compileStatusIcon}`: Icon indicating the compile status
+-- - `{wordCount}`: Number of words in the document
+-- - `{fileName}`: Name of the file being compiled
+-- 
+-- Note: The status bar will be hidden if the format string is empty.
+-- 
+-- ```lua
+-- default = "{compileStatusIcon} {wordCount} [{fileName}]"
+-- ```
+---@field statusBarFormat string
 -- A flag that determines whether to load system fonts for Typst compiler, which is useful for ensuring reproducible compilation. If set to null or not set, the extension will use the default behavior of the Typst compiler. Note: You need to restart LSP to change this options. 
 -- 
 -- ```lua
@@ -15966,6 +16311,12 @@
 -- default = true
 -- ```
 ---@field enable boolean
+-- Indent case clauses in switch statements. Requires using TypeScript 5.1+ in the workspace.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field indentSwitchCase boolean
 -- Defines space handling after a comma delimiter.
 -- 
 -- ```lua
@@ -16036,20 +16387,6 @@
 ---@field checkJs boolean
 -- Enable/disable `experimentalDecorators` in JavaScript files that are not part of a project. Existing `jsconfig.json` or `tsconfig.json` files override this setting.
 ---@field experimentalDecorators boolean
-
----@class _.lspconfig.settings.ts_ls.EnumMemberValues
--- Enable/disable inlay hints for member values in enum declarations:
--- ```typescript
--- 
--- enum MyValue {
--- 	A /* = 0 */;
--- 	B /* = 1 */;
--- }
---  
--- ```
--- 
--- The text inside the ``` block is code and should not be localized.
----@field enabled boolean
 
 ---@class _.lspconfig.settings.ts_ls.FunctionLikeReturnTypes
 -- Enable/disable inlay hints for implicit return types on function signatures:
@@ -16127,7 +16464,6 @@
 ---@field suppressWhenTypeMatchesName boolean
 
 ---@class _.lspconfig.settings.ts_ls.InlayHints
----@field enumMemberValues _.lspconfig.settings.ts_ls.EnumMemberValues
 ---@field functionLikeReturnTypes _.lspconfig.settings.ts_ls.FunctionLikeReturnTypes
 ---@field parameterNames _.lspconfig.settings.ts_ls.ParameterNames
 ---@field parameterTypes _.lspconfig.settings.ts_ls.ParameterTypes
@@ -17066,18 +17402,48 @@
 ---@field wrapAttributes "auto" | "force" | "force-aligned" | "force-expand-multiline" | "aligned-multiple" | "preserve" | "preserve-aligned"
 
 ---@class _.lspconfig.settings.volar.InlayHints
--- Show inlay hints for destructured props.
+-- Show inlay hints for destructured props:
+-- 
+-- ```ts
+-- watch(() => /* props. */foo, () => { ... });
+-- ```
 ---@field destructuredProps boolean
--- Show inlay hints for event argument in inline handlers.
+-- Show inlay hints for event argument in inline handlers:
+-- 
+-- ```html
+-- <Comp @foo="/* $event => */console.log($event)" />
+-- ```
 ---@field inlineHandlerLeading boolean
--- Show inlay hints for missing required props.
+-- Show inlay hints for missing required props:
+-- 
+-- ```html
+-- <Comp />
+-- <!-- ^ foo! -->
+-- ```
 ---@field missingProps boolean
--- Show inlay hints for component options wrapper for type support.
+-- Show inlay hints for component options wrapper for type support:
+-- 
+-- ```vue
+-- <script lang="ts">
+-- export default /* (await import('vue')).defineComponent( */{}/* ) */;
+-- </script>
+-- ```
 ---@field optionsWrapper boolean
--- Show inlay hints for v-bind shorthand.
+-- Show inlay hints for v-bind shorthand:
+-- 
+-- ```html
+-- <Comp :foo />
+--      <!-- ^ ="foo" -->
+-- ```
 ---@field vBindShorthand boolean
 
 ---@class _.lspconfig.settings.volar.Server
+-- Set compatible extensions to skip automatic detection of Hybrid Mode.
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field compatibleExtensions string[]
 -- Vue language server only handles CSS and HTML language support, and tsserver takes over TS language support via TS plugin.
 -- 
 -- ```lua
@@ -17216,18 +17582,6 @@
 -- Enable/disable `experimentalDecorators` in JavaScript files that are not part of a project. Existing `jsconfig.json` or `tsconfig.json` files override this setting.
 ---@field experimentalDecorators boolean
 
----@class _.lspconfig.settings.vtsls.EnumMemberValues
--- Enable/disable inlay hints for member values in enum declarations:
--- ```typescript
--- 
--- enum MyValue {
--- 	A /* = 0 */;
--- 	B /* = 1 */;
--- }
---  
--- ```
----@field enabled boolean
-
 ---@class _.lspconfig.settings.vtsls.FunctionLikeReturnTypes
 -- Enable/disable inlay hints for implicit return types on function signatures:
 -- ```typescript
@@ -17294,7 +17648,6 @@
 ---@field suppressWhenTypeMatchesName boolean
 
 ---@class _.lspconfig.settings.vtsls.InlayHints
----@field enumMemberValues _.lspconfig.settings.vtsls.EnumMemberValues
 ---@field functionLikeReturnTypes _.lspconfig.settings.vtsls.FunctionLikeReturnTypes
 ---@field parameterNames _.lspconfig.settings.vtsls.ParameterNames
 ---@field parameterTypes _.lspconfig.settings.vtsls.ParameterTypes
