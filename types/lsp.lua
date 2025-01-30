@@ -4098,7 +4098,9 @@
 -- default = "${workspaceRoot}"
 -- ```
 ---@field diagnosticsPathFilter string
--- Disable refactor / rename cache. Will also disbale all rename and refactor options.
+-- Disable inline value feature. Stops value annotations from showing up during debugging.
+---@field disableInlineValue boolean
+-- Disable refactor / rename cache. Will also disbale all rename and refactor options (and inline value feature).
 ---@field disableRefactorCache boolean
 -- ```lua
 -- default = {}
@@ -13304,6 +13306,22 @@
 -- ```
 ---@field workspace boolean
 
+---@class _.lspconfig.settings.rust_analyzer.AutoAwait
+-- Toggles the additional completions that automatically show method calls and field accesses with `await` prefixed to them when completing on a future.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+
+---@class _.lspconfig.settings.rust_analyzer.AutoIter
+-- Toggles the additional completions that automatically show method calls with `iter()` or `into_iter()` prefixed to them when completing on a type that has them.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+
 ---@class _.lspconfig.settings.rust_analyzer.Autoimport
 -- Toggles the additional completions that automatically add imports when completed.
 -- Note that your client must specify the `additionalTextEdits` LSP client capability to truly have this feature enabled.
@@ -13435,6 +13453,8 @@
 -- default = true
 -- ```
 ---@field addSemicolonToUnit boolean
+---@field autoAwait _.lspconfig.settings.rust_analyzer.AutoAwait
+---@field autoIter _.lspconfig.settings.rust_analyzer.AutoIter
 ---@field autoimport _.lspconfig.settings.rust_analyzer.Autoimport
 ---@field autoself _.lspconfig.settings.rust_analyzer.Autoself
 ---@field callable _.lspconfig.settings.rust_analyzer.Callable
@@ -14333,6 +14353,9 @@
 --       pattern = "**/Cargo.toml"
 --     }, {
 --       pattern = "**/Cargo.lock"
+--     }, {
+--       pattern = "extension-output-rust-lang.rust-analyzer*",
+--       scheme = "output"
 --     } }
 -- }
 -- ```
