@@ -2249,6 +2249,12 @@
 -- default = "name"
 -- ```
 ---@field testInvocationMode "name" | "line"
+-- Additional args to pass to the `dart tooling-daemon` command that runs as a background service (requires restart).
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field toolingDaemonAdditionalArgs string[]
 -- The path to a log file for the `dart tooling-daemon` service, which coordinates between various Dart and Flutter tools and extensions. Use `${workspaceName}` to insert the name of the current workspace in the file path. Use `~` to insert the user's home directory (the path should then use `/` separators even on Windows). Only the noted substitutions are supported, others will stay as-is.
 ---@field toolingDaemonLogFile string
 -- **LEGACY SETTING: Only applies to Dart SDKs before v2.15 since DevTools now ships in the SDK.**
@@ -2265,10 +2271,6 @@
 -- default = true
 -- ```
 ---@field updateImportsOnRename boolean
--- **LEGACY SETTING: Only applies to Dart SDKs before v3.3 and is generally not recommended since v2.12.**
--- 
---  Whether to use the Dart Analyzer's original protocol instead of LSP. Some features are not supported when using the legacy protocol and support for it will eventually be removed. Please file issues on GitHub in the Dart Code repo if you find yourself needing to enable this setting.
----@field useLegacyAnalyzerProtocol boolean
 -- **LEGACY SETTING: Legacy debug adapters are not recommended since Dart v3.4.**
 -- 
 -- Whether to use the legacy debug adapters even if the new debug adapters are available in the current Dart/Flutter SDKs contain. Setting the value to `true` will force use of the legacay adapters. Setting to `false` will force use of the SDK adapters. Leaving as `null` will allow the extension to decide which debug adapters to use depending on the SDK version and rollout progress.
@@ -4099,6 +4101,10 @@
 -- ```
 ---@field diagnosticsPathFilter string
 -- Disable inline value feature. Stops value annotations from showing up during debugging.
+-- 
+-- ```lua
+-- default = true
+-- ```
 ---@field disableInlineValue boolean
 -- Disable refactor / rename cache. Will also disbale all rename and refactor options (and inline value feature).
 ---@field disableRefactorCache boolean
@@ -9509,6 +9515,14 @@
 -- ```
 ---@field fileAliases table
 
+---@class _.lspconfig.settings.luau_lsp.Server
+-- Path to the Luau LSP server binary. If not provided, uses the binary included in the extension.
+-- 
+-- ```lua
+-- default = ""
+-- ```
+---@field path string
+
 ---@class _.lspconfig.settings.luau_lsp.SignatureHelp
 -- Enable signature help
 -- 
@@ -9597,6 +9611,7 @@
 ---@field platform _.lspconfig.settings.luau_lsp.Platform
 ---@field plugin _.lspconfig.settings.luau_lsp.Plugin
 ---@field require _.lspconfig.settings.luau_lsp.Require
+---@field server _.lspconfig.settings.luau_lsp.Server
 ---@field signatureHelp _.lspconfig.settings.luau_lsp.SignatureHelp
 ---@field sourcemap _.lspconfig.settings.luau_lsp.Sourcemap
 ---@field types _.lspconfig.settings.luau_lsp.Types
@@ -12982,7 +12997,7 @@
 -- default = "fromEnvironment"
 -- ```
 ---@field importStrategy "fromEnvironment" | "useBundled"
--- Path to a Python interpreter to use to run the LSP server.
+-- Path to a Python interpreter to use to find the `ruff` executable.
 -- 
 -- ```lua
 -- default = {}
@@ -13949,6 +13964,8 @@
 -- Whether to hide inlay type hints for `let` statements that initialize to a closure.
 -- Only applies to closures with blocks, same as `#rust-analyzer.inlayHints.closureReturnTypeHints.enable#`.
 ---@field hideClosureInitialization boolean
+-- Whether to hide inlay parameter type hints for closures.
+---@field hideClosureParameter boolean
 -- Whether to hide inlay type hints for constructors.
 ---@field hideNamedConstructor boolean
 
@@ -18877,7 +18894,7 @@
 ---@field typeVerbosity "full" | "compact" | "inner"
 
 ---@class _.lspconfig.settings.wgls_analyzer.Preprocessor
--- Shader defines used in `#ifdef` directives in the flavour of [Bevy Engine](https://bevyengine.org)'s [shader preprocessor](https://bevyengine.org/news/bevy-0-6/#shader-imports).
+-- Shader defines used in `#ifdef` directives in the flavor of [Bevy Engine](https://bevyengine.org)'s [shader preprocessor](https://bevyengine.org/news/bevy-0-6/#shader-imports).
 -- 
 -- ```lua
 -- default = {}
@@ -18895,7 +18912,7 @@
 ---@field server boolean
 
 ---@class _.lspconfig.settings.wgls_analyzer.Wgsl-analyzer
--- `#import` directives in the flavour of [Bevy Engine](https://bevyengine.org)'s [shader preprocessor](https://bevyengine.org/news/bevy-0-6/#shader-imports). To use objects from an import, add `#import <name>` to your WGSL.
+-- `#import` directives in the flavor of [Bevy Engine](https://bevyengine.org)'s [shader preprocessor](https://bevyengine.org/news/bevy-0-6/#shader-imports). To use objects from an import, add `#import <name>` to your WGSL.
 -- 
 -- ```lua
 -- default = {}
