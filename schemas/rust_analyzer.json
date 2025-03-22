@@ -115,7 +115,7 @@
       "items": {
         "type": "string"
       },
-      "markdownDescription": "List of cfg options to enable with the given values.",
+      "markdownDescription": "List of cfg options to enable with the given values.\n\nTo enable a name without a value, use `\"key\"`.\nTo enable a name with a value, use `\"key=value\"`.\nTo disable, prefix the entry with a `!`.",
       "type": "array"
     },
     "rust-analyzer.cargo.extraArgs": {
@@ -593,12 +593,12 @@
       "markdownDescription": "List of warnings that should be displayed with info severity.\n\nThe warnings will be indicated by a blue squiggly underline in code\nand a blue icon in the `Problems Panel`.",
       "type": "array"
     },
-    "rust-analyzer.files.excludeDirs": {
+    "rust-analyzer.files.exclude": {
       "default": [],
       "items": {
         "type": "string"
       },
-      "markdownDescription": "These directories will be ignored by rust-analyzer. They are\nrelative to the workspace root, and globs are not supported. You may\nalso need to add the folders to Code's `files.watcherExclude`.",
+      "markdownDescription": "These paths (file/directories) will be ignored by rust-analyzer. They are\nrelative to the workspace root, and globs are not supported. You may\nalso need to add the folders to Code's `files.watcherExclude`.",
       "type": "array"
     },
     "rust-analyzer.files.watcher": {
@@ -682,6 +682,11 @@
     "rust-analyzer.hover.documentation.keywords.enable": {
       "default": true,
       "markdownDescription": "Whether to show keyword hover popups. Only applies when\n`#rust-analyzer.hover.documentation.enable#` is set.",
+      "type": "boolean"
+    },
+    "rust-analyzer.hover.dropGlue.enable": {
+      "default": true,
+      "markdownDescription": "Whether to show drop glue information on hover.",
       "type": "boolean"
     },
     "rust-analyzer.hover.links.enable": {

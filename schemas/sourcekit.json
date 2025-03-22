@@ -106,12 +106,28 @@
       "items": {
         "type": "string"
       },
-      "markdownDescription": "Additional arguments to pass to `swift` commands such as `swift build`, `swift package`, `swift test`, etc... Keys and values should be provided as individual entries in the list. If you have created a copy of the build task in `tasks.json` then these build arguments will not be propagated to that task.",
+      "markdownDescription": "Additional arguments to pass to `swift build` and `swift test`. Keys and values should be provided as individual entries in the list. If you have created a copy of the build task in `tasks.json` then these build arguments will not be propagated to that task.",
       "type": "array"
     },
     "swift.buildPath": {
       "default": "",
       "markdownDescription": "The path to a directory that will be used for build artifacts. This path will be added to all swift package manager commands that are executed by vscode-swift extension via `--scratch-path` option. When no value provided - nothing gets passed to swift package manager and it will use its default value of `.build` folder in the workspace.\n\nYou can use absolute path for directory or the relative path, which will use the workspace path as a base. Note that VS Code does not respect tildes (`~`) in paths which represents user home folder under *nix systems.",
+      "type": "string"
+    },
+    "swift.debugger.debugAdapter": {
+      "default": "auto",
+      "enum": [
+        "auto",
+        "lldb-dap",
+        "CodeLLDB"
+      ],
+      "enumDescriptions": [
+        "Automatically select which debug adapter to use based on your Swift toolchain version.",
+        "Use the `lldb-dap` executable from the toolchain. Requires Swift 6 or later.",
+        "Use the CodeLLDB extension's debug adapter."
+      ],
+      "markdownDescription": "Select which debug adapter to use to debus Swift executables.",
+      "order": 1,
       "type": "string"
     },
     "swift.debugger.path": {
@@ -120,10 +136,29 @@
       "order": 2,
       "type": "string"
     },
+    "swift.debugger.setupCodeLLDB": {
+      "default": "prompt",
+      "enum": [
+        "prompt",
+        "alwaysUpdateGlobal",
+        "alwaysUpdateWorkspace",
+        "never"
+      ],
+      "enumDescriptions": [
+        "Prompt to update CodeLLDB settings when they are incorrect.",
+        "Always automatically update CodeLLDB settings globally when they are incorrect.",
+        "Always automatically update CodeLLDB settings in the workspace when they are incorrect.",
+        "Never automatically update CodeLLDB settings when they are incorrect."
+      ],
+      "markdownDescription": "Choose how CodeLLDB settings are updated when debugging Swift executables.",
+      "order": 3,
+      "type": "string"
+    },
     "swift.debugger.useDebugAdapterFromToolchain": {
       "default": false,
+      "markdownDeprecationMessage": "**Deprecated**: Use the `swift.debugger.debugAdapter` setting instead. This will be removed in future versions of the Swift extension.",
       "markdownDescription": "Use the LLDB debug adapter packaged with the Swift toolchain as your debug adapter. Note: this is only available starting with Swift 6. The CodeLLDB extension will be used if your Swift toolchain does not contain lldb-dap.",
-      "order": 1,
+      "order": 4,
       "type": "boolean"
     },
     "swift.diagnostics": {
@@ -172,6 +207,12 @@
       "scope": "machine-overridable",
       "type": "boolean"
     },
+    "swift.disableSandox": {
+      "default": false,
+      "markdownDescription": "Disable sandboxing when running SwiftPM commands. In most cases you should keep the sandbox enabled and leave this setting set to `false`",
+      "order": 4,
+      "type": "boolean"
+    },
     "swift.disableSwiftPackageManagerIntegration": {
       "default": false,
       "markdownDescription": "Disables automated Build Tasks, Package Dependency view, Launch configuration generation and TestExplorer.",
@@ -218,10 +259,42 @@
       "markdownDescription": "Controls whether to open a swift project automatically after creating it.",
       "type": "string"
     },
+    "swift.packageArguments": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "markdownDescription": "Additional arguments to pass to swift commands that do package resolution, such as `swift package resolve`, `swift package update`, `swift build` and `swift test`. Keys and values should be provided as individual entries in the list.",
+      "type": "array"
+    },
     "swift.path": {
       "default": "",
       "markdownDescription": "Override the default path of the folder containing the Swift executables. The default is to look in the `PATH` environment variable. This path is also used to search for other executables used by the extension like `sourcekit-lsp` and `lldb`.",
       "type": "string"
+    },
+    "swift.pluginArguments": {
+      "default": [],
+      "markdownDescription": "Configure a list of arguments to pass to command invocations. This can either be an array of arguments, which will apply to all command invocations, or an object with command names as the key where the value is an array of arguments.",
+      "oneOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "patternProperties": {
+            "^([a-zA-Z0-9_-]+(:[a-zA-Z0-9_-]+)?)$": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      ],
+      "scope": "machine-overridable"
     },
     "swift.pluginPermissions": {
       "default": {},
@@ -387,7 +460,6 @@
     "swift.swiftSDK": {
       "default": "",
       "markdownDescription": "The [Swift SDK](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0387-cross-compilation-destinations.md) to compile against (`--swift-sdk` parameter).",
-      "order": 4,
       "type": "string"
     },
     "swift.testEnvironmentVariables": {

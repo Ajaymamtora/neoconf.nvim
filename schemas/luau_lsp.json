@@ -62,6 +62,15 @@
       "scope": "resource",
       "type": "boolean"
     },
+    "luau-lsp.completion.enableFragmentAutocomplete": {
+      "default": false,
+      "markdownDescription": "Enables the experimental fragment autocomplete system for performance improvements",
+      "scope": "resource",
+      "tags": [
+        "preview"
+      ],
+      "type": "boolean"
+    },
     "luau-lsp.completion.enabled": {
       "default": true,
       "markdownDescription": "Enable autocomplete",
@@ -179,6 +188,9 @@
       "default": false,
       "markdownDescription": "Enables the flags required for Luau's new type solver. These flags can be overriden by `#luau-lsp.fflags.override#`",
       "scope": "window",
+      "tags": [
+        "preview"
+      ],
       "type": "boolean"
     },
     "luau-lsp.fflags.override": {
@@ -379,6 +391,11 @@
       "scope": "resource",
       "type": "boolean"
     },
+    "luau-lsp.sourcemap.generatorCommand": {
+      "markdownDescription": "A command to run to generate the sourcemap. If not specified, defaults to `rojo`",
+      "scope": "resource",
+      "type": "string"
+    },
     "luau-lsp.sourcemap.includeNonScripts": {
       "default": true,
       "markdownDescription": "Include non-script instances in the generated sourcemap",
@@ -403,12 +420,27 @@
       "scope": "resource",
       "type": "string"
     },
+    "luau-lsp.sourcemap.useVSCodeWatcher": {
+      "default": false,
+      "markdownDescription": "Whether the VSCode filesystem watchers are used to regenerate the sourcemap. If disabled, delegates to the generator process. If using `rojo`, this command stops using `--watch`",
+      "scope": "resource",
+      "type": "boolean"
+    },
     "luau-lsp.types.definitionFiles": {
       "default": [],
       "items": {
         "type": "string"
       },
       "markdownDescription": "A list of paths to definition files to load in to the type checker. Note that definition file syntax is currently unstable and may change at any time",
+      "scope": "window",
+      "type": "array"
+    },
+    "luau-lsp.types.disabledGlobals": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "markdownDescription": "A list of globals to remove from the global scope. Accepts full libraries or particular functions (e.g., `table` or `table.clone`)",
       "scope": "window",
       "type": "array"
     },

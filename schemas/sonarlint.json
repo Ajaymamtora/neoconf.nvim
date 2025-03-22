@@ -49,6 +49,14 @@
             "description": "A SonarQube Cloud organization key. If you want to bind different projects that are in different organizations, simply declare multiple connections.",
             "type": "string"
           },
+          "region": {
+            "description": "Region of the SonarQube Cloud instance. Use 'US' for `sonarqube.us`, 'EU' for `sonarcloud.io`.",
+            "enum": [
+              "EU",
+              "US"
+            ],
+            "type": "string"
+          },
           "token": {
             "description": "Token generated from 'My Account>Security' in SonarQube Cloud",
             "type": "string"
@@ -192,6 +200,12 @@
       "markdownDescription": "Disable sending anonymous usage statistics to SonarSource. Click [here](https://github.com/SonarSource/sonarlint-vscode/blob/master/telemetry-sample.md) to see a sample of the data that are collected.",
       "order": 99,
       "scope": "window",
+      "type": "boolean"
+    },
+    "sonarlint.earlyAccess.showRegionSelection": {
+      "default": false,
+      "markdownDescription": "Show region selection while creating SonarQube Cloud Connection _(Early Access)_",
+      "scope": "machine",
       "type": "boolean"
     },
     "sonarlint.focusOnNewCode": {

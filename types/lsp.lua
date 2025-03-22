@@ -16,14 +16,16 @@
 ---@field server "off" | "messages" | "verbose"
 
 ---@class _.lspconfig.settings.als.Ada
+-- Controls whether or not the Ada Language Server should emit diagnostics related to the edition of Ada files into the VS Code Problems view.
+---@field adaFileDiagnostics boolean
+-- Controls whether or not the Ada Language Server should emit diagnostics related to alire into the VS Code Problems view.
+---@field alireDiagnostics boolean
 -- The character set that the Ada Language Server should use when reading files from disk.
 ---@field defaultCharset string
 -- Controls the policy for displaying overriding and overridden subprograms on navigation requests such as 'Go To Definition' or 'Go To Implementations'.
 ---@field displayMethodAncestryOnNavigation "never" | "usage_and_abstract_only" | "definition_only" | "always"
 -- Controls the primary documentation style of entities.
 ---@field documentationStyle "gnat" | "leading"
--- Controls whether or not the Ada Language Server should emit diagnostics into the VS Code Problems view.
----@field enableDiagnostics boolean
 -- Controls whether the Ada Language Server should index the source files immediately after loading a project.
 -- 
 -- If set to false, indexing will be deferred to the time when an action requiring the index is first performed, e.g. hovering over a referenced entity to get its documentation.
@@ -36,6 +38,8 @@
 -- 
 -- It is recommended to set this to a relative path starting at the root of the workspace.
 ---@field gprConfigurationFile string
+-- Controls whether or not the Ada Language Server should emit diagnostics related to the edition of GPR files into the VS Code Problems view.
+---@field gprFileDiagnostics boolean
 -- Enable insertion of missing with-clauses when accepting completion for invisible symbols.
 ---@field insertWithClauses boolean
 -- Controls the maximum number of trace files preserved in the ALS log directory (which defaults to `~/.als`). When this threshold is reached, old trace files get deleted automatically. The default number of preserved trace files is `10`.
@@ -43,9 +47,7 @@
 -- Defines the number of parameters/components beyond which named notation is used for completion snippets.
 ---@field namedNotationThreshold integer
 ---@field onTypeFormatting _.lspconfig.settings.als.OnTypeFormatting
--- Controls whether or not the Ada Language Server should emit project diagnostics into the VS Code Problems view.
--- 
--- Note: this setting is ignored if `ada.enableDiagnostics` is disabled and a workspace reload is necessary to refresh the diagnostics after modifying this setting.
+-- Controls whether or not the Ada Language Server should emit diagnostics related to project loading into the VS Code Problems view.
 ---@field projectDiagnostics boolean
 -- GPR project file (*.gpr) for this workspace.
 -- 
@@ -785,6 +787,8 @@
 -- default = true
 -- ```
 ---@field useLibraryCodeForTypes boolean
+-- Whether to rely on imports from the `typing_extensions` module when targeting older versions of python that do not include certain typing features such as the `@override` decorator.
+---@field useTypingExtensions boolean
 
 ---@class _.lspconfig.settings.basedpyright.Basedpyright
 ---@field analysis _.lspconfig.settings.basedpyright.Analysis
@@ -800,6 +804,10 @@
 -- default = "fromEnvironment"
 -- ```
 ---@field importStrategy "fromEnvironment" | "useBundled"
+
+---@class _.lspconfig.settings.basedpyright.Pyright
+-- Disables the use of pull diagnostics from VS Code.
+---@field disablePullDiagnostics boolean
 
 ---@class _.lspconfig.settings.basedpyright.Python
 -- Path to Python, you can use a custom version of Python.
@@ -817,6 +825,7 @@
 
 ---@class lspconfig.settings.basedpyright
 ---@field basedpyright _.lspconfig.settings.basedpyright.Basedpyright
+---@field pyright _.lspconfig.settings.basedpyright.Pyright
 ---@field python _.lspconfig.settings.basedpyright.Python
 
 ---@class _.lspconfig.settings.bashls.Shfmt
@@ -1795,7 +1804,7 @@
 ---@field debugExternalPackageLibraries boolean
 -- Whether to mark Dart SDK libraries (`dart:*`) as debuggable, enabling stepping into them while debugging.
 ---@field debugSdkLibraries boolean
--- Whether to launch external DevTools windows using Chrome or the system default browser.
+-- Whether to launch external DevTools windows using Chrome or the system default browser. This setting is ignored for remote workspaces (including Docker, SSH, WSL).
 -- 
 -- ```lua
 -- default = "chrome"
@@ -2612,6 +2621,12 @@
 -- default = true
 -- ```
 ---@field signatureAfterComplete boolean
+-- Subdirectory where the Elixir stdlib resides to allow for source code lookup. E.g. /home/youruser/.asdf/installs/elixir/1.18.2
+-- 
+-- ```lua
+-- default = ""
+-- ```
+---@field stdlibSrcDir string
 -- Suggest @spec annotations inline using Dialyzer's inferred success typings (Requires Dialyzer).
 -- 
 -- ```lua
@@ -2912,7 +2927,7 @@
 -- An array of language ids for which the extension should probe if support is installed.
 -- 
 -- ```lua
--- default = { "astro", "javascript", "javascriptreact", "typescript", "typescriptreact", "html", "mdx", "vue", "markdown", "json", "jsonc" }
+-- default = { "astro", "civet", "javascript", "javascriptreact", "typescript", "typescriptreact", "html", "mdx", "vue", "markdown", "json", "jsonc" }
 -- ```
 ---@field probe string[]
 ---@field problems _.lspconfig.settings.eslint.Problems
@@ -3375,10 +3390,6 @@
 -- If enabled, the current file will be saved before sending the last selection to FSI for evaluation
 ---@field saveOnSendLastSelection boolean
 -- Automatically shows solution explorer on plugin startup
--- 
--- ```lua
--- default = true
--- ```
 ---@field showExplorerOnStartup boolean
 -- Set the activity (left bar) where the project explorer view will be displayed. If `explorer`, then the project explorer will be a collapsible tab in the main explorer view, a sibling to the file system explorer. If `fsharp`, a new activity with the F# logo will be added and the project explorer will be rendered in this activity.Requires restart.
 -- 
@@ -3431,6 +3442,12 @@
 -- default = true
 -- ```
 ---@field unnecessaryParenthesesAnalyzer boolean
+-- A set of regex patterns to exclude from the unnecessary parentheses analyzer
+-- 
+-- ```lua
+-- default = { ".*\\.g\\.fs", ".*\\.cg\\.fs" }
+-- ```
+---@field unnecessaryParenthesesAnalyzerExclusions string[]
 -- Enables detection of unused declarations
 -- 
 -- ```lua
@@ -5473,7 +5490,7 @@
 -- Configure stub files for built in symbols and common extensions. The default setting includes PHP core and all bundled extensions.
 -- 
 -- ```lua
--- default = { "apache", "bcmath", "bz2", "calendar", "com_dotnet", "Core", "ctype", "curl", "date", "dba", "dom", "enchant", "exif", "FFI", "fileinfo", "filter", "fpm", "ftp", "gd", "gettext", "gmp", "hash", "iconv", "imap", "intl", "json", "ldap", "libxml", "mbstring", "meta", "mysqli", "oci8", "odbc", "openssl", "pcntl", "pcre", "PDO", "pdo_ibm", "pdo_mysql", "pdo_pgsql", "pdo_sqlite", "pgsql", "Phar", "posix", "pspell", "random", "readline", "Reflection", "session", "shmop", "SimpleXML", "snmp", "soap", "sockets", "sodium", "SPL", "sqlite3", "standard", "superglobals", "sysvmsg", "sysvsem", "sysvshm", "tidy", "tokenizer", "xml", "xmlreader", "xmlrpc", "xmlwriter", "xsl", "Zend OPcache", "zip", "zlib" }
+-- default = { "apache", "bcmath", "bz2", "calendar", "com_dotnet", "Core", "ctype", "curl", "date", "dba", "dom", "enchant", "exif", "FFI", "fileinfo", "filter", "fpm", "ftp", "gd", "gettext", "gmp", "hash", "iconv", "imap", "intl", "json", "ldap", "libxml", "mbstring", "meta", "mysqli", "oci8", "odbc", "openssl", "pcntl", "pcre", "PDO", "pgsql", "Phar", "posix", "pspell", "random", "readline", "Reflection", "session", "shmop", "SimpleXML", "snmp", "soap", "sockets", "sodium", "SPL", "sqlite3", "standard", "superglobals", "sysvmsg", "sysvsem", "sysvshm", "tidy", "tokenizer", "xml", "xmlreader", "xmlrpc", "xmlwriter", "xsl", "Zend OPcache", "zip", "zlib" }
 -- ```
 ---@field stubs string[]
 ---@field telemetry _.lspconfig.settings.intelephense.Telemetry
@@ -9344,6 +9361,8 @@
 ---@field addTabstopAfterParentheses boolean
 -- Automatically insert an `end` when opening a block
 ---@field autocompleteEnd boolean
+-- Enables the experimental fragment autocomplete system for performance improvements
+---@field enableFragmentAutocomplete boolean
 -- Enable autocomplete
 -- 
 -- ```lua
@@ -9544,6 +9563,8 @@
 -- default = true
 -- ```
 ---@field enabled boolean
+-- A command to run to generate the sourcemap. If not specified, defaults to `rojo`
+---@field generatorCommand string
 -- Include non-script instances in the generated sourcemap
 -- 
 -- ```lua
@@ -9565,6 +9586,8 @@
 -- default = "sourcemap.json"
 -- ```
 ---@field sourcemapFile string
+-- Whether the VSCode filesystem watchers are used to regenerate the sourcemap. If disabled, delegates to the generator process. If using `rojo`, this command stops using `--watch`
+---@field useVSCodeWatcher boolean
 
 ---@class _.lspconfig.settings.luau_lsp.Types
 -- A list of paths to definition files to load in to the type checker. Note that definition file syntax is currently unstable and may change at any time
@@ -9573,6 +9596,12 @@
 -- default = {}
 -- ```
 ---@field definitionFiles string[]
+-- A list of globals to remove from the global scope. Accepts full libraries or particular functions (e.g., `table` or `table.clone`)
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field disabledGlobals string[]
 -- A list of paths to documentation files which provide documentation support to the definition files provided
 -- 
 -- ```lua
@@ -9926,6 +9955,14 @@
 -- default = "true"
 -- ```
 ---@field triggerCompletionInArgumentLists boolean
+
+---@class _.lspconfig.settings.omnisharp.Diagnostics
+-- %configuration.dotnet.diagnostics.reportInformationAsHint%
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field reportInformationAsHint boolean
 
 ---@class _.lspconfig.settings.omnisharp.Formatting
 -- %configuration.dotnet.formatting.organizeImportsOnFormat%
@@ -10284,6 +10321,7 @@
 ---@field completion _.lspconfig.settings.omnisharp.Completion
 -- %configuration.dotnet.defaultSolution.description%
 ---@field defaultSolution string
+---@field diagnostics _.lspconfig.settings.omnisharp.Diagnostics
 -- %configuration.dotnet.enableXamlTools%
 -- 
 -- ```lua
@@ -11940,6 +11978,8 @@
 ---@field disableLanguageServices boolean
 -- Disables the “Organize Imports” command.
 ---@field disableOrganizeImports boolean
+-- Disables the use of pull diagnostics from VS Code.
+---@field disablePullDiagnostics boolean
 -- Disable hint diagnostics with special hints for grayed-out or strike-through text.
 ---@field disableTaggedHints boolean
 
@@ -12630,8 +12670,6 @@
 ---@field forConstructorPayloads boolean
 
 ---@class _.lspconfig.settings.rescriptls.Settings
--- Whether you want to allow the extension to format your code using its built in formatter when it cannot find a ReScript compiler version in your current project to use for formatting.
----@field allowBuiltInFormatter boolean
 -- Whether you want the extension to prompt for autostarting a ReScript build if a project is opened with no build running.
 -- 
 -- ```lua
@@ -12954,10 +12992,10 @@
 -- ```
 ---@field args string[]
 ---@field codeAction _.lspconfig.settings.ruff_lsp.CodeAction
--- Path to a `ruff.toml` or `pyproject.toml` file to use for configuration. By default, Ruff will discover configuration for each project from the filesystem, mirroring the behavior of the Ruff CLI.
+-- Configuration overrides for Ruff. See [the documentation](https://docs.astral.sh/ruff/editors/settings/#configuration) for more details.
 -- 
 -- **This setting is used only by the native server.**
----@field configuration string
+---@field configuration string|table
 -- The preferred method of resolving configuration in the editor with local configuration from `.toml` files.
 -- 
 -- **This setting is used only by the native server.**
@@ -13167,6 +13205,10 @@
 ---@field autoreload boolean
 ---@field buildScripts _.lspconfig.settings.rust_analyzer.BuildScripts
 -- List of cfg options to enable with the given values.
+-- 
+-- To enable a name without a value, use `"key"`.
+-- To enable a name with a value, use `"key=value"`.
+-- To disable, prefix the entry with a `!`.
 -- 
 -- ```lua
 -- default = { "debug_assertions", "miri" }
@@ -13574,14 +13616,14 @@
 ---@field warningsAsInfo string[]
 
 ---@class _.lspconfig.settings.rust_analyzer.Files
--- These directories will be ignored by rust-analyzer. They are
+-- These paths (file/directories) will be ignored by rust-analyzer. They are
 -- relative to the workspace root, and globs are not supported. You may
 -- also need to add the folders to Code's `files.watcherExclude`.
 -- 
 -- ```lua
 -- default = {}
 -- ```
----@field excludeDirs string[]
+---@field exclude string[]
 -- Controls file watching implementation.
 -- 
 -- ```lua
@@ -13718,6 +13760,14 @@
 ---@field enable boolean
 ---@field keywords _.lspconfig.settings.rust_analyzer.Keywords
 
+---@class _.lspconfig.settings.rust_analyzer.DropGlue
+-- Whether to show drop glue information on hover.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+
 ---@class _.lspconfig.settings.rust_analyzer.Links
 -- Use markdown syntax for links on hover.
 -- 
@@ -13773,6 +13823,7 @@
 ---@class _.lspconfig.settings.rust_analyzer.Hover
 ---@field actions _.lspconfig.settings.rust_analyzer.Actions
 ---@field documentation _.lspconfig.settings.rust_analyzer.Documentation
+---@field dropGlue _.lspconfig.settings.rust_analyzer.DropGlue
 ---@field links _.lspconfig.settings.rust_analyzer.Links
 -- Whether to show what types are used as generic arguments in calls etc. on hover, and what is their max length to show such types, beyond it they will be shown with ellipsis.
 -- 
@@ -14936,6 +14987,10 @@
 -- ```
 ---@field servers any[]
 
+---@class _.lspconfig.settings.sonarlint.EarlyAccess
+-- Show region selection while creating SonarQube Cloud Connection _(Early Access)_
+---@field showRegionSelection boolean
+
 ---@class _.lspconfig.settings.sonarlint.Ls
 -- Path to a Java Runtime Environment (17 or more recent) used to launch the SonarQube for VS Code Language Server.
 -- * On Windows, backslashes must be escaped, e.g. `C:\\Program Files\\Java\\jdk-17` 
@@ -14970,6 +15025,7 @@
 ---@field connectedMode _.lspconfig.settings.sonarlint.ConnectedMode
 -- Disable sending anonymous usage statistics to SonarSource. Click [here](https://github.com/SonarSource/sonarlint-vscode/blob/master/telemetry-sample.md) to see a sample of the data that are collected.
 ---@field disableTelemetry boolean
+---@field earlyAccess _.lspconfig.settings.sonarlint.EarlyAccess
 -- Highlight issues in new code.
 -- 
 -- Focusing on new code helps you practice [Clean as You Code](https://docs.sonarsource.com/sonarqube-for-ide/vs-code/clean-as-you-code-in-the-ide/).
@@ -15041,19 +15097,16 @@
 -- ```lua
 -- default = { {
 --     command = { "bundle", "exec", "srb", "typecheck", "--lsp" },
---     cwd = "${workspaceFolder}",
 --     description = "Stable Sorbet Ruby IDE features",
 --     id = "stable",
 --     name = "Sorbet"
 --   }, {
 --     command = { "bundle", "exec", "srb", "typecheck", "--lsp", "--enable-all-beta-lsp-features" },
---     cwd = "${workspaceFolder}",
 --     description = "Beta Sorbet Ruby IDE features",
 --     id = "beta",
 --     name = "Sorbet (Beta)"
 --   }, {
 --     command = { "bundle", "exec", "srb", "typecheck", "--lsp", "--enable-all-experimental-lsp-features" },
---     cwd = "${workspaceFolder}",
 --     description = "Experimental Sorbet Ruby IDE features (warning: crashy, for developers only)",
 --     id = "experimental",
 --     name = "Sorbet (Experimental)"
@@ -15117,12 +15170,24 @@
 ---@field trace _.lspconfig.settings.sourcekit.Trace
 
 ---@class _.lspconfig.settings.sourcekit.Debugger
+-- Select which debug adapter to use to debus Swift executables.
+-- 
+-- ```lua
+-- default = "auto"
+-- ```
+---@field debugAdapter "auto" | "lldb-dap" | "CodeLLDB"
 -- Path to lldb debug adapter.
 -- 
 -- ```lua
 -- default = ""
 -- ```
 ---@field path string
+-- Choose how CodeLLDB settings are updated when debugging Swift executables.
+-- 
+-- ```lua
+-- default = "prompt"
+-- ```
+---@field setupCodeLLDB "prompt" | "alwaysUpdateGlobal" | "alwaysUpdateWorkspace" | "never"
 -- Use the LLDB debug adapter packaged with the Swift toolchain as your debug adapter. Note: this is only available starting with Swift 6. The CodeLLDB extension will be used if your Swift toolchain does not contain lldb-dap.
 ---@field useDebugAdapterFromToolchain boolean
 
@@ -15196,7 +15261,7 @@
 ---@field autoGenerateLaunchConfigurations boolean
 -- **Experimental**: Run `swift build` in the background whenever a file is saved. It is possible the background compilation will already be running when you attempt a compile yourself, so this is disabled by default.
 ---@field backgroundCompilation boolean
--- Additional arguments to pass to `swift` commands such as `swift build`, `swift package`, `swift test`, etc... Keys and values should be provided as individual entries in the list. If you have created a copy of the build task in `tasks.json` then these build arguments will not be propagated to that task.
+-- Additional arguments to pass to `swift build` and `swift test`. Keys and values should be provided as individual entries in the list. If you have created a copy of the build task in `tasks.json` then these build arguments will not be propagated to that task.
 -- 
 -- ```lua
 -- default = {}
@@ -15227,6 +15292,8 @@
 ---@field diagnosticsStyle "default" | "llvm" | "swift"
 -- Disable automatic running of `swift package resolve` whenever the `Package.swift` or `Package.resolve` files are updated. This will also disable searching for command plugins and the initial test discovery process.
 ---@field disableAutoResolve boolean
+-- Disable sandboxing when running SwiftPM commands. In most cases you should keep the sandbox enabled and leave this setting set to `false`
+---@field disableSandox boolean
 -- Disables automated Build Tasks, Package Dependency view, Launch configuration generation and TestExplorer.
 ---@field disableSwiftPackageManagerIntegration boolean
 -- Controls whether or not the extension will contribute environment variables defined in `Swift: Environment Variables` to the integrated terminal. If this is set to `true` and a custom `Swift: Path` is also set then the swift path is appended to the terminal's `PATH`.
@@ -15253,12 +15320,24 @@
 -- default = "prompt"
 -- ```
 ---@field openAfterCreateNewProject "always" | "alwaysNewWindow" | "whenNoFolderOpen" | "prompt"
+-- Additional arguments to pass to swift commands that do package resolution, such as `swift package resolve`, `swift package update`, `swift build` and `swift test`. Keys and values should be provided as individual entries in the list.
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field packageArguments string[]
 -- Override the default path of the folder containing the Swift executables. The default is to look in the `PATH` environment variable. This path is also used to search for other executables used by the extension like `sourcekit-lsp` and `lldb`.
 -- 
 -- ```lua
 -- default = ""
 -- ```
 ---@field path string
+-- Configure a list of arguments to pass to command invocations. This can either be an array of arguments, which will apply to all command invocations, or an object with command names as the key where the value is an array of arguments.
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field pluginArguments any
 -- Configures a list of permissions to be used when running a command plugins.
 -- 
 -- Permissions objects are defined in the form:
@@ -15996,12 +16075,24 @@
 -- default = { "class", "className", "ngClass", "class:list" }
 -- ```
 ---@field classAttributes string[]
+-- The function or tagged template literal names for which to provide class completions, hover previews, linting etc.
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field classFunctions string[]
 -- Enable code actions.
 -- 
 -- ```lua
 -- default = true
 -- ```
 ---@field codeActions boolean
+-- Enable code lens.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field codeLens boolean
 -- Controls whether the editor should render inline color decorators for Tailwind CSS classes and helper functions.
 -- 
 -- ```lua
@@ -16147,71 +16238,71 @@
 ---@field terraform _.lspconfig.settings.terraformls.Terraform
 
 ---@class _.lspconfig.settings.tinymist.Completion
--- Whether to enable postfix code completion. For example, `[A].box|` will be completed to `box[A]|`. Hint: Restarting the editor is required to change this setting.
+-- %extension.tinymist.config.tinymist.completion.postfix.desc%
 -- 
 -- ```lua
 -- default = true
 -- ```
 ---@field postfix boolean
--- Whether to enable UFCS-style completion. For example, `[A].box|` will be completed to `box[A]|`. Hint: Restarting the editor is required to change this setting.
+-- %extension.tinymist.config.tinymist.completion.postfixUfcs.desc%
 -- 
 -- ```lua
 -- default = true
 -- ```
 ---@field postfixUfcs boolean
--- Whether to enable left-variant UFCS-style completion. For example, `[A].table|` will be completed to `table(|)[A]`. Hint: Restarting the editor is required to change this setting.
+-- %extension.tinymist.config.tinymist.completion.postfixUfcsLeft.desc%
 -- 
 -- ```lua
 -- default = true
 -- ```
 ---@field postfixUfcsLeft boolean
--- Whether to enable right-variant UFCS-style completion. For example, `[A].table|` will be completed to `table([A], |)`. Hint: Restarting the editor is required to change this setting.
+-- %extension.tinymist.config.tinymist.completion.postfixUfcsRight.desc%
 -- 
 -- ```lua
 -- default = true
 -- ```
 ---@field postfixUfcsRight boolean
--- Whether to trigger completions on arguments (placeholders) of snippets. For example, `box` will be completed to `box(|)`, and server will request the editor (lsp client) to request completion after moving cursor to the placeholder in the snippet. Note: this has no effect if the editor doesn't support `editor.action.triggerSuggest` or `tinymist.triggerSuggestAndParameterHints` command. Hint: Restarting the editor is required to change this setting.
+-- %extension.tinymist.config.tinymist.completion.triggerOnSnippetPlaceholders.desc%
 ---@field triggerOnSnippetPlaceholders boolean
 
 ---@class _.lspconfig.settings.tinymist.Preview
--- (Experimental) Show typst cursor indicator in preview.
+-- %extension.tinymist.config.tinymist.preview.cursorIndicator.desc%
 ---@field cursorIndicator boolean
--- List of *additional* paths to font assets used by typst-preview.
+-- %extension.tinymist.config.tinymist.preview.fontPaths.desc%
 -- 
 -- ```lua
 -- default = {}
 -- ```
 ---@field fontPaths string[]
--- Invert colors of the preview (useful for dark themes without cost). Please note you could see the origin colors when you hover elements in the preview. It is also possible to specify strategy to each element kind by an object map in JSON format.
+-- %extension.tinymist.config.tinymist.preview.invertColors.desc%
 ---@field invertColors "never" | "auto" | "always"|table
--- Only render visible part of the document. This can improve performance but still being experimental.
+-- %extension.tinymist.config.tinymist.preview.partialRendering.desc%
 -- 
 -- ```lua
 -- default = true
 -- ```
 ---@field partialRendering boolean
--- Declare current previewing file as entrypoint for typst-lsp or tinymist. This will make typst-lsp or tinymist to use this file as entrypoint instead of the file opened in vscode. This can improve diagnostics messages and auto completion but still being experimental.
+-- %extension.tinymist.config.tinymist.preview.pinPreviewFile.desc%
 ---@field pinPreviewFile boolean
--- Refresh preview when the document is saved or when the document is changed
+-- %extension.tinymist.config.tinymist.preview.refresh.desc%
 -- 
 -- ```lua
 -- default = "onType"
 -- ```
 ---@field refresh "onSave" | "onType"
--- Configure scroll sync mode.
+-- %extension.tinymist.config.tinymist.preview.scrollSync.desc%
 -- 
 -- ```lua
 -- default = "onSelectionChangeByMouse"
 -- ```
 ---@field scrollSync "never" | "onSelectionChangeByMouse" | "onSelectionChange"
--- key-value pairs visible through `sys.inputs`, corresponds to `--input` argument of typst cli
+-- %extension.tinymist.config.tinymist.preview.sysInputs.desc%
 -- 
 -- ```lua
 -- default = {}
 -- ```
 ---@field sysInputs table
--- Whether to load system fonts. If disabled, only fonts in `typst-preview.fontPaths` is loaded
+-- %extension.tinymist.config.tinymist.preview.systemFonts.desc%
 -- 
 -- ```lua
 -- default = true
@@ -16219,7 +16310,7 @@
 ---@field systemFonts boolean
 
 ---@class _.lspconfig.settings.tinymist.Trace
--- Traces the communication between VS Code and the language server.
+-- %extension.tinymist.config.tinymist.trace.server.desc%
 -- 
 -- ```lua
 -- default = "off"
@@ -16227,114 +16318,126 @@
 ---@field server "off" | "messages" | "verbose"
 
 ---@class _.lspconfig.settings.tinymist.Tinymist
--- In VSCode, enable compile status meaning that the extension will show the compilation status in the status bar. Since Neovim and Helix don't have a such feature, it is disabled by default at the language server label.
+-- %extension.tinymist.config.tinymist.compileStatus.desc%
 -- 
 -- ```lua
 -- default = "enable"
 -- ```
 ---@field compileStatus "enable" | "disable"
 ---@field completion _.lspconfig.settings.tinymist.Completion
--- Whether to configure default word separators on startup
+-- %extension.tinymist.config.tinymist.configureDefaultWordSeparator.string.desc%
+-- 
+-- ```lua
+-- default = "disable"
+-- ```
+---@field configureDefaultWordSeparator "enable" | "disable"
+-- %extension.tinymist.config.tinymist.copyAndPaste.desc%
 -- 
 -- ```lua
 -- default = "enable"
 -- ```
----@field configureDefaultWordSeparator "enable" | "disable"
--- Whether to handle drag-and-drop of resources into the editing typst document. Note: restarting the editor is required to change this setting.
+---@field copyAndPaste "enable" | "disable"
+-- %extension.tinymist.config.tinymist.dragAndDrop.desc%
 -- 
 -- ```lua
 -- default = "enable"
 -- ```
 ---@field dragAndDrop "enable" | "disable"
--- The extension can export PDFs of your Typst files. This setting controls whether this feature is enabled and how often it runs.
+-- %extension.tinymist.config.tinymist.exportPdf.desc%
 -- 
 -- ```lua
 -- default = "never"
 -- ```
 ---@field exportPdf "never" | "onSave" | "onType" | "onDocumentHasTitle"
--- A list of file or directory path to fonts. Note: The configuration source in higher priority will **override** the configuration source in lower priority. The order of precedence is: Configuration `tinymist.fontPaths` > Configuration `tinymist.typstExtraArgs.fontPaths` > LSP's CLI Argument `--font-path` > The environment variable `TYPST_FONT_PATHS` (a path list separated by `;` (on Windows) or `:` (Otherwise)). Note: If the path to fonts is a relative path, it will be resolved based on the root directory. Note: In VSCode, you can use VSCode variables in the path, e.g. `${workspaceFolder}/fonts`.
+-- %extension.tinymist.config.tinymist.exportTarget.desc%
+-- 
+-- ```lua
+-- default = "paged"
+-- ```
+---@field exportTarget "paged" | "html"
+-- %extension.tinymist.config.tinymist.fontPaths.desc%
 ---@field fontPaths any[]
--- The extension can format Typst files using typstfmt or typstyle.
+-- %extension.tinymist.config.tinymist.formatterIndentSize.desc%
+-- 
+-- ```lua
+-- default = 2
+-- ```
+---@field formatterIndentSize number
+-- %extension.tinymist.config.tinymist.formatterMode.desc%
 -- 
 -- ```lua
 -- default = "disable"
 -- ```
 ---@field formatterMode "disable" | "typstyle" | "typstfmt"
--- Set the print width for the formatter, which is a **soft limit** of characters per line. See [the definition of *Print Width*](https://prettier.io/docs/en/options.html#print-width). Note: this has lower priority than the formatter's specific configurations.
+-- %extension.tinymist.config.tinymist.formatterPrintWidth.desc%
 -- 
 -- ```lua
 -- default = 120
 -- ```
 ---@field formatterPrintWidth number
--- Enable or disable [experimental/onEnter](https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/lsp-extensions.md#on-enter) (LSP onEnter feature) to allow automatic insertion of characters on enter, such as `///` for comments. Note: restarting the editor is required to change this setting.
+-- %extension.tinymist.config.tinymist.onEnterEvent.desc%
 -- 
 -- ```lua
 -- default = true
 -- ```
 ---@field onEnterEvent boolean
--- The path pattern to store Typst artifacts, you can use `$root` or `$dir` or `$name` to do magic configuration, e.g. `$dir/$name` (default) and `$root/target/$dir/$name`.
+-- %extension.tinymist.config.tinymist.outputPath.desc%
 -- 
 -- ```lua
 -- default = ""
 -- ```
 ---@field outputPath string
 ---@field preview _.lspconfig.settings.tinymist.Preview
--- Enable or disable preview features of Typst. Note: restarting the editor is required to change this setting.
+-- %extension.tinymist.config.tinymist.previewFeature.desc%
 -- 
 -- ```lua
 -- default = "enable"
 -- ```
 ---@field previewFeature "enable" | "disable"
--- This configuration specifies the way to resolved projects.
+-- %extension.tinymist.config.tinymist.projectResolution.desc%
 -- 
 -- ```lua
 -- default = "singleFile"
 -- ```
 ---@field projectResolution "singleFile" | "lockDatabase"
--- (Experimental) Whether to render typst elements in (hover) docs. In VS Code, when this feature is enabled, tinymist will store rendered results in the filesystem's temporary storage to show them in the hover content. Note: Please disable this feature if the editor doesn't support/handle image previewing in docs.
+-- %extension.tinymist.config.tinymist.renderDocs.desc%
 -- 
 -- ```lua
 -- default = "enable"
 -- ```
 ---@field renderDocs "enable" | "disable"
--- Configure the root for absolute paths in typst. Hint: you can set the rootPath to `-`, so that tinymist will always use parent directory of the file as the root path. Note: for neovim users, if it complains root not found, you must set `require("lspconfig")["tinymist"].setup { root_dir }` as well, see [tinymist#528](https://github.com/Myriad-Dreamin/tinymist/issues/528).
+-- %extension.tinymist.config.tinymist.rootPath.desc%
 ---@field rootPath string
--- Enable or disable semantic tokens (LSP syntax highlighting)
+-- %extension.tinymist.config.tinymist.semanticTokens.desc%
 -- 
 -- ```lua
 -- default = "enable"
 -- ```
 ---@field semanticTokens "enable" | "disable"
--- The extension can use a local tinymist executable instead of the one bundled with the extension. This setting controls the path to the executable. The string "tinymist" means look up Tinymist in PATH.
+-- %extension.tinymist.config.tinymist.serverPath.desc%
 ---@field serverPath string
--- Configures way of opening exported files, e.g. inside of editor tabs or using system application.
+-- %extension.tinymist.config.tinymist.showExportFileIn.desc%
 ---@field showExportFileIn "editorTab" | "systemDefault"
--- Set format string of the server status. For example, `{compileStatusIcon}{wordCount} [{fileName}]` will format the status as `$(check) 123 words [main]`. Valid placeholders are:
--- 
--- - `{compileStatusIcon}`: Icon indicating the compile status
--- - `{wordCount}`: Number of words in the document
--- - `{fileName}`: Name of the file being compiled
--- 
--- Note: The status bar will be hidden if the format string is empty.
+-- %extension.tinymist.config.tinymist.statusBarFormat.desc%
 -- 
 -- ```lua
 -- default = "{compileStatusIcon} {wordCount} [{fileName}]"
 -- ```
 ---@field statusBarFormat string
--- A flag that determines whether to load system fonts for Typst compiler, which is useful for ensuring reproducible compilation. If set to null or not set, the extension will use the default behavior of the Typst compiler. Note: You need to restart LSP to change this options. 
+-- %extension.tinymist.config.tinymist.systemFonts.desc%
 -- 
 -- ```lua
 -- default = true
 -- ```
 ---@field systemFonts boolean
 ---@field trace _.lspconfig.settings.tinymist.Trace
--- Whether to prefix newlines after comments with the corresponding comment prefix.
+-- %extension.tinymist.config.tinymist.typingContinueCommentsOnNewline.desc%
 -- 
 -- ```lua
 -- default = true
 -- ```
 ---@field typingContinueCommentsOnNewline boolean
--- You can pass any arguments as you like, and we will try to follow behaviors of the **same version** of typst-cli. Note: the arguments may be overridden by other settings. For example, `--font-path` will be overridden by `tinymist.fontPaths`.
+-- %extension.tinymist.config.tinymist.typstExtraArgs.desc%
 -- 
 -- ```lua
 -- default = {}
@@ -16685,9 +16788,7 @@
 ---@field enabled "prompt" | "always" | "never"
 
 ---@class _.lspconfig.settings.ts_ls.UpdateImportsOnPaste
--- Enable updating imports when pasting code. Requires TypeScript 5.7+.
--- 
--- By default this shows a option to update imports after pasting. You can use the `#editor.pasteAs.preferences#` setting to update imports automatically when pasting: `"editor.pasteAs.preferences": [ "text.updateImports.jsts" ]`.
+-- Automatically update imports when pasting code. Requires TypeScript 5.6+.
 -- 
 -- ```lua
 -- default = true
@@ -16762,10 +16863,6 @@
 -- default = true
 -- ```
 ---@field npmIsInstalled boolean
-
----@class _.lspconfig.settings.ts_ls.Experimental
--- Enable expanding/contracting the hover to reveal more/less information from the TS server.
----@field expandableHover boolean
 
 ---@class _.lspconfig.settings.ts_ls.Format
 -- Enable/disable default TypeScript formatter.
@@ -17234,9 +17331,7 @@
 ---@field enabled "prompt" | "always" | "never"
 
 ---@class _.lspconfig.settings.ts_ls.UpdateImportsOnPaste
--- Enable updating imports when pasting code. Requires TypeScript 5.7+.
--- 
--- By default this shows a option to update imports after pasting. You can use the `#editor.pasteAs.preferences#` setting to update imports automatically when pasting: `"editor.pasteAs.preferences": [ "text.updateImports.jsts" ]`.
+-- Automatically update imports when pasting code. Requires TypeScript 5.6+.
 -- 
 -- ```lua
 -- default = true
@@ -17277,7 +17372,6 @@
 ---@field disableAutomaticTypeAcquisition boolean
 -- Enables prompting of users to use the TypeScript version configured in the workspace for Intellisense.
 ---@field enablePromptUseWorkspaceTsdk boolean
----@field experimental _.lspconfig.settings.ts_ls.Experimental
 ---@field format _.lspconfig.settings.ts_ls.Format
 ---@field implementationsCodeLens _.lspconfig.settings.ts_ls.ImplementationsCodeLens
 ---@field inlayHints _.lspconfig.settings.ts_ls.InlayHints
@@ -17478,24 +17572,10 @@
 ---@field vBindShorthand boolean
 
 ---@class _.lspconfig.settings.volar.Server
--- Set compatible extensions to skip automatic detection of Hybrid Mode.
--- 
--- ```lua
--- default = {}
--- ```
----@field compatibleExtensions string[]
--- Vue language server only handles CSS and HTML language support, and tsserver takes over TS language support via TS plugin.
--- 
--- ```lua
--- default = "auto"
--- ```
----@field hybridMode "auto" | "typeScriptPluginOnly" | true | false
 -- ```lua
 -- default = { "vue" }
 -- ```
 ---@field includeLanguages string[]
--- Set --max-old-space-size option on server process. If you have problem on frequently "Request textDocument/** failed." error, try setting higher memory(MB) on it.
----@field maxOldSpaceSize number
 
 ---@class _.lspconfig.settings.volar.Layout
 -- ```lua
@@ -17520,14 +17600,6 @@
 -- ```
 ---@field server "off" | "messages" | "verbose"
 
----@class _.lspconfig.settings.volar.UpdateImportsOnFileMove
--- Enabled update imports on file move.
--- 
--- ```lua
--- default = true
--- ```
----@field enabled boolean
-
 ---@class _.lspconfig.settings.volar.Vue
 ---@field autoInsert _.lspconfig.settings.volar.AutoInsert
 ---@field codeActions _.lspconfig.settings.volar.CodeActions
@@ -17539,7 +17611,6 @@
 ---@field server _.lspconfig.settings.volar.Server
 ---@field splitEditors _.lspconfig.settings.volar.SplitEditors
 ---@field trace _.lspconfig.settings.volar.Trace
----@field updateImportsOnFileMove _.lspconfig.settings.volar.UpdateImportsOnFileMove
 
 ---@class lspconfig.settings.volar
 ---@field vue _.lspconfig.settings.volar.Vue
