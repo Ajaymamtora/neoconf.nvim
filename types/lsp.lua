@@ -362,6 +362,12 @@
 -- default = "error"
 -- ```
 ---@field reportIndexIssue "none" | "hint" | "information" | "warning" | "error" | true | false
+-- Diagnostics for usages of `@abstractmethod` on a non-abstract class
+-- 
+-- ```lua
+-- default = "none"
+-- ```
+---@field reportInvalidAbstractMethod "none" | "hint" | "information" | "warning" | "error" | true | false
 -- Diagnostics for `cast`s to non-overlapping types
 -- 
 -- ```lua
@@ -788,6 +794,12 @@
 -- default = true
 -- ```
 ---@field autoSearchPaths boolean
+-- Path to the baseline file. Defaults to `./.basedpyright/baseline.json`
+-- 
+-- ```lua
+-- default = ""
+-- ```
+---@field baselineFile string
 -- ```lua
 -- default = "openFilesOnly"
 -- ```

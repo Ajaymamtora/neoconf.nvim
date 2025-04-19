@@ -14,6 +14,12 @@
       "scope": "resource",
       "type": "boolean"
     },
+    "basedpyright.analysis.baselineFile": {
+      "default": "",
+      "markdownDescription": "Path to the baseline file. Defaults to `./.basedpyright/baseline.json`",
+      "scope": "resource",
+      "type": "string"
+    },
     "basedpyright.analysis.diagnosticMode": {
       "default": "openFilesOnly",
       "enum": [
@@ -492,6 +498,23 @@
         "reportIndexIssue": {
           "default": "error",
           "description": "Diagnostics related to index operations and expressions.",
+          "enum": [
+            "none",
+            "hint",
+            "information",
+            "warning",
+            "error",
+            true,
+            false
+          ],
+          "type": [
+            "string",
+            "boolean"
+          ]
+        },
+        "reportInvalidAbstractMethod": {
+          "default": "none",
+          "description": "Diagnostics for usages of `@abstractmethod` on a non-abstract class",
           "enum": [
             "none",
             "hint",
