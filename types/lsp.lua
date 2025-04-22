@@ -10585,6 +10585,8 @@
 ---@field enable boolean
 
 ---@class _.lspconfig.settings.omnisharp.LanguageServer
+-- %configuration.razor.languageServer.cohostingEnabled%
+---@field cohostingEnabled boolean
 -- %configuration.razor.languageServer.debug%
 ---@field debug boolean
 -- %configuration.razor.languageServer.directory%
@@ -17033,6 +17035,10 @@
 -- ```
 ---@field npmIsInstalled boolean
 
+---@class _.lspconfig.settings.ts_ls.Experimental
+-- Enable expanding/contracting the hover to reveal more/less information from the TS server. Requires TypeScript 5.9+.
+---@field expandableHover boolean
+
 ---@class _.lspconfig.settings.ts_ls.Format
 -- Enable/disable default TypeScript formatter.
 -- 
@@ -17533,6 +17539,7 @@
 ---@field disableAutomaticTypeAcquisition boolean
 -- Enables prompting of users to use the TypeScript version configured in the workspace for Intellisense.
 ---@field enablePromptUseWorkspaceTsdk boolean
+---@field experimental _.lspconfig.settings.ts_ls.Experimental
 ---@field format _.lspconfig.settings.ts_ls.Format
 ---@field implementationsCodeLens _.lspconfig.settings.ts_ls.ImplementationsCodeLens
 ---@field inlayHints _.lspconfig.settings.ts_ls.InlayHints
