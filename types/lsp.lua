@@ -16423,10 +16423,6 @@
 
 ---@class _.lspconfig.settings.tinymist.Lint
 -- %extension.tinymist.config.tinymist.lint.enabled.desc%
--- 
--- ```lua
--- default = true
--- ```
 ---@field enabled boolean
 -- %extension.tinymist.config.tinymist.lint.when.desc%
 -- 
@@ -17042,6 +17038,8 @@
 -- default = true
 -- ```
 ---@field expandableHover boolean
+-- Disables TypeScript and JavaScript language features to allow usage of the TypeScript Go experimental extension. Requires TypeScript Go to be installed and configured. Requires reloading extensions after changing this setting.
+---@field useTsgo boolean
 
 ---@class _.lspconfig.settings.ts_ls.Format
 -- Enable/disable default TypeScript formatter.
