@@ -16906,7 +16906,7 @@
 -- default = true
 -- ```
 ---@field completeJSDocs boolean
--- Enabled/disable autocomplete suggestions.
+-- Enable/disable autocomplete suggestions.
 -- 
 -- ```lua
 -- default = true
@@ -17366,7 +17366,7 @@
 -- default = true
 -- ```
 ---@field completeJSDocs boolean
--- Enabled/disable autocomplete suggestions.
+-- Enable/disable autocomplete suggestions.
 -- 
 -- ```lua
 -- default = true
