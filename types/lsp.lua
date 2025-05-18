@@ -1029,7 +1029,7 @@
 -- ```
 ---@field fallbackFlags string[]
 ---@field inactiveRegions _.lspconfig.settings.clangd.InactiveRegions
--- What to do when clangd configuration files are changed. Ignored for clangd 12+, which can reload such files itself.
+-- What to do when clangd configuration files are changed. Ignored for clangd 12+, which can reload such files itself; however, this can be overridden with clangd.onConfigChanged.forceEnable.
 -- 
 -- ```lua
 -- default = "prompt"
@@ -9667,6 +9667,10 @@
 -- ```
 ---@field fileAliases table
 
+---@class _.lspconfig.settings.luau_lsp.CrashReporting
+-- Upload crash reports to Sentry
+---@field enabled boolean
+
 ---@class _.lspconfig.settings.luau_lsp.Server
 -- Type of communication channel to use for communicating with the server. Only useful for debug purposes
 -- 
@@ -9674,6 +9678,7 @@
 -- default = "stdio"
 -- ```
 ---@field communicationChannel "stdio" | "pipe"
+---@field crashReporting _.lspconfig.settings.luau_lsp.CrashReporting
 -- Make the server spin indefinitely when starting up to allow time to attach a debugger. Only useful for debug purposes
 ---@field delayStartup boolean
 -- Path to the Luau LSP server binary. If not provided, uses the binary included in the extension.
