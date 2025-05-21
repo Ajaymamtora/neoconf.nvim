@@ -1,6 +1,149 @@
 ---@meta
 
 
+---@class _.lspconfig.settings.als.OnTypeFormatting
+-- If the VS Code `editor.formatOnType` setting is enabled, the Ada Language Server will format Ada code while it is being typed in the editor, in particular when a new line is typed.
+-- 
+-- This setting controls whether formatting should only perform the indentation of the new line (true) or also format the previous line (false).
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field indentOnly true | false
+
+---@class _.lspconfig.settings.als.Trace
+-- Traces the communication between VS Code and the Ada language server in the 'Ada Language Server' Output view.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "off" | "messages" | "verbose"
+
+---@class _.lspconfig.settings.als.Ada
+-- Controls whether or not the Ada Language Server should emit diagnostics related to the edition of Ada files into the VS Code Problems view.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field adaFileDiagnostics true | false
+-- Controls whether or not the Ada Language Server should emit diagnostics related to alire into the VS Code Problems view.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field alireDiagnostics true | false
+-- The character set that the Ada Language Server should use when reading files from disk.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists.
+---@field defaultCharset string
+-- Controls the policy for displaying overriding and overridden subprograms on navigation requests such as 'Go To Definition' or 'Go To Implementations'.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `"usage_and_abstract_only"`.
+---@field displayMethodAncestryOnNavigation "never" | "usage_and_abstract_only" | "definition_only" | "always"
+-- Controls the primary documentation style of entities.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `"gnat"`.
+---@field documentationStyle "gnat" | "leading"
+-- Controls whether the Ada Language Server should index the source files immediately after loading a project.
+-- 
+-- If set to false, indexing will be deferred to the time when an action requiring the index is first performed, e.g. hovering over a referenced entity to get its documentation.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field enableIndexing true | false
+-- Controls whether comments should be folded like code blocks.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field foldComments true | false
+-- Controls the Ada Language Server normalizes the file paths received from the client.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field followSymlinks true | false
+-- GPR configuration file (*.cgpr) for this workspace.
+-- 
+-- It is recommended to set this to a relative path starting at the root of the workspace.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists.
+---@field gprConfigurationFile string
+-- Controls whether or not the Ada Language Server should emit diagnostics related to the edition of GPR files into the VS Code Problems view.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field gprFileDiagnostics true | false
+-- Enable insertion of missing with-clauses when accepting completion for invisible symbols.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field insertWithClauses true | false
+-- Controls the maximum number of trace files preserved in the ALS log directory (which defaults to `~/.als`). When this threshold is reached, old trace files get deleted automatically. The default number of preserved trace files is `10`.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `10`.
+-- 
+-- ```lua
+-- default = 10
+-- ```
+---@field logThreshold integer
+-- Defines the number of parameters/components beyond which named notation is used for completion snippets.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `3`.
+-- 
+-- ```lua
+-- default = 3
+-- ```
+---@field namedNotationThreshold integer
+---@field onTypeFormatting _.lspconfig.settings.als.OnTypeFormatting
+-- Controls whether or not the Ada Language Server should emit diagnostics related to project loading into the VS Code Problems view.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field projectDiagnostics true | false
+-- GPR project file (*.gpr) for this workspace.
+-- 
+-- It is recommended to set this to a relative path starting at the root of the workspace.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists.
+---@field projectFile string
+-- The path to a directory used for out-of-tree builds. This feature is related to the [--relocate-build-tree GPRbuild command line switch](https://docs.adacore.com/gprbuild-docs/html/gprbuild_ug/building_with_gprbuild.html#switches).
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists.
+---@field relocateBuildTree string
+-- Enable editing Ada comments to update references to an entity when it is being renamed.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `false`.
+---@field renameInComments true | false
+-- This setting must be used in conjunction with the `relocateBuildTree` setting.
+-- 
+-- It specifies the root directory for artifact relocation. It corresponds to the [--root-dir GPRbuild command line switch](https://docs.adacore.com/gprbuild-docs/html/gprbuild_ug/building_with_gprbuild.html#switches).
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists.
+---@field rootDir string
+-- Scenario variables to apply to the GPR project file.
+-- 
+-- This value should be provided as an object where the property names are GPR scenario variables and the values are strings.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists.
+---@field scenarioVariables table
+-- Whether to show error notifications in VS Code for failing LSP requests.
+---@field showNotificationsOnErrors boolean
+-- Controls whether or not the Ada Language Server should emit source information diagnostics (e.g: for opened files that do not belong to the loaded project tree).
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field sourceInfoDiagnostics true | false
+---@field trace _.lspconfig.settings.als.Trace
+-- Enable snippets in completion results (e.g. subprogram calls).
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field useCompletionSnippets true | false
+-- Enable GNATformat as the formatting provider for Ada source files.
+-- 
+-- If not set in VS Code, this setting takes its value from the [`.als.json`](https://github.com/AdaCore/ada_language_server/blob/master/doc/settings.md) file at the root of the workspace, if that file exists. Otherwise it defaults to `true`.
+---@field useGnatformat true | false
+
+---@class _.lspconfig.settings.als.Trace
+-- Traces the communication between VS Code and the GPR language server in the 'GPR Language Server' Output view.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "off" | "messages" | "verbose"
+
+---@class _.lspconfig.settings.als.Gpr
+---@field trace _.lspconfig.settings.als.Trace
+
+---@class lspconfig.settings.als
+---@field ada _.lspconfig.settings.als.Ada
+---@field gpr _.lspconfig.settings.als.Gpr
+
 ---@class _.lspconfig.settings.astro.Language-server
 -- Path to the language server executable. You won't need this in most cases, set this only when needing a specific version of the language server
 ---@field ls-path string
@@ -2253,6 +2396,328 @@
 
 ---@class lspconfig.settings.dartls
 ---@field dart _.lspconfig.settings.dartls.Dart
+
+---@class _.lspconfig.settings.denols.CodeLens
+-- Enables or disables the display of code lens information for implementations of items in the code.
+---@field implementations boolean
+-- Enables or disables the display of code lens information for references of items in the code.
+---@field references boolean
+-- Enables or disables the display of code lens information for all functions in the code.
+---@field referencesAllFunctions boolean
+-- Enables or disables the display of code lenses that allow running of individual tests in the code.
+---@field test boolean
+-- Additional arguments to use with the run test code lens.  Defaults to `[ "--allow-all", "--no-check" ]`.
+-- 
+-- ```lua
+-- default = { "--allow-all", "--no-check" }
+-- ```
+---@field testArgs string[]
+
+---@class _.lspconfig.settings.denols.EnumMemberValues
+-- Enable/disable inlay hints for enum values.
+---@field enabled boolean
+
+---@class _.lspconfig.settings.denols.FunctionLikeReturnTypes
+-- Enable/disable inlay hints for implicit function return types.
+---@field enabled boolean
+
+---@class _.lspconfig.settings.denols.ParameterNames
+-- Enable/disable inlay hints for parameter names.
+-- 
+-- ```lua
+-- default = "none"
+-- ```
+---@field enabled "none" | "literals" | "all"
+-- Do not display an inlay hint when the argument name matches the parameter.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field suppressWhenArgumentMatchesName boolean
+
+---@class _.lspconfig.settings.denols.ParameterTypes
+-- Enable/disable inlay hints for implicit parameter types.
+---@field enabled boolean
+
+---@class _.lspconfig.settings.denols.PropertyDeclarationTypes
+-- Enable/disable inlay hints for implicit property declarations.
+---@field enabled boolean
+
+---@class _.lspconfig.settings.denols.VariableTypes
+-- Enable/disable inlay hints for implicit variable types.
+---@field enabled boolean
+-- Suppress type hints where the variable name matches the implicit type.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field suppressWhenTypeMatchesName boolean
+
+---@class _.lspconfig.settings.denols.InlayHints
+---@field enumMemberValues _.lspconfig.settings.denols.EnumMemberValues
+---@field functionLikeReturnTypes _.lspconfig.settings.denols.FunctionLikeReturnTypes
+---@field parameterNames _.lspconfig.settings.denols.ParameterNames
+---@field parameterTypes _.lspconfig.settings.denols.ParameterTypes
+---@field propertyDeclarationTypes _.lspconfig.settings.denols.PropertyDeclarationTypes
+---@field variableTypes _.lspconfig.settings.denols.VariableTypes
+
+---@class _.lspconfig.settings.denols.Imports
+-- If enabled, when new hosts/origins are encountered that support import suggestions, you will be prompted to enable or disable it.  Defaults to `true`.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field autoDiscover boolean
+-- Controls which hosts are enabled for import suggestions.
+-- 
+-- ```lua
+-- default = {
+--   ["https://deno.land"] = true
+-- }
+-- ```
+---@field hosts table
+
+---@class _.lspconfig.settings.denols.Suggest
+-- ```lua
+-- default = true
+-- ```
+---@field autoImports boolean
+---@field completeFunctionCalls boolean
+---@field imports _.lspconfig.settings.denols.Imports
+-- ```lua
+-- default = true
+-- ```
+---@field names boolean
+-- ```lua
+-- default = true
+-- ```
+---@field paths boolean
+
+---@class _.lspconfig.settings.denols.Testing
+-- Arguments to use when running tests via the Test Explorer.  Defaults to `[ "--allow-all" ]`.
+-- 
+-- ```lua
+-- default = { "--allow-all", "--no-check" }
+-- ```
+---@field args string[]
+
+---@class _.lspconfig.settings.denols.Trace
+-- Traces the communication between VS Code and the Deno Language Server.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "messages" | "off" | "verbose"
+
+---@class _.lspconfig.settings.denols.Deno
+-- A path to the cache directory for Deno. By default, the operating system's cache path plus `deno` is used, or the `DENO_DIR` environment variable, but if set, this path will be used instead.
+---@field cache string
+-- Controls if the extension should cache the active document's dependencies on save.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field cacheOnSave boolean
+-- A list of root certificate stores used to validate TLS certificates when fetching and caching remote resources. This overrides the `DENO_TLS_CA_STORE` environment variable if set.
+---@field certificateStores string[]
+---@field codeLens _.lspconfig.settings.denols.CodeLens
+-- The file path to a configuration file. This is the equivalent to using `--config` on the command line. The path can be either be relative to the workspace, or an absolute path.
+-- 
+-- It is recommend you name it `deno.json` or `deno.jsonc`.
+-- 
+-- **Not recommended to be set globally.**
+---@field config string
+-- Controls the default action when clicking on a task in the _Deno Tasks sidebar_.
+-- 
+-- ```lua
+-- default = "open"
+-- ```
+---@field defaultTaskCommand "open" | "run"
+-- Disables the Deno Language Server for specific paths. This will leave the built in TypeScript/JavaScript language server enabled for those paths. Takes priority over `deno.enablePaths`.
+-- 
+-- **Not recommended to be enabled in user settings.**
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field disablePaths string[]
+-- Maximum number of file system entries to traverse when finding scripts to preload into TypeScript on startup. Set this to 0 to disable document preloading.
+-- 
+-- ```lua
+-- default = 1000
+-- ```
+---@field documentPreloadLimit number
+-- Controls if the Deno Language Server is enabled. When enabled, the extension will disable the built-in VSCode JavaScript and TypeScript language services, and will use the Deno Language Server instead.
+-- 
+-- If omitted, your preference will be inferred as true if there is a `deno.json[c]` at your workspace root and false if not.
+-- 
+-- If you want to enable only part of your workspace folder, consider using `deno.enablePaths` setting instead.
+-- 
+-- **Not recommended to be enabled globally.**
+---@field enable boolean
+-- Enables the Deno Language Server for specific paths, instead of for the whole workspace folder. This will disable the built in TypeScript/JavaScript language server for those paths.
+-- 
+-- When a value is set, the value of `"deno.enable"` is ignored.
+-- 
+-- The workspace folder is used as the base for the supplied paths. If for example you have all your Deno code in `worker` path in your workspace, you can add an item with the value of `./worker`, and the Deno will only provide diagnostics for the files within `worker` or any of its sub paths.
+-- 
+-- **Not recommended to be enabled in user settings.**
+---@field enablePaths string[]
+-- Additional environment variables to pass to Deno processes. Overrides the user's env and `deno.envFile`. These will be overridden by more specific settings such as `deno.future` for `DENO_FUTURE`, and invariables like `NO_COLOR=1`.
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field env table
+-- Env file containing additional environment variables to pass to Deno processes. Overrides the user's env. These will be overridden by `deno.env`, more specific settings such as `deno.future` for `DENO_FUTURE`, and invariables like `NO_COLOR=1`.
+---@field envFile string
+-- Enable breaking features likely to be shipped in Deno 2.0.
+---@field future boolean
+-- The file path to an import map. This is the equivalent to using `--import-map` on the command line.
+-- 
+-- [Import maps](https://deno.land/manual@v1.6.0/linking_to_external_code/import_maps) provide a way to "relocate" modules based on their specifiers. The path can either be relative to the workspace, or an absolute path.
+-- 
+-- **Not recommended to be set globally.**
+---@field importMap string
+---@field inlayHints _.lspconfig.settings.denols.InlayHints
+-- Determines if the internal debugging information for the Deno language server will be logged to the _Deno Language Server_ console.
+---@field internalDebug boolean
+-- Enables the inspector server for the JS runtime used by the Deno Language Server to host its TS server. Optionally provide an address for the inspector listener e.g. "127.0.0.1:9222" (default).
+---@field internalInspect boolean|string
+-- Controls if linting information will be provided by the Deno Language Server.
+-- 
+-- **Not recommended to be enabled globally.**
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field lint boolean
+-- Write logs to a file in a project-local directory.
+---@field logFile boolean
+-- Maximum amount of memory the TypeScript isolate can use. Defaults to 3072 (3GB).
+-- 
+-- ```lua
+-- default = 3072
+-- ```
+---@field maxTsServerMemory number
+-- A path to the `deno` CLI executable. By default, the extension looks for `deno` in the `PATH`, but if set, will use the path specified instead.
+---@field path string
+---@field suggest _.lspconfig.settings.denols.Suggest
+---@field testing _.lspconfig.settings.denols.Testing
+-- A path to a PEM certificate to use as the certificate authority when validating TLS certificates when fetching and caching remote resources. This is like using `--cert` on the Deno CLI and overrides the `DENO_CERT` environment variable if set.
+---@field tlsCertificate string
+---@field trace _.lspconfig.settings.denols.Trace
+-- **DANGER** disables verification of TLS certificates for the hosts provided. There is likely a better way to deal with any errors than use this option. This is like using `--unsafely-ignore-certificate-errors` in the Deno CLI.
+---@field unsafelyIgnoreCertificateErrors string[]
+-- Controls which `--unstable-*` features tests will be run with when running them via the explorer.
+-- 
+-- **Not recommended to be enabled globally.**
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field unstable string[]
+
+---@class lspconfig.settings.denols
+---@field deno _.lspconfig.settings.denols.Deno
+
+---@class _.lspconfig.settings.elixirls.Trace
+-- Traces the communication between VS Code and the Elixir language server.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "off" | "messages" | "verbose"
+
+---@class _.lspconfig.settings.elixirls.ElixirLS
+-- Additional file types capable of triggering a build on change
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field additionalWatchedExtensions string[]
+-- Trigger ElixirLS build when code is saved
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field autoBuild boolean
+-- Enable auto-insert required alias. This is true (enabled) by default.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field autoInsertRequiredAlias boolean
+-- Run ElixirLS's rapid Dialyzer when code is saved
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field dialyzerEnabled boolean
+-- Formatter to use for Dialyzer warnings
+-- 
+-- ```lua
+-- default = "dialyxir_long"
+-- ```
+---@field dialyzerFormat "dialyzer" | "dialyxir_short" | "dialyxir_long"
+-- Dialyzer options to enable or disable warnings - See Dialyzer's documentation for options. Note that the "race_conditions" option is unsupported
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field dialyzerWarnOpts string[]
+-- Show code lenses to run tests in terminal.
+---@field enableTestLenses boolean
+-- Environment variables to use for compilation
+---@field envVariables table
+-- Automatically fetch project dependencies when compiling.
+---@field fetchDeps boolean
+-- Use OTP incremental dialyzer (available on OTP 26+)
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field incrementalDialyzer boolean
+-- Absolute path to alternative ElixirLS release that will override the packaged release
+---@field languageServerOverridePath string
+-- Mix environment to use for compilation
+-- 
+-- ```lua
+-- default = "test"
+-- ```
+---@field mixEnv string
+-- Mix target to use for compilation
+---@field mixTarget string
+-- Subdirectory containing Mix project if not in the project root
+-- 
+-- ```lua
+-- default = ""
+-- ```
+---@field projectDir string
+-- Show signature help after confirming autocomplete.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field signatureAfterComplete boolean
+-- Subdirectory where the Elixir stdlib resides to allow for source code lookup. E.g. /home/youruser/.asdf/installs/elixir/1.18.2
+-- 
+-- ```lua
+-- default = ""
+-- ```
+---@field stdlibSrcDir string
+-- Suggest @spec annotations inline using Dialyzer's inferred success typings (Requires Dialyzer).
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field suggestSpecs boolean
+---@field trace _.lspconfig.settings.elixirls.Trace
+-- Don't try to look for mix.exs in parent directories
+---@field useCurrentRootFolderAsProjectDir boolean
+
+---@class lspconfig.settings.elixirls
+---@field elixirLS _.lspconfig.settings.elixirls.ElixirLS
 
 ---@class _.lspconfig.settings.elmls.ElmTestRunner
 -- Show output of elm-test as terminal task
@@ -4749,6 +5214,415 @@
 ---@class lspconfig.settings.html
 ---@field html _.lspconfig.settings.html.Html
 
+---@class _.lspconfig.settings.intelephense.Implementations
+-- Enable a code lens that shows an abstract and interface implementations count and command to peek locations.
+---@field enable boolean
+
+---@class _.lspconfig.settings.intelephense.Overrides
+-- Enable a code lens that shows method override count and command to peek locations.
+---@field enable boolean
+
+---@class _.lspconfig.settings.intelephense.Parent
+-- Enable a code lens that indicates if a method has a parent implementation and command to peek location.
+---@field enable boolean
+
+---@class _.lspconfig.settings.intelephense.References
+-- Enable a code lens that shows a reference count and command to peek locations.
+---@field enable boolean
+
+---@class _.lspconfig.settings.intelephense.Usages
+-- Enable a code lens that shows a trait usages count and command to peek locations.
+---@field enable boolean
+
+---@class _.lspconfig.settings.intelephense.CodeLens
+---@field implementations _.lspconfig.settings.intelephense.Implementations
+---@field overrides _.lspconfig.settings.intelephense.Overrides
+---@field parent _.lspconfig.settings.intelephense.Parent
+---@field references _.lspconfig.settings.intelephense.References
+---@field usages _.lspconfig.settings.intelephense.Usages
+
+---@class _.lspconfig.settings.intelephense.Compatibility
+-- Resolves `ArrayAccess` and `Traversable` implementations that are unioned with a typed array to generic syntax. eg `ArrayAccessOrTraversable|ElementType[]` => `ArrayAccessOrTraversable<mixed, ElementType>`.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field correctForArrayAccessArrayAndTraversableArrayUnionTypes boolean
+-- Resolves `BaseClass|static` union types to `static` instead of `BaseClass`.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field correctForBaseClassStaticUnionTypes boolean
+-- Prefer `@psalm-` and `@phpstan-` prefixed `@return`, `@var`, `@param` tags when determining symbol types.
+---@field preferPsalmPhpstanPrefixedAnnotations boolean
+
+---@class _.lspconfig.settings.intelephense.Completion
+-- Global namespace constants and functions will be fully qualified (prefixed with a backslash).
+---@field fullyQualifyGlobalConstantsAndFunctions boolean
+-- Use declarations will be automatically inserted for namespaced classes, traits, interfaces, functions, and constants.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field insertUseDeclaration boolean
+-- The maximum number of completion items returned per request.
+-- 
+-- ```lua
+-- default = 100
+-- ```
+---@field maxItems number
+-- PHP permits the calling of static methods using the object operator eg `$obj->myStaticMethod();`. If you would prefer not to have static methods suggested in this context then set this value to `false`. Defaults to `true`.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field suggestObjectOperatorStaticMethods boolean
+-- Method and function completions will include parentheses and trigger parameter hints.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field triggerParameterHints boolean
+
+---@class _.lspconfig.settings.intelephense.Diagnostics
+-- Enables argument count diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field argumentCount boolean
+-- Enables deprecated diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field deprecated boolean
+-- Enables duplicate symbol diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field duplicateSymbols boolean
+-- Enables diagnostics in embedded languages.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field embeddedLanguages boolean
+-- Enables diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+-- Enables reporting of problems associated with method and class implementations. For example, unimplemented methods or method signature incompatibilities.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field implementationErrors boolean
+-- Enables reporting of various language constraint errors.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field languageConstraints boolean
+-- Enables reporting of errors associated with type member access.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field memberAccess boolean
+-- This setting turns off type checking for the `mixed` type. This is useful for projects that may have incomplete or innacurate typings. Set to `false` to make type checking more thorough by not allowing `mixed` to satisy any type constraint. This setting has no effect when `relaxedTypeCheck` is `true`.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field noMixedTypeCheck boolean
+-- This setting makes type checking less thorough by allowing contravariant (wider) types to also satisfy a type constraint. This is useful for projects that may have incomplete or innacurate typings. Set to `false` for more thorough type checks. When this setting is `true`, the `noMixedTypeCheck` setting is ignored.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field relaxedTypeCheck boolean
+-- Controls when diagnostics are run.
+-- 
+-- ```lua
+-- default = "onType"
+-- ```
+---@field run "onType" | "onSave"
+-- Enables diagnostics on type compatibility of arguments, property assignments, and return statements where types have been declared.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field typeErrors boolean
+-- Enables undefined class constant diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field undefinedClassConstants boolean
+-- Enables undefined constant diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field undefinedConstants boolean
+-- Enables undefined function diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field undefinedFunctions boolean
+-- Enables undefined method diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field undefinedMethods boolean
+-- Enables undefined property diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field undefinedProperties boolean
+-- DEPRECATED. Use the setting for each symbol category.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field undefinedSymbols boolean
+-- Enables undefined class, interface and trait diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field undefinedTypes boolean
+-- Enables undefined variable diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field undefinedVariables boolean
+-- Enables unexpected token diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field unexpectedTokens boolean
+-- Enables unused variable, private member, and import diagnostics.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field unusedSymbols boolean
+
+---@class _.lspconfig.settings.intelephense.Environment
+-- The directory of the entry point to the application (directory of index.php). Can be absolute or relative to the workspace folder. Used for resolving script inclusion and path suggestions.
+---@field documentRoot string
+-- The include paths (as individual path items) as defined in the include_path ini setting or paths to external libraries. Can be absolute or relative to the workspace folder. Used for resolving script inclusion and/or adding external symbols to folder.
+---@field includePaths string[]
+-- A semver compatible string that represents the target PHP version. Used for providing version appropriate suggestions and diagnostics. PHP 5.3.0 and greater supported.
+-- 
+-- ```lua
+-- default = "8.4.0"
+-- ```
+---@field phpVersion string
+-- When enabled '<?' will be parsed as a PHP open tag. Defaults to true.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field shortOpenTag boolean
+
+---@class _.lspconfig.settings.intelephense.Files
+-- Configure glob patterns to make files available for language server features. Inherits from files.associations.
+-- 
+-- ```lua
+-- default = { "*.php", "*.phtml" }
+-- ```
+---@field associations any[]
+-- Configure glob patterns to exclude certain files and folders from all language server features. Inherits from files.exclude.
+-- 
+-- ```lua
+-- default = { "**/.git/**", "**/.svn/**", "**/.hg/**", "**/CVS/**", "**/.DS_Store/**", "**/node_modules/**", "**/bower_components/**", "**/vendor/**/{Tests,tests}/**", "**/.history/**", "**/vendor/**/vendor/**" }
+-- ```
+---@field exclude string[]
+-- Maximum file size in bytes.
+-- 
+-- ```lua
+-- default = 1000000
+-- ```
+---@field maxSize number
+
+---@class _.lspconfig.settings.intelephense.Format
+-- Controls formatting style of braces
+-- 
+-- ```lua
+-- default = "per"
+-- ```
+---@field braces "per" | "allman" | "k&r"
+-- Enables formatting.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+
+-- An object that describes the format of generated class/interface/trait phpdoc. The following snippet variables are available: SYMBOL_NAME; SYMBOL_KIND; SYMBOL_TYPE; SYMBOL_NAMESPACE.
+-- 
+-- ```lua
+-- default = {
+--   summary = "$1",
+--   tags = { "@package ${1:$SYMBOL_NAMESPACE}" }
+-- }
+-- ```
+---@class _.lspconfig.settings.intelephense.ClassTemplate
+-- A snippet string representing a phpdoc description.
+---@field description string
+-- A snippet string representing a phpdoc summary.
+---@field summary string
+-- An array of snippet strings representing phpdoc tags.
+---@field tags string[]
+
+-- An object that describes the format of generated function/method phpdoc. The following snippet variables are available: SYMBOL_NAME; SYMBOL_KIND; SYMBOL_TYPE; SYMBOL_NAMESPACE.
+-- 
+-- ```lua
+-- default = {
+--   summary = "$1",
+--   tags = { "@param ${1:$SYMBOL_TYPE} $SYMBOL_NAME $2", "@return ${1:$SYMBOL_TYPE} $2", "@throws ${1:$SYMBOL_TYPE} $2" }
+-- }
+-- ```
+---@class _.lspconfig.settings.intelephense.FunctionTemplate
+-- A snippet string representing a phpdoc description.
+---@field description string
+-- A snippet string representing a phpdoc summary.
+---@field summary string
+-- An array of snippet strings representing phpdoc tags.
+---@field tags string[]
+
+-- An object that describes the format of generated property phpdoc. The following snippet variables are available: SYMBOL_NAME; SYMBOL_KIND; SYMBOL_TYPE; SYMBOL_NAMESPACE.
+-- 
+-- ```lua
+-- default = {
+--   summary = "$1",
+--   tags = { "@var ${1:$SYMBOL_TYPE}" }
+-- }
+-- ```
+---@class _.lspconfig.settings.intelephense.PropertyTemplate
+-- A snippet string representing a phpdoc description.
+---@field description string
+-- A snippet string representing a phpdoc summary.
+---@field summary string
+-- An array of snippet strings representing phpdoc tags.
+---@field tags string[]
+
+---@class _.lspconfig.settings.intelephense.Phpdoc
+-- An object that describes the format of generated class/interface/trait phpdoc. The following snippet variables are available: SYMBOL_NAME; SYMBOL_KIND; SYMBOL_TYPE; SYMBOL_NAMESPACE.
+-- 
+-- ```lua
+-- default = {
+--   summary = "$1",
+--   tags = { "@package ${1:$SYMBOL_NAMESPACE}" }
+-- }
+-- ```
+---@field classTemplate _.lspconfig.settings.intelephense.ClassTemplate
+-- An object that describes the format of generated function/method phpdoc. The following snippet variables are available: SYMBOL_NAME; SYMBOL_KIND; SYMBOL_TYPE; SYMBOL_NAMESPACE.
+-- 
+-- ```lua
+-- default = {
+--   summary = "$1",
+--   tags = { "@param ${1:$SYMBOL_TYPE} $SYMBOL_NAME $2", "@return ${1:$SYMBOL_TYPE} $2", "@throws ${1:$SYMBOL_TYPE} $2" }
+-- }
+-- ```
+---@field functionTemplate _.lspconfig.settings.intelephense.FunctionTemplate
+-- An object that describes the format of generated property phpdoc. The following snippet variables are available: SYMBOL_NAME; SYMBOL_KIND; SYMBOL_TYPE; SYMBOL_NAMESPACE.
+-- 
+-- ```lua
+-- default = {
+--   summary = "$1",
+--   tags = { "@var ${1:$SYMBOL_TYPE}" }
+-- }
+-- ```
+---@field propertyTemplate _.lspconfig.settings.intelephense.PropertyTemplate
+-- Adds `@return void` to auto generated phpdoc for definitions that do not return a value.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field returnVoid boolean
+-- ```lua
+-- default = "snippet"
+-- ```
+---@field textFormat "snippet" | "text"
+-- Fully qualified names will be used for types when true. When false short type names will be used and imported where appropriate. Overrides intelephense.completion.insertUseDeclaration.
+---@field useFullyQualifiedNames boolean
+
+---@class _.lspconfig.settings.intelephense.References
+-- Glob patterns matching files and folders that should be excluded from references search.
+-- 
+-- ```lua
+-- default = { "**/vendor/**" }
+-- ```
+---@field exclude string[]
+
+---@class _.lspconfig.settings.intelephense.Rename
+-- Glob patterns matching files and folders that should be excluded when renaming symbols. Rename operation will fail if the symbol definition is found in the excluded files/folders.
+-- 
+-- ```lua
+-- default = { "**/vendor/**" }
+-- ```
+---@field exclude string[]
+-- Controls the scope of a namespace rename operation.
+-- 
+-- ```lua
+-- default = "single"
+-- ```
+---@field namespaceMode "single" | "all"
+
+---@class _.lspconfig.settings.intelephense.Telemetry
+-- Anonymous usage and crash data will be sent to Azure Application Insights. Inherits from telemetry.enableTelemetry.
+---@field enabled boolean
+
+---@class _.lspconfig.settings.intelephense.Trace
+-- Traces the communication between VSCode and the intelephense language server.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "off" | "messages" | "verbose"
+
+---@class _.lspconfig.settings.intelephense.Intelephense
+---@field codeLens _.lspconfig.settings.intelephense.CodeLens
+---@field compatibility _.lspconfig.settings.intelephense.Compatibility
+---@field completion _.lspconfig.settings.intelephense.Completion
+---@field diagnostics _.lspconfig.settings.intelephense.Diagnostics
+---@field environment _.lspconfig.settings.intelephense.Environment
+---@field files _.lspconfig.settings.intelephense.Files
+---@field format _.lspconfig.settings.intelephense.Format
+-- DEPRECATED. Don't use this. Go to command palette and search for enter licence key.
+---@field licenceKey string
+-- Maximum memory (in MB) that the server should use. On some systems this may only have effect when runtime has been set. Minimum 256.
+---@field maxMemory number
+---@field phpdoc _.lspconfig.settings.intelephense.Phpdoc
+---@field references _.lspconfig.settings.intelephense.References
+---@field rename _.lspconfig.settings.intelephense.Rename
+-- Path to a Node.js executable. Use this if you wish to use a different version of Node.js. Defaults to Node.js shipped with VSCode.
+---@field runtime string
+-- Configure stub files for built in symbols and common extensions. The default setting includes PHP core and all bundled extensions.
+-- 
+-- ```lua
+-- default = { "apache", "bcmath", "bz2", "calendar", "com_dotnet", "Core", "ctype", "curl", "date", "dba", "dom", "enchant", "exif", "FFI", "fileinfo", "filter", "fpm", "ftp", "gd", "gettext", "gmp", "hash", "iconv", "imap", "intl", "json", "ldap", "libxml", "mbstring", "meta", "mysqli", "oci8", "odbc", "openssl", "pcntl", "pcre", "PDO", "pgsql", "Phar", "posix", "pspell", "random", "readline", "Reflection", "session", "shmop", "SimpleXML", "snmp", "soap", "sockets", "sodium", "SPL", "sqlite3", "standard", "superglobals", "sysvmsg", "sysvsem", "sysvshm", "tidy", "tokenizer", "xml", "xmlreader", "xmlrpc", "xmlwriter", "xsl", "Zend OPcache", "zip", "zlib" }
+-- ```
+---@field stubs string[]
+---@field telemetry _.lspconfig.settings.intelephense.Telemetry
+---@field trace _.lspconfig.settings.intelephense.Trace
+
+---@class lspconfig.settings.intelephense
+---@field intelephense _.lspconfig.settings.intelephense.Intelephense
+
 ---@class _.lspconfig.settings.java_language_server.Trace
 -- Traces the communication between VSCode and the language server.
 -- 
@@ -5578,6 +6452,66 @@
 ---@class lspconfig.settings.jdtls
 ---@field java _.lspconfig.settings.jdtls.Java
 ---@field redhat _.lspconfig.settings.jdtls.Redhat
+
+---@class _.lspconfig.settings.jsonls.ColorDecorators
+-- Enables or disables color decorators
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+
+---@class _.lspconfig.settings.jsonls.Format
+-- Enable/disable default JSON formatter
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+-- Keep all existing new lines when formatting.
+---@field keepLines boolean
+
+---@class _.lspconfig.settings.jsonls.SchemaDownload
+-- When enabled, JSON schemas can be fetched from http and https locations.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+
+---@class _.lspconfig.settings.jsonls.Trace
+-- Traces the communication between VS Code and the JSON language server.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "off" | "messages" | "verbose"
+
+---@class _.lspconfig.settings.jsonls.Validate
+-- Enable/disable JSON validation.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+
+---@class _.lspconfig.settings.jsonls.Json
+---@field colorDecorators _.lspconfig.settings.jsonls.ColorDecorators
+---@field format _.lspconfig.settings.jsonls.Format
+-- The maximum number of outline symbols and folding regions computed (limited for performance reasons).
+-- 
+-- ```lua
+-- default = 5000
+-- ```
+---@field maxItemsComputed number
+---@field schemaDownload _.lspconfig.settings.jsonls.SchemaDownload
+-- Associate schemas to JSON files in the current project.
+---@field schemas object[]
+---@field trace _.lspconfig.settings.jsonls.Trace
+---@field validate _.lspconfig.settings.jsonls.Validate
+
+---@class lspconfig.settings.jsonls
+---@field json _.lspconfig.settings.jsonls.Json
 
 ---@class _.lspconfig.settings.julials.Execution
 -- Print executed code in REPL and append it to the REPL history.
@@ -12071,6 +13005,33 @@
 ---@field rust _.lspconfig.settings.rls.Rust
 ---@field rust-client _.lspconfig.settings.rls.Rust-client
 
+---@class _.lspconfig.settings.rome.Rome
+-- The rome lsp server executable. If the path is relative, the workspace folder will be used as base path
+---@field lspBin string
+-- Enable/Disable Rome handling renames in the workspace. (Experimental)
+---@field rename boolean
+-- Require a Rome configuration file to enable syntax errors, formatting and linting. Requires Rome 12 or newer.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field requireConfiguration boolean
+
+---@class _.lspconfig.settings.rome.Trace
+-- Traces the communication between VS Code and the language server.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "off" | "messages" | "verbose"
+
+---@class _.lspconfig.settings.rome.Rome.Lsp
+---@field trace _.lspconfig.settings.rome.Trace
+
+---@class lspconfig.settings.rome
+---@field rome _.lspconfig.settings.rome.Rome
+---@field rome_lsp _.lspconfig.settings.rome.Rome.Lsp
+
 -- Whether to display Quick Fix actions to disable rules via `noqa` suppression comments.
 -- 
 -- ```lua
@@ -14126,6 +15087,157 @@
 ---@class lspconfig.settings.solidity_ls
 ---@field solidity _.lspconfig.settings.solidity_ls.Solidity
 
+---@class _.lspconfig.settings.sonarlint.Connections
+-- Connect SonarQube for VS Code to SonarQube Cloud to apply the same Clean Code standards as your team. Analyze more languages, detect more issues **on the whole project**, receive notifications about the quality gate status, and more. Quality Profiles and file exclusion settings defined on the server are shared between all connected users. Please find the documentation [here](https://docs.sonarsource.com/sonarqube-for-ide/vs-code/team-features/connected-mode/)
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field sonarcloud object[]
+-- Connect SonarQube for VS Code to SonarQube Server to apply the same Clean Code standards as your team. Analyze more languages, detect more issues **on the whole project**, receive notifications about the quality gate status, and more. Quality Profiles and file exclusion settings defined on the server are shared between all connected users. Please find the documentation [here](https://docs.sonarsource.com/sonarqube-for-ide/vs-code/team-features/connected-mode/)
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field sonarqube object[]
+
+---@class _.lspconfig.settings.sonarlint.ConnectedMode
+---@field connections _.lspconfig.settings.sonarlint.Connections
+-- Bind the current workspace folder to a [SonarQube Server](command:SonarLint.HelpAndFeedbackLinkClicked?%22sonarQubeProductPage%22) or [SonarQube Cloud](command:SonarLint.HelpAndFeedbackLinkClicked?%22sonarCloudProductPage%22) project. Requires connection details to be defined in the setting `#sonarlint.connectedMode.connections.sonarqube#` or `#sonarlint.connectedMode.connections.sonarcloud#`.
+-- 
+-- Binding a workspace folder to a server project allows SonarQube for VS Code to match, as much as possible, the same rules and settings as found on the server, and hence share the analysis configuration with other contributors.
+-- 
+-- Example:
+-- 
+--     "sonarlint.connectedMode.project": {
+--       "projectKey": "my_project",
+--       "connectionId":"my_connection_id"
+--     }
+-- 
+-- 
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field project table|table
+-- Configure one or more connection(s) to SonarQube (Server, Cloud). For security reasons, the token should not be stored in SCM with workspace settings. The `serverId` can be any identifier and will be referenced in `#sonarlint.connectedMode.project#`.
+-- 
+-- Example for SonarQube Cloud:
+-- 
+--     "sonarlint.connectedMode.servers": [
+--       {
+--         "serverId": "my_orga_in_sonarcloud.io",
+--         "serverUrl": "https://sonarcloud.io",
+--         "organizationKey": "my_organization",
+--         "token": "V2VkIE1..."
+--       }
+--     ]
+-- 
+-- Example for SonarQube Server:
+-- 
+--     "sonarlint.connectedMode.servers": [
+--       {
+--         "serverId": "my_sonarqube",
+--         "serverUrl": "https://sonar.mycompany.com",
+--         "token": "V2VkIE1..."
+--       }
+--     ]
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field servers any[]
+
+---@class _.lspconfig.settings.sonarlint.EarlyAccess
+-- Show region selection while creating SonarQube Cloud Connection _(Early Access)_
+---@field showRegionSelection boolean
+
+---@class _.lspconfig.settings.sonarlint.Ls
+-- Path to a Java Runtime Environment (17 or more recent) used to launch the SonarQube for VS Code Language Server.
+-- * On Windows, backslashes must be escaped, e.g. `C:\\Program Files\\Java\\jdk-17` 
+-- * On macOS, this path should include the `/Contents/Home` directory, e.g `/Library/Java/JavaVirtualMachines/corretto-17.0.5/Contents/Home`
+---@field javaHome string
+-- Extra JVM arguments used to launch the SonarLint Language Server. e.g. `-Xmx1024m`
+---@field vmargs string
+
+---@class _.lspconfig.settings.sonarlint.Output
+-- Show analyzer's logs in the SonarQube for IDE output.
+---@field showAnalyzerLogs boolean
+-- Enable verbose log level in the SonarQube for IDE output.
+---@field showVerboseLogs boolean
+
+---@class _.lspconfig.settings.sonarlint.Trace
+-- Traces the communication between VS Code and the SonarLint language server.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "off" | "messages" | "verbose"|table
+
+---@class _.lspconfig.settings.sonarlint.Sonarlint
+-- Files whose name match this [glob pattern](https://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob) will not be processed by analyzers. In [Connected Mode](command:SonarLint.HelpAndFeedbackLinkClicked?%22connectedModeDocs%22) with SonarQube Server or SonarQube Cloud, this property will be ignored and the server's exclusion settings will be applied. No rules are evaluated on excluded files. Example: `**/lib/**,**/*generated*`
+-- 
+-- ```lua
+-- default = ""
+-- ```
+---@field analysisExcludesStandalone string
+-- Extra properties that could be passed to the code analyzers. Only for advanced use cases.
+---@field analyzerProperties table
+---@field connectedMode _.lspconfig.settings.sonarlint.ConnectedMode
+-- Disable sending anonymous usage statistics to SonarSource. Click [here](https://github.com/SonarSource/sonarlint-vscode/blob/master/telemetry-sample.md) to see a sample of the data that are collected.
+---@field disableTelemetry boolean
+---@field earlyAccess _.lspconfig.settings.sonarlint.EarlyAccess
+-- Highlight issues in new code.
+-- 
+-- Focusing on new code helps you practice [Clean as You Code](https://docs.sonarsource.com/sonarqube-for-ide/vs-code/clean-as-you-code-in-the-ide/).
+-- 
+-- In [Connected Mode](https://docs.sonarsource.com/sonarqube-for-ide/vs-code/team-features/connected-mode/) you benefit from a more accurate new code definition based on your SonarQube (Server, Cloud) settings.
+-- 
+-- Without Connected Mode (in standalone mode), any code added or changed in the **last 30 days** is considered new code.
+---@field focusOnNewCode boolean
+---@field ls _.lspconfig.settings.sonarlint.Ls
+---@field output _.lspconfig.settings.sonarlint.Output
+-- Path to the active compilation database, e.g. `C:\\Repos\\MyProject\\compile_commands.json`
+---@field pathToCompileCommands string
+-- Path to a Node.js executable (18.18 or more recent) used to analyze JavaScript and TypeScript code. 
+-- On Windows, backslashes must be escaped, e.g. `C:\\Program Files\\NodeJS\\20-lts\\bin\\node.exe`
+---@field pathToNodeExecutable string
+-- Customize applied rule set. This property contains a list of rules whose activation level or parameter values differ from the one provided by default. In [Connected Mode](command:SonarLint.HelpAndFeedbackLinkClicked?%22connectedModeDocs%22), this configuration is overridden by the projects's Quality Profile, as configured on server side and can be **shared among contributors**. See [SonarLint Rules](command:SonarLint.AllRules.focus) view for the list of **locally** available rules.
+-- 
+-- Example:
+-- 
+--     "sonarlint.rules": {
+--         "javascript:S1481": {
+--             "level": "off",
+--          },
+--         "javascript:S103": {
+--             "level": "on",
+--             "parameters": {
+--                 "maximumLineLength": "120"
+--             }
+--         }
+--     }
+-- 
+-- 
+-- ```lua
+-- default = {}
+-- ```
+---@field rules table
+-- Files whose name match this [glob pattern](https://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob) are considered as test files by analyzers. Most rules are *not* evaluated on test files.
+-- 
+-- In [Connected Mode](command:SonarLint.HelpAndFeedbackLinkClicked?%22connectedModeDocs%22), this setting is configured **on the server-side** and shared among all contributors.
+-- 
+-- Example: `**/test/**,**/*test*,**/*Test*`
+-- 
+-- ```lua
+-- default = ""
+-- ```
+---@field testFilePattern string
+---@field trace _.lspconfig.settings.sonarlint.Trace
+
+---@class lspconfig.settings.sonarlint
+---@field sonarlint _.lspconfig.settings.sonarlint.Sonarlint
+
 ---@class _.lspconfig.settings.sorbet.Sorbet
 -- List of workspace file patterns that contribute to Sorbet's configuration.  Changes to any of those files should trigger a restart of any actively running Sorbet language server.
 -- 
@@ -14460,6 +15572,42 @@
 ---@class lspconfig.settings.sourcekit
 ---@field sourcekit-lsp _.lspconfig.settings.sourcekit.Sourcekit-lsp
 ---@field swift _.lspconfig.settings.sourcekit.Swift
+
+---@class _.lspconfig.settings.spectral.Trace
+-- Traces the communication between VS Code and the language server.
+-- 
+-- ```lua
+-- default = "off"
+-- ```
+---@field server "off" | "messages" | "verbose"
+
+---@class _.lspconfig.settings.spectral.Spectral
+-- Controls whether or not Spectral is enabled.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enable boolean
+-- Location of the ruleset file to use when validating. If omitted, the default is a .spectral.yml/.spectral.json in the same folder as the document being validated. Paths are relative to the workspace. This can also be a remote HTTP url.
+---@field rulesetFile string
+-- Run the linter on save (onSave) or as you type (onType).
+-- 
+-- ```lua
+-- default = "onType"
+-- ```
+---@field run "onSave" | "onType"
+---@field trace _.lspconfig.settings.spectral.Trace
+-- An array of file globs (e.g., `**/*.yaml`) in minimatch glob format which should be validated by Spectral. If language identifiers are also specified, the file must match both in order to be validated. You can also use negative file globs (e.g., `!**/package.json`) here to exclude files.
+---@field validateFiles string[]
+-- An array of language IDs which should be validated by Spectral. If file globs are also specified, the file must match both in order to be validated.
+-- 
+-- ```lua
+-- default = { "json", "yaml" }
+-- ```
+---@field validateLanguages string[]
+
+---@class lspconfig.settings.spectral
+---@field spectral _.lspconfig.settings.spectral.Spectral
 
 ---@class _.lspconfig.settings.stylelint_lsp.Trace
 -- Capture trace messages from the server.
@@ -16623,6 +17771,12 @@
 -- default = true
 -- ```
 ---@field enable boolean
+-- Indent case clauses in switch statements. Requires using TypeScript 5.1+ in the workspace.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field indentSwitchCase boolean
 -- Defines space handling after a comma delimiter.
 -- 
 -- ```lua
@@ -16687,12 +17841,6 @@
 -- default = "ignore"
 -- ```
 ---@field semicolons "ignore" | "insert" | "remove"
-
----@class _.lspconfig.settings.vtsls.ImplicitProjectConfig
--- Enable/disable semantic checking of JavaScript files. Existing `jsconfig.json` or `tsconfig.json` files override this setting.
----@field checkJs boolean
--- Enable/disable `experimentalDecorators` in JavaScript files that are not part of a project. Existing `jsconfig.json` or `tsconfig.json` files override this setting.
----@field experimentalDecorators boolean
 
 ---@class _.lspconfig.settings.vtsls.FunctionLikeReturnTypes
 -- Enable/disable inlay hints for implicit return types on function signatures:
@@ -16846,12 +17994,6 @@
 -- ```lua
 -- default = true
 -- ```
----@field renameShorthandProperties boolean
--- Enable/disable introducing aliases for object shorthand properties during renames.
--- 
--- ```lua
--- default = true
--- ```
 ---@field useAliasesForRenames boolean
 
 ---@class _.lspconfig.settings.vtsls.ReferencesCodeLens
@@ -16892,7 +18034,7 @@
 -- default = true
 -- ```
 ---@field completeJSDocs boolean
--- Enabled/disable autocomplete suggestions.
+-- Enable/disable autocomplete suggestions.
 -- 
 -- ```lua
 -- default = true
@@ -16950,7 +18092,6 @@
 
 ---@class _.lspconfig.settings.vtsls.Javascript
 ---@field format _.lspconfig.settings.vtsls.Format
----@field implicitProjectConfig _.lspconfig.settings.vtsls.ImplicitProjectConfig
 ---@field inlayHints _.lspconfig.settings.vtsls.InlayHints
 -- Makes `Go to Definition` avoid type declaration files when possible by triggering `Go to Source Definition` instead. This allows `Go to Source Definition` to be triggered with the mouse gesture.
 ---@field preferGoToSourceDefinition boolean
@@ -16960,6 +18101,14 @@
 ---@field suggestionActions _.lspconfig.settings.vtsls.SuggestionActions
 ---@field updateImportsOnFileMove _.lspconfig.settings.vtsls.UpdateImportsOnFileMove
 ---@field validate _.lspconfig.settings.vtsls.Validate
+
+---@class _.lspconfig.settings.vtsls.Hover
+-- The maximum number of characters in a hover. If the hover is longer than this, it will be truncated. Requires TypeScript 5.9+.
+-- 
+-- ```lua
+-- default = 500
+-- ```
+---@field maximumLength number
 
 ---@class _.lspconfig.settings.vtsls.ImplicitProjectConfig
 -- Enable/disable semantic checking of JavaScript files. Existing `jsconfig.json` or `tsconfig.json` files override this setting.
@@ -16992,6 +18141,7 @@
 ---@field target "ES3" | "ES5" | "ES6" | "ES2015" | "ES2016" | "ES2017" | "ES2018" | "ES2019" | "ES2020" | "ES2021" | "ES2022" | "ES2023" | "ES2024" | "ESNext"
 
 ---@class _.lspconfig.settings.vtsls.Js/ts
+---@field hover _.lspconfig.settings.vtsls.Hover
 ---@field implicitProjectConfig _.lspconfig.settings.vtsls.ImplicitProjectConfig
 
 ---@class _.lspconfig.settings.vtsls.Check
@@ -17261,12 +18411,6 @@
 -- ```lua
 -- default = true
 -- ```
----@field renameShorthandProperties boolean
--- Enable/disable introducing aliases for object shorthand properties during renames.
--- 
--- ```lua
--- default = true
--- ```
 ---@field useAliasesForRenames boolean
 
 ---@class _.lspconfig.settings.vtsls.ReferencesCodeLens
@@ -17315,7 +18459,7 @@
 -- default = true
 -- ```
 ---@field completeJSDocs boolean
--- Enabled/disable autocomplete suggestions.
+-- Enable/disable autocomplete suggestions.
 -- 
 -- ```lua
 -- default = true
@@ -17400,12 +18544,6 @@
 -- default = {}
 -- ```
 ---@field pluginPaths string[]
--- Enable/disable spawning a separate TypeScript server that can more quickly respond to syntax related operations, such as calculating folding or computing document symbols.
--- 
--- ```lua
--- default = true
--- ```
----@field useSeparateSyntaxServer boolean
 -- Controls if TypeScript launches a dedicated server to more quickly handle syntax related operations, such as computing code folding.
 -- 
 -- ```lua
