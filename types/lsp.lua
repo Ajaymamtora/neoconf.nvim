@@ -2169,6 +2169,8 @@
 ---@field maxLogLineLength number
 -- Whether to register the Dart SDK's MCP server with VS Code. This only applies to Dart SDKs >= v3.9.0 which added the server.
 ---@field mcpServer boolean
+-- The path to a log file for the Dart SDK's MCP server. Use `${workspaceName}` to insert the name of the current workspace in the file path. Use `~` to insert the user's home directory (the path should then use `/` separators even on Windows). Only the noted substitutions are supported, others will stay as-is.
+---@field mcpServerLogFile string
 -- Whether to normalize file casings before sending them to the LSP server. This may fix issues with file_names lints not disappearing after renaming a file if the VS Code API continues to use the original casing.
 ---@field normalizeFileCasing boolean
 -- Whether to show a notification the first few times an Analysis Server exception occurs.
