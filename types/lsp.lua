@@ -17717,6 +17717,26 @@
 -- ```
 ---@field askNewComponentName boolean
 
+---@class _.lspconfig.settings.volar.Editor
+-- Sponsor this extension to unlock premium features. [Learn more](https://youtu.be/RcPcO4_Ct_U)
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field focusMode boolean
+-- Sponsor this extension to unlock premium features. [Learn more](https://youtu.be/RcPcO4_Ct_U)
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field reactivityVisualization boolean
+-- Sponsor this extension to unlock premium features. [Learn more](https://youtu.be/RcPcO4_Ct_U)
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field templateInterpolationDecorators boolean
+
 ---@class _.lspconfig.settings.volar.Script
 -- %configuration.format.script.initialIndent%
 ---@field initialIndent boolean
@@ -17795,6 +17815,7 @@
 ---@class _.lspconfig.settings.volar.Vue
 ---@field autoInsert _.lspconfig.settings.volar.AutoInsert
 ---@field codeActions _.lspconfig.settings.volar.CodeActions
+---@field editor _.lspconfig.settings.volar.Editor
 ---@field format _.lspconfig.settings.volar.Format
 ---@field inlayHints _.lspconfig.settings.volar.InlayHints
 ---@field server _.lspconfig.settings.volar.Server
