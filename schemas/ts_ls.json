@@ -1161,7 +1161,8 @@
         "off",
         "terse",
         "normal",
-        "verbose"
+        "verbose",
+        "requestTime"
       ],
       "scope": "window",
       "type": "string"

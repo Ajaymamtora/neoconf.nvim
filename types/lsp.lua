@@ -2168,6 +2168,10 @@
 -- ```
 ---@field maxLogLineLength number
 -- Whether to register the Dart SDK's MCP server with VS Code. This only applies to Dart SDKs >= v3.9.0 which added the server.
+-- 
+-- ```lua
+-- default = true
+-- ```
 ---@field mcpServer boolean
 -- The path to a log file for the Dart SDK's MCP server. Use `${workspaceName}` to insert the name of the current workspace in the file path. Use `~` to insert the user's home directory (the path should then use `/` separators even on Windows). Only the noted substitutions are supported, others will stay as-is.
 ---@field mcpServerLogFile string
@@ -17541,7 +17545,7 @@
 -- ```lua
 -- default = "off"
 -- ```
----@field log "off" | "terse" | "normal" | "verbose"
+---@field log "off" | "terse" | "normal" | "verbose" | "requestTime"
 -- The maximum amount of memory (in MB) to allocate to the TypeScript server process. To use a memory limit greater than 4 GB, use `#typescript.tsserver.nodePath#` to run TS Server with a custom Node installation.
 -- 
 -- ```lua
