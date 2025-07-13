@@ -93,6 +93,133 @@ require("lspconfig").lua_ls.setup(...)
 }
 ```
 
+## 📋 Configuration Schema
+
+The following are the significant configuration keys available in your `.neoconf.json` files:
+
+### Core Settings
+
+```json
+{
+  "autoformat": true,
+  "exclusions": ["/absolute/path/to/excluded/file1.js", "/absolute/path/to/excluded/file2.ts"],
+  "node_modules": {
+    "check": {
+      "disabled": false,
+      "auto_install": true
+    }
+  },
+  "lsp": {
+    "workspaces": ["/absolute/path/to/workspace1", "/absolute/path/to/workspace2"],
+    "inlay_hint": true,
+    "lua_ls": {
+      "enabled": true,
+      "cmd": "/usr/local/bin/lua-language-server",
+      "cwd": "/path/to/lua/workspace"
+    },
+    "checkstyle": {
+      "jar": "/absolute/path/to/checkstyle.jar"
+    },
+    "spotbugs": {
+      "root": "/absolute/path/to/spotbugs"
+    }
+  },
+  "scopes": [
+    {
+      "name": "nvim",
+      "paths": ["$HOME/.config/nvim/"]
+    },
+    {
+      "name": "Typescript",
+      "paths": ["$LSP_ROOT"],
+      "mask": "*.ts,!*.spec.ts,!*.stub.ts,!*.stories.ts"
+    },
+    {
+      "name": "JSON",
+      "paths": ["$LSP_ROOT"],
+      "mask": "*.json"
+    },
+    {
+      "name": "SCSS",
+      "paths": ["$LSP_ROOT"],
+      "mask": "*.scss"
+    },
+    {
+      "name": "Typescript SPEC",
+      "paths": ["$LSP_ROOT"],
+      "mask": "*.spec.ts"
+    }
+  ],
+  "tasks": [
+    {
+      "name": "Open git exclude file",
+      "start": "once",
+      "tags": ["build"],
+      "prompt": "never",
+      "cwd": "./src/css",
+      "env": {
+        "user": "ajay"
+      },
+      "params": [
+        {
+          "port": 8080
+        }
+      ]
+    }
+  ],
+  "hooks": {
+    "on_save": [
+      {
+        "name": "Format on save",
+        "start": "once",
+        "tags": ["format"],
+        "prompt": "never"
+      }
+    ]
+  }
+}
+```
+
+### Key Descriptions
+
+- **`autoformat`** *(boolean)*: Enable or disable automatic formatting of files.
+
+- **`exclusions`** *(array of strings)*: An array of absolute file paths to exclude from processing.
+
+- **`node_modules.check.disabled`** *(boolean)*: Controls whether neoconf automatically checks for outdated or inconsistent packages in node_modules. Set to `true` to disable the check.
+
+- **`node_modules.check.auto_install`** *(boolean)*: Automatically install npm packages when an inconsistency is detected.
+
+- **`lsp.workspaces`** *(array of strings)*: An array of absolute paths to LSP workspaces. These paths tell the LSP server which directories to treat as workspace roots.
+
+- **`lsp.inlay_hint`** *(boolean)*: Enable inlay hints for supported LSP servers.
+
+- **`lsp.<SERVER_NAME>.enabled`** *(boolean)*: Enable or disable a specific LSP server (e.g., `lsp.lua_ls.enabled`).
+
+- **`lsp.<SERVER_NAME>.cmd`** *(string)*: Specify a custom executable path for a specific LSP server (e.g., `lsp.lua_ls.cmd`).
+
+- **`lsp.<SERVER_NAME>.cwd`** *(string)*: Set a fixed working directory for the formatter tool of a specific LSP server.
+
+- **`lsp.checkstyle.jar`** *(string)*: Absolute path to the checkstyle JAR file.
+
+- **`lsp.spotbugs.root`** *(string)*: Absolute path to the SpotBugs root directory.
+
+- **`scopes`** *(array of objects)*: Define file scopes for different operations. Each scope object contains:
+  - `name` *(string)*: Display name for the scope
+  - `paths` *(array of strings)*: Array of paths (supports variables like `$HOME` and `$LSP_ROOT`)
+  - `mask` *(string, optional)*: File pattern mask (e.g., `"*.ts,!*.spec.ts"` for TypeScript files excluding specs)
+
+- **`tasks`** *(array of objects)*: Overseer task definitions. Each task object can contain:
+  - `name` *(string)*: Display name for the task
+  - `start` *(string)*: When to start the task (e.g., "once", "always")
+  - `tags` *(array of strings)*: Tags for categorizing tasks
+  - `prompt` *(string)*: When to prompt user (e.g., "never", "always")
+  - `cwd` *(string)*: Working directory for the task
+  - `env` *(object)*: Environment variables for the task
+  - `params` *(array of objects)*: Parameters to pass to the task
+
+- **`hooks.on_save`** *(array of objects)*: Overseer task definitions that execute on file save. Uses the same structure as `tasks`.
+
 ## 🚀 Usage
 
 ### The `:Neoconf` Command
