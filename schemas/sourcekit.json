@@ -421,6 +421,23 @@
       "scope": "application",
       "type": "boolean"
     },
+    "swift.showTestCodeLenses": {
+      "default": true,
+      "items": {
+        "enum": [
+          "run",
+          "debug",
+          "coverage"
+        ],
+        "type": "string"
+      },
+      "markdownDescription": "Controls whether or not to show inline code lenses for running and debugging tests inline, above test and suite declarations. If set to an array, specify one or more of the following: 'run', 'debug', 'coverage'.",
+      "scope": "application",
+      "type": [
+        "boolean",
+        "array"
+      ]
+    },
     "swift.sourcekit-lsp.backgroundIndexing": {
       "default": "auto",
       "enum": [

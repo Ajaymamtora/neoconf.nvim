@@ -784,6 +784,12 @@
 ---@field variableTypes boolean
 
 ---@class _.lspconfig.settings.basedpyright.Analysis
+-- Whether to automatically insert an `f` in front of a string when typing a `{` inside it.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field autoFormatStrings boolean
 -- Offer auto-import completions.
 -- 
 -- ```lua
@@ -15614,6 +15620,12 @@
 -- default = true
 -- ```
 ---@field showCreateSwiftProjectInWelcomePage boolean
+-- Controls whether or not to show inline code lenses for running and debugging tests inline, above test and suite declarations. If set to an array, specify one or more of the following: 'run', 'debug', 'coverage'.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field showTestCodeLenses boolean|string[]
 ---@field sourcekit-lsp _.lspconfig.settings.sourcekit.Sourcekit-lsp
 -- Additional environment variables to pass to swift operations (`swift build`, `swift resolve`, etc...).
 -- 
