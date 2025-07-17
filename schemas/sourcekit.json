@@ -246,6 +246,13 @@
       "scope": "machine-overridable",
       "type": "array"
     },
+    "swift.excludePathsFromActivation": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "markdownDescription": "Configure glob patterns for excluding Swift package folders from getting activated. This will take precedence over the glob patterns provided to `files.exclude`.",
+      "type": "object"
+    },
     "swift.excludePathsFromPackageDependencies": {
       "default": [
         "**/.git",

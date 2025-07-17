@@ -9228,7 +9228,7 @@
 -- ```lua
 -- default = "Lua 5.4"
 -- ```
----@field version "Lua 5.1" | "Lua 5.2" | "Lua 5.3" | "Lua 5.4" | "LuaJIT"
+---@field version "Lua 5.1" | "Lua 5.2" | "Lua 5.3" | "Lua 5.4" | "Lua 5.5" | "LuaJIT"
 
 ---@class _.lspconfig.settings.lua_ls.Semantic
 -- Semantic coloring of type annotations.
@@ -15330,6 +15330,12 @@
 -- default = "nowhere"
 -- ```
 ---@field highlightUntyped "nowhere" | "everywhere-but-tests" | "everywhere"
+-- Which severity to use to highlight untyped usages with (controls the squiggle colors)
+-- 
+-- ```lua
+-- default = 3
+-- ```
+---@field highlightUntypedDiagnosticSeverity 1 | 2 | 3 | 4
 -- Standard Ruby LSP configurations.  If you commit your VSCode settings to source control, you probably want to commit *this* setting, not `sorbet.userLspConfigs`.
 -- 
 -- ```lua
@@ -15546,6 +15552,8 @@
 -- default = {}
 -- ```
 ---@field excludeFromCodeCoverage string[]
+-- Configure glob patterns for excluding Swift package folders from getting activated. This will take precedence over the glob patterns provided to `files.exclude`.
+---@field excludePathsFromActivation table
 -- A list of glob patterns to exclude from the Package Dependencies view. Always use forward-slashes in glob expressions regardless of platform. This is combined with VS Code's default `files.exclude` setting.
 -- 
 -- ```lua
