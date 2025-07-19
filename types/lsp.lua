@@ -6130,6 +6130,14 @@
 -- ```
 ---@field enabled "auto" | "on" | "off"
 
+---@class _.lspconfig.settings.jdtls.Appcds
+-- [Experimental] Enable Java AppCDS (Application Class Data Sharing) for improvements to extension activation. When set to `auto`, AppCDS will be enabled in Visual Studio Code - Insiders, and for pre-release versions.
+-- 
+-- ```lua
+-- default = "auto"
+-- ```
+---@field enabled "auto" | "on" | "off"
+
 ---@class _.lspconfig.settings.jdtls.Java
 -- Specifies the folder path to the JDK (21 or more recent) used to launch the Java Language Server. This setting will replace the Java extension's embedded JRE to start the Java Language Server. 
 -- 
@@ -6165,6 +6173,7 @@
 
 ---@class _.lspconfig.settings.jdtls.Ls
 ---@field androidSupport _.lspconfig.settings.jdtls.AndroidSupport
+---@field appcds _.lspconfig.settings.jdtls.Appcds
 ---@field java _.lspconfig.settings.jdtls.Java
 ---@field javac _.lspconfig.settings.jdtls.Javac
 ---@field lombokSupport _.lspconfig.settings.jdtls.LombokSupport
