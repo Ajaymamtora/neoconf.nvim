@@ -15285,7 +15285,7 @@
 ---@field output _.lspconfig.settings.sonarlint.Output
 -- Path to the active compilation database, e.g. `C:\\Repos\\MyProject\\compile_commands.json`
 ---@field pathToCompileCommands string
--- Path to a Node.js executable (18.18 or more recent) used to analyze JavaScript and TypeScript code. 
+-- Path to a Node.js executable (versions above 18.20.0, 20.12.0, or 21.4.0) used to analyze JavaScript and TypeScript code. 
 -- On Windows, backslashes must be escaped, e.g. `C:\\Program Files\\NodeJS\\20-lts\\bin\\node.exe`
 ---@field pathToNodeExecutable string
 -- Customize applied rule set. This property contains a list of rules whose activation level or parameter values differ from the one provided by default. In [Connected Mode](command:SonarLint.HelpAndFeedbackLinkClicked?%22connectedModeDocs%22), this configuration is overridden by the projects's Quality Profile, as configured on server side and can be **shared among contributors**. See [SonarLint Rules](command:SonarLint.AllRules.focus) view for the list of **locally** available rules.
@@ -15459,6 +15459,8 @@
 -- default = "auto"
 -- ```
 ---@field backgroundIndexing "on" | "off" | "auto"
+-- Set the branch to use when setting the `$schema` property of the SourceKit-LSP configuration. For example: "release/6.1" or "main". When this setting is unset, the extension will determine the branch based on the version of the toolchain that is in use.
+---@field configurationBranch string
 -- Disable SourceKit-LSP. This will turn off features like code completion, error diagnostics and jump-to-definition. Features like swift-testing test discovery will not work correctly.
 ---@field disable boolean
 -- Arguments to pass to SourceKit-LSP. Keys and values should be provided as individual entries in the list. e.g. `['--log-level', 'debug']`

@@ -457,6 +457,10 @@
       "scope": "machine-overridable",
       "type": "string"
     },
+    "swift.sourcekit-lsp.configurationBranch": {
+      "markdownDescription": "Set the branch to use when setting the `$schema` property of the SourceKit-LSP configuration. For example: \"release/6.1\" or \"main\". When this setting is unset, the extension will determine the branch based on the version of the toolchain that is in use.",
+      "type": "string"
+    },
     "swift.sourcekit-lsp.disable": {
       "default": false,
       "markdownDescription": "Disable SourceKit-LSP. This will turn off features like code completion, error diagnostics and jump-to-definition. Features like swift-testing test discovery will not work correctly.",
