@@ -10235,6 +10235,8 @@
 -- default = {}
 -- ```
 ---@class _.lspconfig.settings.omnisharp.ComponentPaths
+-- %configuration.dotnet.server.componentPaths.roslynCopilot%
+---@field roslynCopilot string
 -- %configuration.dotnet.server.componentPaths.roslynDevKit%
 ---@field roslynDevKit string
 -- %configuration.dotnet.server.componentPaths.xamlTools%
