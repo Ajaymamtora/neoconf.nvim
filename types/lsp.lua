@@ -15461,8 +15461,6 @@
 -- default = "auto"
 -- ```
 ---@field backgroundIndexing "on" | "off" | "auto"
--- Set the branch to use when setting the `$schema` property of the SourceKit-LSP configuration. For example: "release/6.1" or "main". When this setting is unset, the extension will determine the branch based on the version of the toolchain that is in use.
----@field configurationBranch string
 -- Disable SourceKit-LSP. This will turn off features like code completion, error diagnostics and jump-to-definition. Features like swift-testing test discovery will not work correctly.
 ---@field disable boolean
 -- Arguments to pass to SourceKit-LSP. Keys and values should be provided as individual entries in the list. e.g. `['--log-level', 'debug']`
@@ -15532,6 +15530,12 @@
 -- default = ""
 -- ```
 ---@field buildPath string
+-- When opening a .sourckit-lsp/config.json configuration file, whether or not to check if the $schema matches the version of Swift you are using.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field checkLspConfigurationSchema boolean
 ---@field debugger _.lspconfig.settings.sourcekit.Debugger
 -- Output additional diagnostics to the Swift Output View.
 ---@field diagnostics boolean
@@ -15573,6 +15577,8 @@
 -- default = { "**/.git", "**/.github" }
 -- ```
 ---@field excludePathsFromPackageDependencies string[]
+-- Set the branch to use when setting the `$schema` property of the SourceKit-LSP configuration. For example: "release/6.1" or "main". When this setting is unset, the extension will determine the branch based on the version of the toolchain that is in use.
+---@field lspConfigurationBranch string
 -- Controls whether to open a swift project automatically after creating it.
 -- 
 -- ```lua
@@ -17166,12 +17172,6 @@
 ---@field npmIsInstalled boolean
 
 ---@class _.lspconfig.settings.ts_ls.Experimental
--- Enable expanding/contracting the hover to reveal more/less information from the TS server. Requires TypeScript 5.9+.
--- 
--- ```lua
--- default = true
--- ```
----@field expandableHover boolean
 -- Disables TypeScript and JavaScript language features to allow usage of the TypeScript Go experimental extension. Requires TypeScript Go to be installed and configured. Requires reloading extensions after changing this setting.
 ---@field useTsgo boolean
 
