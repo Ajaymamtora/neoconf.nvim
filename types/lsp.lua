@@ -15615,6 +15615,12 @@
 -- default = {}
 -- ```
 ---@field pluginPermissions table
+-- Controls whether or not to record the duration of tests in the Test Explorer. This is used to show the duration of tests in the Test Explorer view. If you're experiencing performance issues when running a large number of tests that complete quickly, disabling this setting can make the UI more responsive.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field recordTestDuration boolean
 -- The path of the folder containing the Swift runtime libraries. This is of use when supporting non-standard SDK layouts on Windows. On Windows the runtime path is added to the `Path` environment variable. This is of less use on macOS and Linux but will be added to `DYLD_LIBRARY_PATH` and `LD_LIBRARY_PATH` environment variables respectively on each platform. 
 -- 
 -- ```lua
