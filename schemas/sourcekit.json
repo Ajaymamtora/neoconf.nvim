@@ -125,6 +125,12 @@
       "scope": "machine-overridable",
       "type": "boolean"
     },
+    "swift.createTasksForLibraryProducts": {
+      "default": false,
+      "markdownDescription": "When enabled, the extension will create \"swift\" build tasks for library products in the package manifest. Note that automatic library products will not be included.",
+      "scope": "machine-overridable",
+      "type": "boolean"
+    },
     "swift.debugger.debugAdapter": {
       "default": "auto",
       "enum": [
