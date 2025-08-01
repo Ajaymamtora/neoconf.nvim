@@ -61,7 +61,8 @@ function M.open(settings, opts)
   vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
 
   -- Save keymap
-  vim.keymap.set("n", "<leader>s", function()
+  local save_keymap = Config.get().save_keymap or "<leader>s"
+  vim.keymap.set("n", save_keymap, function()
     M.save_current_buffer()
     opts.on_save()
   end, { buffer = buf, noremap = true, silent = true })

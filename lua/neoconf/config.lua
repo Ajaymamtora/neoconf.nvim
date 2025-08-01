@@ -21,6 +21,8 @@ M.defaults = {
   -- set the filetype to jsonc for settings files, so you can use comments
   -- make sure you have the jsonc treesitter parser installed!
   filetype_jsonc = true,
+  -- keymap for saving temporary settings buffer
+  save_keymap = "<leader>s",
   plugins = {
     -- configures lsp clients with settings in the following order:
     -- - lua settings passed in lspconfig setup
