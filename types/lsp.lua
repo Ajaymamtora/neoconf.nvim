@@ -15465,7 +15465,7 @@
 -- Disable the running of SourceKit-LSP.
 ---@field disable boolean
 ---@field inlayHints _.lspconfig.settings.sourcekit.InlayHints
--- Arguments to pass to SourceKit-LSP. Keys and values should be provided as individual entries in the list. e.g. `['--log-level', 'debug']`
+-- Arguments to pass to SourceKit-LSP. Keys and values should be provided as individual entries in the list. e.g. `["--experimental-feature", "show-macro-expansions"]`
 -- 
 -- ```lua
 -- default = {}
@@ -15520,7 +15520,7 @@
 ---@field backgroundIndexing "on" | "off" | "auto"
 -- Disable SourceKit-LSP. This will turn off features like code completion, error diagnostics and jump-to-definition. Features like swift-testing test discovery will not work correctly.
 ---@field disable boolean
--- Arguments to pass to SourceKit-LSP. Keys and values should be provided as individual entries in the list. e.g. `['--log-level', 'debug']`
+-- Arguments to pass to SourceKit-LSP. Keys and values should be provided as individual entries in the list. e.g. `["--experimental-feature", "show-macro-expansions"]`
 -- 
 -- ```lua
 -- default = {}
@@ -17230,7 +17230,7 @@
 -- Set target JavaScript language version for emitted JavaScript and include library declarations. See more: https://www.typescriptlang.org/tsconfig#target.
 -- 
 -- ```lua
--- default = "ES2022"
+-- default = "ES2024"
 -- ```
 ---@field target "ES3" | "ES5" | "ES6" | "ES2015" | "ES2016" | "ES2017" | "ES2018" | "ES2019" | "ES2020" | "ES2021" | "ES2022" | "ES2023" | "ES2024" | "ESNext"
 
