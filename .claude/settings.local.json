@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(lua:*)",
+      "Bash(rm:*)",
+      "Bash(grep:*)",
+      "Bash(nvim:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

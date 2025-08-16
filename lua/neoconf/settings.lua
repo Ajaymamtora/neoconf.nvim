@@ -181,6 +181,9 @@ function M.refresh()
   -- Clear the Settings cache
   M._cache = {}
 
+  -- Reload previous content tracking for change detection
+  require("neoconf.config").reload_previous_content()
+
   -- Re-read the global config file
   local global_settings = M.get_global()
   M.options = vim.tbl_deep_extend("force", M.options, global_settings:get())

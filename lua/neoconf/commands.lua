@@ -4,6 +4,65 @@ local Util = require("neoconf.util")
 
 local M = {}
 
+-- Helper function to detect LSP-related changes
+function M.detect_lsp_changes(previous, current)
+  local MAX_DEPTH = 1000
+  local visited = {}
+
+  local function deep_equal(a, b, depth)
+    -- Recursion depth failsafe
+    if depth > MAX_DEPTH then
+      return false -- Assume different if too deep to prevent stack overflow
+    end
+
+    -- Fast path: identical references
+    if a == b then
+      return true
+    end
+
+    -- Type check
+    if type(a) ~= type(b) then
+      return false
+    end
+    if type(a) ~= "table" then
+      return false
+    end
+
+    -- Circular reference detection
+    local key_a = tostring(a)
+    local key_b = tostring(b)
+    if visited[key_a] or visited[key_b] then
+      return a == b -- Only equal if same reference for circular structures
+    end
+    visited[key_a] = true
+    visited[key_b] = true
+
+    -- Compare table contents
+    for k, v in pairs(a) do
+      if not deep_equal(v, b[k], depth + 1) then
+        return false
+      end
+    end
+    for k, v in pairs(b) do
+      if a[k] == nil then
+        return false
+      end
+    end
+
+    -- Clean up visited tracking
+    visited[key_a] = nil
+    visited[key_b] = nil
+
+    return true
+  end
+
+  -- Check if the lsp object has changed
+  local prev_lsp = type(previous) == "table" and previous.lsp or nil
+  local curr_lsp = type(current) == "table" and current.lsp or nil
+
+  return not deep_equal(prev_lsp, curr_lsp, 0)
+end
+
 function M.setup()
   local commands = {
     lsp = function()
@@ -54,8 +113,43 @@ function M.setup()
       pattern = Util.file_patterns({ autocmd = true }),
       group = group,
       callback = function(event)
-        pcall(Config.options.on_write, event)
         local fname = Util.fqn(event.match)
+        local is_global = Util.is_global(fname)
+
+        -- Read the current content to detect changes
+        local current_content = {}
+        if Util.exists(fname) then
+          local data = Util.read_file(fname)
+          local ok, json = pcall(vim.json.decode, data)
+          if ok then
+            current_content = json
+          end
+        end
+
+        -- Get previous content from our tracking (initialize if new file)
+        local previous_content = Config.get_previous_content(fname)
+        if not Config._previous_content[fname] then
+          Config.init_previous_content(fname)
+          previous_content = Config.get_previous_content(fname)
+        end
+        
+        -- Create enhanced event info
+        local enhanced_event = {
+          file = fname,
+          is_global = is_global,
+          current_content = current_content,
+          previous_content = previous_content,
+          raw_event = event,
+        }
+
+        -- Detect LSP-related changes
+        enhanced_event.lsp_settings_changed = M.detect_lsp_changes(previous_content, current_content)
+        
+        pcall(Config.options.on_write, enhanced_event)
+        
+        -- Update previous content for next time
+        Config.update_previous_content(fname, current_content)
+
         -- clear cached settings for this file
         Settings.clear(fname)
         require("neoconf.plugins").fire("on_update", fname)

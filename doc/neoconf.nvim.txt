@@ -9,6 +9,7 @@ Table of Contents                             *neoconf.nvim-table-of-contents*
   - Installation                      |neoconf.nvim-neoconf.nvim-installation|
   - Setup                                    |neoconf.nvim-neoconf.nvim-setup|
   - Configuration                    |neoconf.nvim-neoconf.nvim-configuration|
+  - Write Callback                  |neoconf.nvim-neoconf.nvim-write-callback|
   - Configuration Schema      |neoconf.nvim-neoconf.nvim-configuration-schema|
   - Usage                                    |neoconf.nvim-neoconf.nvim-usage|
   - API                                        |neoconf.nvim-neoconf.nvim-api|
@@ -76,6 +77,8 @@ CONFIGURATION                        *neoconf.nvim-neoconf.nvim-configuration*
 >lua
     {
     
+      -- Use cwd for neoconf root, prevents searching upwards outside the current project
+      root_use_cwd = false,
       -- name of the local settings files
       local_settings = ".neoconf.json",
       -- name of the global settings file in your Neovim config directory
@@ -91,6 +94,10 @@ CONFIGURATION                        *neoconf.nvim-neoconf.nvim-configuration*
       -- set the filetype to jsonc for settings files, so you can use comments
       -- make sure you have the jsonc treesitter parser installed!
       filetype_jsonc = true,
+      -- callback function called when a neoconf file is written
+      on_write = function(event) end,
+      -- keymap for saving temporary settings buffer
+      save_keymap = "<leader>s",
       plugins = {
         -- configures lsp clients with settings in the following order:
         -- - lua settings passed in lspconfig setup
@@ -115,6 +122,78 @@ CONFIGURATION                        *neoconf.nvim-neoconf.nvim-configuration*
       },
     
     }
+<
+
+
+WRITE CALLBACK                      *neoconf.nvim-neoconf.nvim-write-callback*
+
+The `on_write` callback allows you to hook into file write events for neoconf 
+JSON files. This is useful for implementing intelligent LSP restarts, custom 
+validation, or other reactive behaviors when configuration changes.
+
+
+CALLBACK EVENT OBJECT ~
+
+When a neoconf file is written, the callback receives an enhanced event object 
+with the following properties:
+
+>lua
+    {
+      file = "/path/to/.neoconf.json",           -- Absolute path to the written file
+      is_global = false,                         -- true if global config, false if local
+      current_content = { lsp = { lua_ls = {} } }, -- Current JSON content after write
+      previous_content = { lsp = {} },           -- Previous JSON content before write
+      lsp_settings_changed = true,               -- true if anything under "lsp" object changed
+      raw_event = { ... }                        -- Original BufWritePost autocmd event
+    }
+<
+
+
+USAGE EXAMPLES ~
+
+Intelligent LSP Restart:
+>lua
+    require("neoconf").setup({
+      on_write = function(event)
+        -- Only restart LSP if LSP settings in local file changed
+        if event.lsp_settings_changed and not event.is_global then
+          vim.cmd('LspRestart')
+        end
+      end
+    })
+<
+
+Custom Validation:
+>lua
+    require("neoconf").setup({
+      on_write = function(event)
+        -- Validate specific settings
+        if event.current_content.lsp and event.current_content.lsp.lua_ls then
+          local lua_ls_config = event.current_content.lsp.lua_ls
+          if lua_ls_config.cmd and not vim.fn.executable(lua_ls_config.cmd) then
+            vim.notify("Warning: lua_ls executable not found: " .. lua_ls_config.cmd, vim.log.levels.WARN)
+          end
+        end
+      end
+    })
+<
+
+Conditional Actions:
+>lua
+    require("neoconf").setup({
+      on_write = function(event)
+        if event.is_global then
+          vim.notify("Global neoconf updated: " .. event.file)
+        else
+          vim.notify("Local project config updated")
+          -- Additional project-specific actions
+          if event.lsp_settings_changed then
+            -- Reload project-specific LSP configurations
+            require('my_project_utils').reload_lsp_config()
+          end
+        end
+      end
+    })
 <
 
 

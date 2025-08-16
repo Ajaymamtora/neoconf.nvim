@@ -108,9 +108,8 @@ function M.file_patterns(opts)
 
   if opts.autocmd then
     for i, v in ipairs(ret) do
-      if v:find("/") then
-        ret[i] = "*/" .. v
-      end
+      -- Add */ prefix to match any path
+      ret[i] = "*/" .. v
     end
   end
 

@@ -5,7 +5,7 @@ M.defaults = {
   -- Use cwd for neoconf root, prevents searching upwards outside the current project
   root_use_cwd = false,
   -- on_write callback
-  on_write = function() end,
+  on_write = function(event) end,
   -- name of the local settings files
   local_settings = ".neoconf.json",
   -- name of the global settings file in your Neovim config directory
@@ -50,6 +50,9 @@ M.defaults = {
 --- @type Config
 M.options = {}
 
+-- Storage for previous file contents to enable change detection
+M._previous_content = {}
+
 ---@class SettingsPattern
 ---@field pattern string
 ---@field key? string|fun(string):string
@@ -72,6 +75,19 @@ function M.setup(options)
 
   vim.list_extend(M.local_patterns, util.expand(M.options.local_settings))
   vim.list_extend(M.global_patterns, util.expand(M.options.global_settings))
+  
+  -- Initialize previous content for existing config files
+  M._previous_content = {}
+  util.for_each_global(function(file)
+    M.init_previous_content(file)
+  end)
+  local workspace = require("neoconf.workspace")
+  local root_dir = workspace.find_root({})
+  if root_dir then
+    util.for_each_local(function(file)
+      M.init_previous_content(file)
+    end, root_dir)
+  end
 end
 
 ---@return Config
@@ -81,6 +97,51 @@ end
 
 function M.get(opts)
   return require("neoconf").get("neoconf", M.options, opts)
+end
+
+-- Initialize previous content for a file
+function M.init_previous_content(filepath)
+  local util = require("neoconf.util")
+  if util.exists(filepath) then
+    local data = util.read_file(filepath)
+    local ok, json = pcall(vim.json.decode, data)
+    if ok then
+      M._previous_content[filepath] = json
+    else
+      M._previous_content[filepath] = {}
+    end
+  else
+    M._previous_content[filepath] = {}
+  end
+end
+
+-- Get previous content for a file
+function M.get_previous_content(filepath)
+  return M._previous_content[filepath] or {}
+end
+
+-- Update previous content for a file
+function M.update_previous_content(filepath, content)
+  M._previous_content[filepath] = vim.deepcopy(content)
+end
+
+-- Reload previous content for all config files
+function M.reload_previous_content()
+  local util = require("neoconf.util")
+  
+  -- Reload global files
+  util.for_each_global(function(file)
+    M.init_previous_content(file)
+  end)
+  
+  -- Reload local files
+  local workspace = require("neoconf.workspace")
+  local root_dir = workspace.find_root({})
+  if root_dir then
+    util.for_each_local(function(file)
+      M.init_previous_content(file)
+    end, root_dir)
+  end
 end
 
 return M
