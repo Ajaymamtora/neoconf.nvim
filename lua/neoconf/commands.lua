@@ -4,63 +4,86 @@ local Util = require("neoconf.util")
 
 local M = {}
 
--- Helper function to detect LSP-related changes
-function M.detect_lsp_changes(previous, current)
-  local MAX_DEPTH = 1000
-  local visited = {}
-
-  local function deep_equal(a, b, depth)
-    -- Recursion depth failsafe
-    if depth > MAX_DEPTH then
-      return false -- Assume different if too deep to prevent stack overflow
-    end
-
-    -- Fast path: identical references
-    if a == b then
-      return true
-    end
-
-    -- Type check
-    if type(a) ~= type(b) then
-      return false
-    end
-    if type(a) ~= "table" then
-      return false
-    end
-
-    -- Circular reference detection
-    local key_a = tostring(a)
-    local key_b = tostring(b)
-    if visited[key_a] or visited[key_b] then
-      return a == b -- Only equal if same reference for circular structures
-    end
-    visited[key_a] = true
-    visited[key_b] = true
-
-    -- Compare table contents
-    for k, v in pairs(a) do
-      if not deep_equal(v, b[k], depth + 1) then
-        return false
-      end
-    end
-    for k, v in pairs(b) do
-      if a[k] == nil then
-        return false
-      end
-    end
-
-    -- Clean up visited tracking
-    visited[key_a] = nil
-    visited[key_b] = nil
-
-    return true
+-- Performance-optimized LSP change detection using jq with Lua fallback
+local function jq_compare_lsp(previous, current)
+  local tempfile_prev = vim.fn.tempname() .. ".json"
+  local tempfile_curr = vim.fn.tempname() .. ".json"
+  
+  -- Write temporary files for jq processing
+  local prev_lsp = type(previous) == "table" and previous.lsp or {}
+  local curr_lsp = type(current) == "table" and current.lsp or {}
+  
+  local prev_file = io.open(tempfile_prev, "w")
+  if prev_file then
+    prev_file:write(vim.json.encode(prev_lsp))
+    prev_file:close()
+  else
+    return nil -- Fallback to Lua
   end
+  
+  local curr_file = io.open(tempfile_curr, "w")
+  if curr_file then
+    curr_file:write(vim.json.encode(curr_lsp))
+    curr_file:close()
+  else
+    os.remove(tempfile_prev)
+    return nil -- Fallback to Lua
+  end
+  
+  -- Use jq to compare JSON structures efficiently
+  local cmd = string.format(
+    'jq -s --exit-status ".[0] == .[1]" "%s" "%s" 2>/dev/null',
+    tempfile_prev, tempfile_curr
+  )
+  
+  local exit_code = os.execute(cmd)
+  
+  -- Clean up temporary files
+  os.remove(tempfile_prev)
+  os.remove(tempfile_curr)
+  
+  -- jq exits with 0 if equal, 1 if different, >1 if error
+  if exit_code == 0 then
+    return false -- No change
+  elseif exit_code == 256 then -- exit code 1 in Lua (256 = 1 << 8)
+    return true -- Change detected
+  else
+    return nil -- Error, fallback to Lua
+  end
+end
 
-  -- Check if the lsp object has changed
+-- Optimized Lua fallback for LSP comparison
+local function lua_compare_lsp_optimized(previous, current)
   local prev_lsp = type(previous) == "table" and previous.lsp or nil
   local curr_lsp = type(current) == "table" and current.lsp or nil
+  
+  -- Fast path: identical references or both nil
+  if prev_lsp == curr_lsp then
+    return false
+  end
+  
+  -- One is nil, other is not
+  if (prev_lsp == nil) ~= (curr_lsp == nil) then
+    return true
+  end
+  
+  -- Convert to JSON strings and compare (much faster than deep recursion)
+  local prev_json = vim.json.encode(prev_lsp)
+  local curr_json = vim.json.encode(curr_lsp)
+  
+  return prev_json ~= curr_json
+end
 
-  return not deep_equal(prev_lsp, curr_lsp, 0)
+-- Helper function to detect LSP-related changes
+function M.detect_lsp_changes(previous, current)
+  -- Try jq-based comparison first (fastest)
+  local jq_result = jq_compare_lsp(previous, current)
+  if jq_result ~= nil then
+    return jq_result
+  end
+  
+  -- Fallback to optimized Lua comparison
+  return lua_compare_lsp_optimized(previous, current)
 end
 
 function M.setup()
