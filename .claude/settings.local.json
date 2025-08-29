@@ -4,7 +4,8 @@
       "Bash(lua:*)",
       "Bash(rm:*)",
       "Bash(grep:*)",
-      "Bash(nvim:*)"
+      "Bash(nvim:*)",
+      "Bash(echo \"Exit code: $?\")"
     ],
     "deny": [],
     "ask": []

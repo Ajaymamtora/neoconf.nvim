@@ -23,6 +23,12 @@ M.defaults = {
   filetype_jsonc = true,
   -- keymap for saving temporary settings buffer
   save_keymap = "<leader>s",
+  -- LSP change detection method: "auto", "jq", "lua_optimized", "lua_deep"
+  -- "auto": try jq first, fallback to lua_optimized
+  -- "jq": use jq command for fast JSON comparison
+  -- "lua_optimized": use JSON string comparison (fast)
+  -- "lua_deep": use original deep recursive comparison (slow but thorough)
+  diff_method = "auto",
   plugins = {
     -- configures lsp clients with settings in the following order:
     -- - lua settings passed in lspconfig setup
