@@ -4,6 +4,65 @@ local Util = require("neoconf.util")
 
 local M = {}
 
+-- Original deep recursive comparison method (thorough but slow)
+local function lua_compare_lsp_deep(previous, current)
+  local MAX_DEPTH = 1000
+  local visited = {}
+
+  local function deep_equal(a, b, depth)
+    -- Recursion depth failsafe
+    if depth > MAX_DEPTH then
+      return false -- Assume different if too deep to prevent stack overflow
+    end
+
+    -- Fast path: identical references
+    if a == b then
+      return true
+    end
+
+    -- Type check
+    if type(a) ~= type(b) then
+      return false
+    end
+    if type(a) ~= "table" then
+      return false
+    end
+
+    -- Circular reference detection
+    local key_a = tostring(a)
+    local key_b = tostring(b)
+    if visited[key_a] or visited[key_b] then
+      return a == b -- Only equal if same reference for circular structures
+    end
+    visited[key_a] = true
+    visited[key_b] = true
+
+    -- Compare table contents
+    for k, v in pairs(a) do
+      if not deep_equal(v, b[k], depth + 1) then
+        return false
+      end
+    end
+    for k, v in pairs(b) do
+      if a[k] == nil then
+        return false
+      end
+    end
+
+    -- Clean up visited tracking
+    visited[key_a] = nil
+    visited[key_b] = nil
+
+    return true
+  end
+
+  -- Check if the lsp object has changed
+  local prev_lsp = type(previous) == "table" and previous.lsp or nil
+  local curr_lsp = type(current) == "table" and current.lsp or nil
+
+  return not deep_equal(prev_lsp, curr_lsp, 0)
+end
+
 -- Performance-optimized LSP change detection using jq with Lua fallback
 local function jq_compare_lsp(previous, current)
   local tempfile_prev = vim.fn.tempname() .. ".json"
@@ -76,14 +135,30 @@ end
 
 -- Helper function to detect LSP-related changes
 function M.detect_lsp_changes(previous, current)
-  -- Try jq-based comparison first (fastest)
-  local jq_result = jq_compare_lsp(previous, current)
-  if jq_result ~= nil then
-    return jq_result
-  end
+  local Config = require("neoconf.config")
+  local diff_method = Config.options.diff_method or "auto"
   
-  -- Fallback to optimized Lua comparison
-  return lua_compare_lsp_optimized(previous, current)
+  if diff_method == "jq" then
+    local jq_result = jq_compare_lsp(previous, current)
+    if jq_result ~= nil then
+      return jq_result
+    end
+    -- Fallback to optimized if jq fails
+    return lua_compare_lsp_optimized(previous, current)
+  elseif diff_method == "lua_optimized" then
+    return lua_compare_lsp_optimized(previous, current)
+  elseif diff_method == "lua_deep" then
+    return lua_compare_lsp_deep(previous, current)
+  else -- "auto" or any other value
+    -- Try jq-based comparison first (fastest)
+    local jq_result = jq_compare_lsp(previous, current)
+    if jq_result ~= nil then
+      return jq_result
+    end
+    
+    -- Fallback to optimized Lua comparison
+    return lua_compare_lsp_optimized(previous, current)
+  end
 end
 
 function M.setup()
