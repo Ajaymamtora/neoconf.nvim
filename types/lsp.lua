@@ -10717,12 +10717,6 @@
 -- default = true
 -- ```
 ---@field suppressLspErrorToasts boolean
--- %configuration.razor.languageServer.useNewFormattingEngine%
--- 
--- ```lua
--- default = true
--- ```
----@field useNewFormattingEngine boolean
 
 ---@class _.lspconfig.settings.omnisharp.Plugin
 -- %configuration.omnisharp.razor.plugin.path%
