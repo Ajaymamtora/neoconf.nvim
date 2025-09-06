@@ -40,11 +40,9 @@ function M.open(settings, opts)
   local formatted = Json.encode(settings, { sort = true })
 
   -- Write formatted content to temp file
-  local file = io.open(temp_file, "w")
-  if file then
-    file:write(formatted)
-    file:close()
-  else
+  local lines = vim.split(formatted, "\n")
+  local write_result = vim.fn.writefile(lines, temp_file)
+  if write_result ~= 0 then
     error("Failed to write temporary file: " .. temp_file)
   end
 

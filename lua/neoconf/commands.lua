@@ -72,19 +72,15 @@ local function jq_compare_lsp(previous, current)
   local prev_lsp = type(previous) == "table" and previous.lsp or {}
   local curr_lsp = type(current) == "table" and current.lsp or {}
   
-  local prev_file = io.open(tempfile_prev, "w")
-  if prev_file then
-    prev_file:write(vim.json.encode(prev_lsp))
-    prev_file:close()
-  else
+  local prev_json = vim.json.encode(prev_lsp)
+  local write_result = vim.fn.writefile({prev_json}, tempfile_prev)
+  if write_result ~= 0 then
     return nil -- Fallback to Lua
   end
   
-  local curr_file = io.open(tempfile_curr, "w")
-  if curr_file then
-    curr_file:write(vim.json.encode(curr_lsp))
-    curr_file:close()
-  else
+  local curr_json = vim.json.encode(curr_lsp)
+  local write_result = vim.fn.writefile({curr_json}, tempfile_curr)
+  if write_result ~= 0 then
     os.remove(tempfile_prev)
     return nil -- Fallback to Lua
   end
@@ -95,7 +91,8 @@ local function jq_compare_lsp(previous, current)
     tempfile_prev, tempfile_curr
   )
   
-  local exit_code = os.execute(cmd)
+  local result = vim.system({'sh', '-c', cmd}):wait()
+  local exit_code = result.code == 0 and 0 or (result.code == 1 and 256 or result.code)
   
   -- Clean up temporary files
   os.remove(tempfile_prev)

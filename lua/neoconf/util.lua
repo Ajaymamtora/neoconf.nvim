@@ -141,22 +141,19 @@ function M.path(str)
 end
 
 function M.read_file(file)
-  local fd = io.open(file, "r")
-  if not fd then
+  if vim.fn.filereadable(file) ~= 1 then
     error(("Could not open file %s for reading"):format(file))
   end
-  local data = fd:read("*a")
-  fd:close()
-  return data
+  local lines = vim.fn.readfile(file, "")
+  return table.concat(lines, "\n")
 end
 
 function M.write_file(file, data)
-  local fd = io.open(file, "w+")
-  if not fd then
+  local lines = vim.split(data, "\n")
+  local write_result = vim.fn.writefile(lines, file)
+  if write_result ~= 0 then
     error(("Could not open file %s for writing"):format(file))
   end
-  fd:write(data)
-  fd:close()
 end
 
 function M.json_decode(json)
@@ -256,28 +253,21 @@ function M.is_global(file)
 end
 
 function M.fetch(url)
-  local fd = io.popen(string.format("curl -s -k %q", url))
-  if not fd then
+  local result = vim.system({'curl', '-s', '-k', url}):wait()
+  if result.code ~= 0 then
     error(("Could not download %s"):format(url))
   end
-  local ret = fd:read("*a")
-  fd:close()
-  return ret
+  return result.stdout or ""
 end
 
 function M.json_format(obj)
-  local tmp = os.tmpname()
+  local tmp = vim.fn.tempname()
   M.write_file(tmp, vim.json.encode(obj))
-  local fd = io.popen("jq -S < " .. tmp)
-  if not fd then
+  local result = vim.system({'jq', '-S'}, {stdin = vim.json.encode(obj), text = true}):wait()
+  if result.code ~= 0 or not result.stdout or result.stdout == "" then
     error("Could not format json")
   end
-  local ret = fd:read("*a")
-  if ret == "" then
-    error("Could not format json")
-  end
-  fd:close()
-  return ret
+  return result.stdout
 end
 
 function M.mtime(fname)
