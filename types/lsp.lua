@@ -18007,6 +18007,8 @@
 -- default = { "vue" }
 -- ```
 ---@field includeLanguages string[]
+-- %configuration.server.path%
+---@field path string
 
 ---@class _.lspconfig.settings.volar.Suggest
 -- %configuration.suggest.componentNameCasing%
