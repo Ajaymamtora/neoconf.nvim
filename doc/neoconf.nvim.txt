@@ -1,4 +1,4 @@
-*neoconf.nvim.txt*           For Neovim          Last change: 2025 February 27
+*neoconf.nvim.txt*           For Neovim          Last change: 2025 October 11
 
 ==============================================================================
 Table of Contents                             *neoconf.nvim-table-of-contents*
@@ -10,8 +10,11 @@ Table of Contents                             *neoconf.nvim-table-of-contents*
   - Setup                                    |neoconf.nvim-neoconf.nvim-setup|
   - Configuration                    |neoconf.nvim-neoconf.nvim-configuration|
   - Write Callback                  |neoconf.nvim-neoconf.nvim-write-callback|
-  - Configuration Schema      |neoconf.nvim-neoconf.nvim-configuration-schema|
+  - Live Reload & Diff Method          |neoconf.nvim-neoconf.nvim-live-reload|
+  - Settings Files & JSON Keys   |neoconf.nvim-neoconf.nvim-settings-files|
   - Usage                                    |neoconf.nvim-neoconf.nvim-usage|
+  - Commands                              |neoconf.nvim-neoconf.nvim-commands|
+  - Editor (temporary buffer)                |neoconf.nvim-neoconf.nvim-editor|
   - API                                        |neoconf.nvim-neoconf.nvim-api|
   - Acknowledgment                  |neoconf.nvim-neoconf.nvim-acknowledgment|
   - Supported Language Servers|neoconf.nvim-neoconf.nvim-supported-language-servers|
@@ -23,38 +26,37 @@ Table of Contents                             *neoconf.nvim-table-of-contents*
 **neoconf.nvim** is a Neovim plugin to manage global and project-local
 settings.
 
-
 FEATURES                                  *neoconf.nvim-neoconf.nvim-features*
 
-- configure Neovim using **JSON** files (can have comments)
-    - global settings: `~/.config/nvim/neoconf.json`
-    - local settings: `~/projects/foobar/.neoconf.json`
-- live reload of your lsp settings
-- import existing settings from vscode <https://github.com/microsoft/vscode>,
-    coc.nvim <https://github.com/neoclide/coc.nvim> and
-    nlsp-settings.nvim <https://github.com/tamago324/nlsp-settings.nvim>
-- auto-completion of all the settings in the **Json config files**
-- auto-completion of all LSP settings in your **Neovim Lua config files**
-- integrates with neodev.nvim <https://github.com/folke/neodev.nvim>.
-    See .neoconf.json <https://github.com/folke/neoconf.nvim/blob/main/.neoconf.json> in this repo.
-
+- Configure Neovim using **JSON** files (comments supported via JSONC):
+    - Global settings: `~/.config/nvim/neoconf.json`
+    - Local settings:  `<project>/.neoconf.json`
+- Live reload of your LSP settings (sends `workspace/didChangeConfiguration`)
+- Import existing settings from:
+    - VS Code <https://github.com/microsoft/vscode>
+    - coc.nvim <https://github.com/neoclide/coc.nvim>
+    - nlsp-settings.nvim <https://github.com/tamago324/nlsp-settings.nvim>
+- Auto-completion/validation inside your **JSON** config files (via jsonls)
+- Auto-completion of LSP settings in **Lua** files (via lua_ls annotations)
+- Programmatic API to read **and write** settings:
+    - `require("neoconf").get(...)`
+    - `require("neoconf").set(path, value[, { scope = "local"|"global" }])`
+    - helpers like `toggle_inlay_hints()`, `toggle_boolean()`, etc.
+- Simple UI helpers to view/modify merged settings
 
 REQUIREMENTS                          *neoconf.nvim-neoconf.nvim-requirements*
 
 - Neovim >= 0.7.2
 
-
 INSTALLATION                          *neoconf.nvim-neoconf.nvim-installation*
 
 Install the plugin with your preferred package manager:
-
 
 LAZY.NVIM ~
 
 >lua
     { "folke/neoconf.nvim" }
 <
-
 
 SETUP                                        *neoconf.nvim-neoconf.nvim-setup*
 
@@ -69,307 +71,240 @@ It’s important that you set up `neoconf.nvim` **BEFORE** `nvim-lspconfig`.
     require("lspconfig").lua_ls.setup(...)
 <
 
-
 CONFIGURATION                        *neoconf.nvim-neoconf.nvim-configuration*
 
-**neoconf.nvim** comes with the following defaults:
+**neoconf.nvim** comes with the following defaults (Lua setup options):
 
 >lua
     {
-    
-      -- Use cwd for neoconf root, prevents searching upwards outside the current project
+      -- Use cwd for neoconf root, prevents searching upwards outside the
+      -- current project
       root_use_cwd = false,
-      -- name of the local settings files
-      local_settings = ".neoconf.json",
-      -- name of the global settings file in your Neovim config directory
+
+      -- callback after a neoconf JSON file is written (see |neoconf.nvim-neoconf.nvim-write-callback|)
+      on_write = function(event) end,
+
+      -- name of the local settings file (relative to project root)
+      local_settings  = ".neoconf.json",
+      -- name of the global settings file (inside stdpath('config'))
       global_settings = "neoconf.json",
-      -- import existing settings from other plugins
+
+      -- import existing settings from other tools (merged into LSP configs)
       import = {
-        vscode = true, -- local .vscode/settings.json
-        coc = true, -- global/local coc-settings.json
-        nlsp = true, -- global/local nlsp-settings.nvim json settings
+        vscode = true, -- .vscode/settings.json (local)
+        coc    = true, -- coc-settings.json (global + local)
+        nlsp   = true, -- nlsp-settings/*.json (global + local)
       },
-      -- send new configuration to lsp clients when changing json settings
+
+      -- send didChangeConfiguration when JSON settings change
       live_reload = true,
-      -- set the filetype to jsonc for settings files, so you can use comments
+
+      -- set filetype to jsonc for settings files (enables comments)
       -- make sure you have the jsonc treesitter parser installed!
       filetype_jsonc = true,
-      -- callback function called when a neoconf file is written
-      on_write = function(event) end,
-      -- keymap for saving temporary settings buffer
+
+      -- keymap for saving the temporary editor buffer (see |neoconf.nvim-neoconf.nvim-editor|)
       save_keymap = "<leader>s",
+
+      -- LSP change-detection method used for event.lsp_settings_changed
+      -- See |neoconf.nvim-neoconf.nvim-live-reload|
+      diff_method = "auto", -- "auto" | "jq" | "lua_optimized" | "lua_deep"
+
       plugins = {
-        -- configures lsp clients with settings in the following order:
-        -- - lua settings passed in lspconfig setup
-        -- - global json settings
-        -- - local json settings
-        lspconfig = {
-          enabled = true,
-        },
-        -- configures jsonls to get completion in .neoconf.json files
+        -- configures lsp clients with neoconf in this order:
+        -- 1) settings passed in lspconfig setup
+        -- 2) global neoconf: lspconfig.<server>
+        -- 3) global imports: coc, nlsp.<server>
+        -- 4) local  imports: vscode, coc, nlsp.<server>
+        -- 5) local  neoconf: lspconfig.<server>
+        lspconfig = { enabled = true },
+
+        -- adds schema/completion for .neoconf.json (via jsonls)
         jsonls = {
           enabled = true,
-          -- only show completion in json settings for configured lsp servers
+          -- only show completion for servers that are configured in lspconfig
           configured_servers_only = true,
         },
-        -- configures lua_ls to get completion of lspconfig server settings
+
+        -- adds lua annotations & makes plugin types discoverable by lua_ls
         lua_ls = {
-          -- by default, lua_ls annotations are only enabled in your neovim config directory
+          -- by default, annotations enabled when editing your Neovim config
           enabled_for_neovim_config = true,
-          -- explicitly enable adding annotations. Mostly relevant to put in your local .neoconf.json file
+          -- explicitly enable annotations everywhere
           enabled = false,
         },
       },
-    
     }
 <
-
 
 WRITE CALLBACK                      *neoconf.nvim-neoconf.nvim-write-callback*
 
-The `on_write` callback allows you to hook into file write events for neoconf 
-JSON files. This is useful for implementing intelligent LSP restarts, custom 
+The `on_write` callback allows you to hook into file write events for neoconf
+JSON files. This is useful for implementing intelligent LSP restarts, custom
 validation, or other reactive behaviors when configuration changes.
-
 
 CALLBACK EVENT OBJECT ~
 
-When a neoconf file is written, the callback receives an enhanced event object 
-with the following properties:
+When a neoconf file is written, the callback receives an enhanced event object:
 
 >lua
     {
-      file = "/path/to/.neoconf.json",           -- Absolute path to the written file
-      is_global = false,                         -- true if global config, false if local
-      current_content = { lsp = { lua_ls = {} } }, -- Current JSON content after write
-      previous_content = { lsp = {} },           -- Previous JSON content before write
-      lsp_settings_changed = true,               -- true if anything under "lsp" object changed
-      raw_event = { ... }                        -- Original BufWritePost autocmd event
+      file = "/abs/path/.neoconf.json",          -- absolute path to the file
+      is_global = false,                          -- true if global config file
+      current_content = { ... },                  -- JSON after write
+      previous_content = { ... },                 -- JSON before write
+      lsp_settings_changed = true,                -- see |neoconf.nvim-neoconf.nvim-live-reload|
+      raw_event = { ... }                         -- original BufWritePost data
     }
 <
-
 
 USAGE EXAMPLES ~
 
 Intelligent LSP Restart:
+
 >lua
     require("neoconf").setup({
       on_write = function(event)
-        -- Only restart LSP if LSP settings in local file changed
         if event.lsp_settings_changed and not event.is_global then
-          vim.cmd('LspRestart')
+          vim.cmd("LspRestart")
         end
-      end
+      end,
     })
 <
 
 Custom Validation:
+
 >lua
     require("neoconf").setup({
       on_write = function(event)
-        -- Validate specific settings
-        if event.current_content.lsp and event.current_content.lsp.lua_ls then
-          local lua_ls_config = event.current_content.lsp.lua_ls
-          if lua_ls_config.cmd and not vim.fn.executable(lua_ls_config.cmd) then
-            vim.notify("Warning: lua_ls executable not found: " .. lua_ls_config.cmd, vim.log.levels.WARN)
-          end
+        local lua_ls = event.current_content.lspconfig
+          and event.current_content.lspconfig.lua_ls
+        if lua_ls and lua_ls.cmd and vim.fn.executable(lua_ls.cmd) == 0 then
+          vim.notify("lua_ls executable not found: " .. lua_ls.cmd, vim.log.levels.WARN)
         end
-      end
+      end,
     })
 <
 
-Conditional Actions:
->lua
-    require("neoconf").setup({
-      on_write = function(event)
-        if event.is_global then
-          vim.notify("Global neoconf updated: " .. event.file)
-        else
-          vim.notify("Local project config updated")
-          -- Additional project-specific actions
-          if event.lsp_settings_changed then
-            -- Reload project-specific LSP configurations
-            require('my_project_utils').reload_lsp_config()
-          end
-        end
-      end
-    })
-<
+LIVE RELOAD & DIFF METHOD            *neoconf.nvim-neoconf.nvim-live-reload*
 
+When a settings file is saved, the plugin computes whether anything under the
+top-level **`lsp`** object changed and exposes that as `event.lsp_settings_changed`
+in the write callback. The diff method is configurable:
 
-CONFIGURATION SCHEMA              *neoconf.nvim-neoconf.nvim-configuration-schema*
+- `"auto"`: try `jq` (fast), fallback to `lua_optimized`
+- `"jq"`: uses the `jq` command to compare JSON
+- `"lua_optimized"`: compares `vim.json.encode`d strings
+- `"lua_deep"`: deep recursive table compare (thorough but slow)
 
-The following are the significant configuration keys available in your 
-`.neoconf.json` files:
+Note: only the `lsp` sub-tree is considered for this flag. Your callback can
+still inspect `event.current_content` for anything else.
 
+SETTINGS FILES & JSON KEYS      *neoconf.nvim-neoconf.nvim-settings-files*
 
-CORE SETTINGS ~
+Neoconf reads from:
+
+- **Global**: `stdpath("config")/neoconf.json`
+- **Local**:  `<project>/.neoconf.json`
+
+Files are parsed as **JSONC** (comments allowed). Completion/validation for
+`.neoconf.json` is provided via jsonls.
+
+Common top-level keys you may use:
+
+- **`lspconfig`** *(object)* — per-server settings that will be merged into the
+  corresponding LSP client configuration. You may also **disable** a server by
+  setting its key to `false`.
+
+  Example:
 
 >json
     {
-      "autoformat": true,
-      "exclusions": ["/absolute/path/to/excluded/file1.js", "/absolute/path/to/excluded/file2.ts"],
-      "node_modules": {
-        "check": {
-          "disabled": false,
-          "auto_install": true
-        }
-      },
-      "lsp": {
-        "workspaces": ["/absolute/path/to/workspace1", "/absolute/path/to/workspace2"],
-        "inlay_hint": true,
+      "lspconfig": {
         "lua_ls": {
-          "enabled": true,
-          "cmd": "/usr/local/bin/lua-language-server",
-          "cwd": "/path/to/lua/workspace"
-        },
-        "checkstyle": {
-          "jar": "/absolute/path/to/checkstyle.jar"
-        },
-        "spotbugs": {
-          "root": "/absolute/path/to/spotbugs"
-        }
-      },
-      "scopes": [
-        {
-          "name": "nvim",
-          "paths": ["$HOME/.config/nvim/"]
-        },
-        {
-          "name": "Typescript",
-          "paths": ["$LSP_ROOT"],
-          "mask": "*.ts,!*.spec.ts,!*.stub.ts,!*.stories.ts"
-        },
-        {
-          "name": "JSON",
-          "paths": ["$LSP_ROOT"],
-          "mask": "*.json"
-        },
-        {
-          "name": "SCSS",
-          "paths": ["$LSP_ROOT"],
-          "mask": "*.scss"
-        },
-        {
-          "name": "Typescript SPEC",
-          "paths": ["$LSP_ROOT"],
-          "mask": "*.spec.ts"
-        }
-      ],
-      "tasks": [
-        {
-          "name": "Open git exclude file",
-          "start": "once",
-          "tags": ["build"],
-          "prompt": "never",
-          "cwd": "./src/css",
-          "env": {
-            "user": "ajay"
-          },
-          "params": [
-            {
-              "port": 8080
+          "settings": {
+            "Lua": {
+              "workspace": { "checkThirdParty": false },
+              "diagnostics": { "globals": ["vim"] }
             }
-          ]
-        }
-      ],
-      "hooks": {
-        "on_save": [
-          {
-            "name": "Format on save",
-            "start": "once",
-            "tags": ["format"],
-            "prompt": "never"
           }
-        ]
+        },
+        "jsonls": {
+          "settings": {
+            "json": {
+              "validate": { "enable": true }
+            }
+          }
+        },
+        "eslint": false
       }
     }
 <
 
+- **`lsp`** *(object, optional)* — convenience bucket used by some helpers in
+  this plugin. Example keys:
+  - `inlay_hint` *(boolean)* — toggled by |neoconf.nvim-toggle_inlay_hints|.
 
-KEY DESCRIPTIONS ~
+>json
+    { "lsp": { "inlay_hint": true } }
+<
 
-- **`autoformat`** *(boolean)*: Enable or disable automatic formatting of files.
+- **`neoconf`** *(object, optional)* — configure this plugin from JSON instead
+  of Lua (same structure as `require("neoconf").setup({ ... })`):
 
-- **`exclusions`** *(array of strings)*: An array of absolute file paths to exclude from processing.
+>json
+    {
+      "neoconf": {
+        "live_reload": true,
+        "filetype_jsonc": true,
+        "plugins": {
+          "lua_ls": { "enabled": true }
+        }
+      }
+    }
+<
 
-- **`node_modules.check.disabled`** *(boolean)*: Controls whether neoconf automatically checks for outdated or inconsistent packages in node_modules. Set to `true` to disable the check.
+- **Other keys** — you can store arbitrary values your own config consumes.
+  For instance, |neoconf.nvim-toggle_autoformat| writes an `autoformat` key.
 
-- **`node_modules.check.auto_install`** *(boolean)*: Automatically install npm packages when an inconsistency is detected.
+IMPORT SOURCES (read-only) ~
 
-- **`lsp.workspaces`** *(array of strings)*: An array of absolute paths to LSP workspaces. These paths tell the LSP server which directories to treat as workspace roots.
+When enabled in setup, neoconf will *also* read and merge (without modifying):
 
-- **`lsp.inlay_hint`** *(boolean)*: Enable inlay hints for supported LSP servers.
+- `.vscode/settings.json`                  → merged into server settings
+- `coc-settings.json` (global & local)     → merged
+- `nlsp-settings/<server>.json` (global & local) → merged
 
-- **`lsp.<SERVER_NAME>.enabled`** *(boolean)*: Enable or disable a specific LSP server (e.g., `lsp.lua_ls.enabled`).
+The final LSP client settings merge order is:
 
-- **`lsp.<SERVER_NAME>.cmd`** *(string)*: Specify a custom executable path for a specific LSP server (e.g., `lsp.lua_ls.cmd`).
-
-- **`lsp.<SERVER_NAME>.cwd`** *(string)*: Set a fixed working directory for the formatter tool of a specific LSP server.
-
-- **`lsp.checkstyle.jar`** *(string)*: Absolute path to the checkstyle JAR file.
-
-- **`lsp.spotbugs.root`** *(string)*: Absolute path to the SpotBugs root directory.
-
-- **`scopes`** *(array of objects)*: Define file scopes for different operations. Each scope object contains:
-  - `name` *(string)*: Display name for the scope
-  - `paths` *(array of strings)*: Array of paths (supports variables like `$HOME` and `$LSP_ROOT`)
-  - `mask` *(string, optional)*: File pattern mask (e.g., `"*.ts,!*.spec.ts"` for TypeScript files excluding specs)
-
-- **`tasks`** *(array of objects)*: Overseer task definitions. Each task object can contain:
-  - `name` *(string)*: Display name for the task
-  - `start` *(string)*: When to start the task (e.g., "once", "always")
-  - `tags` *(array of strings)*: Tags for categorizing tasks
-  - `prompt` *(string)*: When to prompt user (e.g., "never", "always")
-  - `cwd` *(string)*: Working directory for the task
-  - `env` *(object)*: Environment variables for the task
-  - `params` *(array of objects)*: Parameters to pass to the task
-
-- **`hooks.on_save`** *(array of objects)*: Overseer task definitions that execute on file save. Uses the same structure as `tasks`.
-
+1. Settings passed to `lspconfig.SERVER.setup({ settings = ... })`
+2. Global `lspconfig.SERVER` from neoconf
+3. Global imports: `coc`, `nlsp.SERVER`
+4. Local  imports: `vscode`, `coc`, `nlsp.SERVER`
+5. Local  `lspconfig.SERVER` from neoconf
 
 USAGE                                        *neoconf.nvim-neoconf.nvim-usage*
 
-
-THE :NEOCONF COMMAND ~
-
-- `:Neoconf`will show a ui to select one of the local/global json config files to edit
-- `:Neoconf local`will show a ui to select one of the local json config files to edit
-- `:Neoconf global`will show a ui to select one of the global json config files to edit
-- `:Neoconf show`opens a floating window with the merged config
-- `:Neoconf lsp`opens a floating window with your merged lsp config
-
-
 COMPLETION AND VALIDATION FOR YOUR JSON SETTINGS FILES ~
 
+- Works out of the box when `plugins.jsonls.enabled = true`.
+- Files are treated as **jsonc** when `filetype_jsonc = true` (allows comments).
 
 COMPLETION AND VALIDATION FOR YOUR LUA SETTINGS FILES ~
 
-Completion of your lua settings should work out of the box.
+- Works out of the box when `plugins.lua_ls` is active for your config.
+- Extra Lua annotations/types are added to make `lspconfig` settings discoverable.
 
-You can additionally use the exported types in other places.
-
-Example with a table containing LSP server settings ~
+Example (table of LSP server options):
 
 >lua
       ---@type lspconfig.options
       local servers = {
-        ansiblels = {},
-        bashls = {},
-        clangd = {},
-        cssls = {},
-        dockerls = {},
-        ts_ls = {},
-        svelte = {},
-        eslint = {},
-        html = {},
+        lua_ls = {},
         jsonls = {
           settings = {
             json = {
-              format = {
-                enable = true,
-              },
-              schemas = require("schemastore").json.schemas(),
+              format = { enable = true },
               validate = { enable = true },
             },
           },
@@ -377,11 +312,129 @@ Example with a table containing LSP server settings ~
       }
 <
 
+COMMANDS                                  *neoconf.nvim-neoconf.nvim-commands*
+
+- `:Neoconf`         — pick a local/global neoconf file to create/edit
+- `:Neoconf local`   — pick a *local* neoconf file to create/edit
+- `:Neoconf global`  — pick a *global* neoconf file to create/edit
+- `:Neoconf show`    — floating window with merged config
+- `:Neoconf lsp`     — floating window with merged LSP client settings
+- `:Neoconf choose_client` — select an active LSP client and open an editor
+  with its settings merged with neoconf (see |neoconf.nvim-neoconf.nvim-editor|)
+- `:Neoconf checkhealth` — run health checks for neoconf integration
+
+EDITOR (TEMPORARY BUFFER)                 *neoconf.nvim-neoconf.nvim-editor*
+
+Neoconf provides a small editor workflow for inspecting & saving settings:
+
+- `:Neoconf choose_client` opens a temporary buffer containing:
+  - the merged neoconf settings,
+  - **plus** the selected LSP client's current `settings`.
+- Press `{save_keymap}` (default **`<leader>s`**) to validate JSON and write
+  **only the local** neoconf settings back to `.neoconf.json`.
+- The write triggers your `on_write` callback and updates caches just like a
+  normal `:write`.
 
 API                                            *neoconf.nvim-neoconf.nvim-api*
 
-**Neodev** comes with an API that can be used by plugin developers to load
-global/local settings for their plugin.
+This section documents the **runtime Lua API** exposed by `require("neoconf")`.
+All functions are safe to call from your `init.lua` or plugins.
+
+GET SETTINGS ~
+
+>lua
+    --- Returns the requested settings (merged according to |neoconf.nvim-neoconf.nvim-settings-files|)
+    ---@generic T : table
+    ---@param key? string      Optional key to fetch (dot-path). When omitted, returns all settings.
+    ---@param defaults? T      Defaults merged into the result when the key is missing/partial.
+    ---@param opts? WorkspaceOptions  See below.
+    ---@return T
+    require("neoconf").get(key, defaults, opts)
+<
+
+>lua
+    ---@class WorkspaceOptions
+    ---@field file?   string  File used to determine the root_dir
+    ---@field buffer? integer Buffer used to determine the root_dir
+    ---@field lsp?    boolean When true, try using active LSP root
+    ---@field local?  boolean Merge local settings (default: true)
+    ---@field global? boolean Merge global settings (default: true)
+<
+
+SET A VALUE (CREATE PATHS)                          *neoconf.nvim-set* *neoconf.nvim.set()*
+
+>lua
+    --- Ensure a JSON path exists and set its value. Creates intermediate objects.
+    --- Triggers the same write flow as editing the file (on_write, live reload, cache refresh).
+    ---
+    ---@param path string  Dot-separated path ("a.b.c")
+    ---@param value any    JSON-encodable value (string|number|boolean|table|vim.NIL)
+    ---@param opts? { scope?: "local"|"global" }  -- default: "local"
+    ---@return boolean|nil ok, string|nil err
+    require("neoconf").set("editor.formatOnSave", true)
+    require("neoconf").set("lsp.inlay_hint", false)
+    require("neoconf").set("lspconfig.lua_ls.settings.Lua.telemetry.enable", vim.NIL)
+<
+
+Notes:
+- **Type mapping** follows `vim.json.encode`:
+  - `string`, `number`, `boolean` → JSON primitives
+  - Lua **tables**:
+    - Lists (1..n integer keys) → JSON arrays
+    - Maps (non-sequence keys)   → JSON objects
+  - Use **`vim.NIL`** to write JSON `null` (Lua `nil` cannot be encoded).
+- If an intermediate key exists but is not an object (or is a list), it is
+  **overwritten** with an empty object to create the path.
+- `opts.scope = "global"` targets `stdpath("config")/neoconf.json`.
+  Default is `"local"` → `<project>/.neoconf.json`.
+
+TOGGLE HELPERS & UTILITIES ~
+
+Toggle a boolean anywhere:                         *neoconf.nvim-toggle_boolean*
+
+>lua
+    ---@return boolean|nil new_value, string|nil error
+    require("neoconf").toggle_boolean("some.feature.enabled")
+<
+
+Toggle a string inside a list (add/remove):   *neoconf.nvim-toggle_string_in_table*
+
+>lua
+    ---@return boolean|nil success, string|nil error
+    require("neoconf").toggle_string_in_table("typescript", "features.languages")
+<
+
+Toggle LSP inlay hints:                         *neoconf.nvim-toggle_inlay_hints*
+
+- Computes the current effective state (prefers explicit `lsp.inlay_hint` in
+  neoconf, otherwise asks the active LSP).
+- Writes the new value to **local** `.neoconf.json` under `lsp.inlay_hint`.
+- Tries to apply the change immediately via `vim.lsp.inlay_hint.enable`.
+
+>lua
+    ---@return boolean|nil new_state
+    require("neoconf").toggle_inlay_hints()
+<
+
+Toggle a generic `autoformat` flag:          *neoconf.nvim-toggle_autoformat*
+
+- Convenience helper that toggles a top-level `autoformat` key in local
+  settings. Many configs check this flag to enable/disable format-on-save.
+
+>lua
+    ---@return boolean|nil new_state
+    require("neoconf").toggle_autoformat()
+<
+
+Print the current state of a setting:    *neoconf.nvim-print_property_state*
+
+>lua
+    require("neoconf").print_property_state("Inlay hints", "lsp.inlay_hint")
+<
+
+PLUGIN INTEGRATION API (for plugin authors) ~
+
+Register to extend the JSON schema so users get completion in `.neoconf.json`:
 
 >lua
     ---@class SettingsPlugin
@@ -389,61 +442,31 @@ global/local settings for their plugin.
     ---@field setup fun()|nil
     ---@field on_update fun(event)|nil
     ---@field on_schema fun(schema: Schema)
-    
-    -- Registers a plugin. Biggest use-case is to get auto-completion for your plugin in the json settings files
-    ---@param plugin SettingsPlugin
-    function Neodev.register(plugin) end
-    
-    ---@class WorkspaceOptions
-    ---@field file? string File will be used to determine the root_dir
-    ---@field buffer? buffer Buffer will be used to find the root_dir
-    ---@field lsp? boolean LSP root_dir will be used to determine the root_dir
-    ---@field local? boolean defaults to true. Merge local settings
-    ---@field global? boolean defaults to true. Merge global settings
-    
-    -- Returns the requested settings
-    ---@generic T : table
-    ---@param key? string Optional key to get settings for
-    ---@param defaults? T Optional table of defaults that will be merged in the result
-    ---@param opts? WorkspaceOptions options to determine the root_dir and what settings to merge
-    ---@return T
-    function Neoconf.get(key, defaults, opts) end
-<
 
-API Example ~
-
->lua
-    -- default config for your plugin
-    local defaults = {
-      doit = true,
-      count = 1,
-      array = {},
-    }
-    
-    -- register your settings schema with Neodev, so auto-completion will work in the json files
     require("neoconf.plugins").register({
-        on_schema = function(schema)
-        -- this call will create a json schema based on the lua types of your default settings
-        schema:import("myplugin", defaults)
-        -- Optionally update some of the json schema
-        schema:set("myplugin.array", {
-            description = "Special array containing booleans or numbers",
-            anyOf = {
-            { type = "boolean" },
-            { type = "integer" },
-            },
-            })
-        end,
+      name = "myplugin",
+      on_schema = function(schema)
+        schema:import("myplugin", {
+          doit = true,
+          count = 1,
+          array = {},
         })
-    
-    local my_settings = Neoconf.get("neodev", defaults)
-<
+        -- You can refine the auto-generated schema:
+        schema:set("myplugin.array", {
+          description = "Booleans or integers",
+          anyOf = { { type = "boolean" }, { type = "integer" } },
+        })
+      end,
+    })
 
+    -- Later in your plugin:
+    local cfg = require("neoconf").get("myplugin", { doit = false, count = 0 })
+<
 
 ACKNOWLEDGMENT                      *neoconf.nvim-neoconf.nvim-acknowledgment*
 
-- json.lua <https://github.com/actboy168/json.lua> a pure-lua JSON library for parsing `jsonc` files
-
+- json.lua <https://github.com/actboy168/json.lua> a pure-lua JSON library for
+  parsing `jsonc` files
 
 SUPPORTED LANGUAGE SERVERS*neoconf.nvim-neoconf.nvim-supported-language-servers*
 
@@ -458,7 +481,7 @@ SUPPORTED LANGUAGE SERVERS*neoconf.nvim-neoconf.nvim-supported-language-servers*
 - denols <https://github.com/denoland/vscode_deno/tree/main/package.json>
 - elixirls <https://github.com/elixir-lsp/vscode-elixir-ls/tree/master/package.json>
 - elmls <https://github.com/elm-tooling/elm-language-client-vscode/tree/master/package.json>
-- eslint <https://github.com/microsoft/vscode-eslint/tree/main/package.json>
+- eslint <https://github.com/microsoft/vscode-eslint/tree/master/package.json>
 - flow <https://github.com/flowtype/flow-for-vscode/tree/master/package.json>
 - fsautocomplete <https://github.com/ionide/ionide-vscode-fsharp/tree/main/release/package.json>
 - grammarly <https://github.com/znck/grammarly/tree/main/extension/package.json>
@@ -481,7 +504,7 @@ SUPPORTED LANGUAGE SERVERS*neoconf.nvim-neoconf.nvim-supported-language-servers*
 - perlpls <https://github.com/FractalBoy/perl-language-server/tree/master/client/package.json>
 - powershell_es <https://github.com/PowerShell/vscode-powershell/tree/main/package.json>
 - psalm <https://github.com/psalm/psalm-vscode-plugin/tree/master/package.json>
-- puppet <https://github.com/puppetlabs/puppet-vscode/tree/main/package.json>
+- puppet <https://github.com/puppetlabs/puppet-vscode/tree/master/package.json>
 - purescriptls <https://github.com/nwolverson/vscode-ide-purescript/tree/master/package.json>
 - pylsp <https://github.com/python-lsp/python-lsp-server/tree/develop/pylsp/config/schema.json>
 - pyright <https://github.com/microsoft/pyright/tree/master/packages/vscode-pyright/package.json>
@@ -502,15 +525,15 @@ SUPPORTED LANGUAGE SERVERS*neoconf.nvim-neoconf.nvim-supported-language-servers*
 - svlangserver <https://github.com/eirikpre/VSCode-SystemVerilog/tree/master/package.json>
 - tailwindcss <https://github.com/tailwindlabs/tailwindcss-intellisense/tree/master/packages/vscode-tailwindcss/package.json>
 - terraformls <https://github.com/hashicorp/vscode-terraform/tree/master/package.json>
-- tinymist <https://github.com/Myriad-Dreamin/tinymist/refs/heads/tree/main/editors/vscode/package.json>
+- tinymist <https://github.com/Myriad-Dreamin/tinymist/refs/heads/main/editors/vscode/package.json>
 - ts_ls <https://github.com/microsoft/vscode/tree/main/extensions/typescript-language-features/package.json>
-- typst_lsp <https://github.com/nvarner/typst-lsp/refs/heads/tree/master/editors/vscode/package.json>
+- typst_lsp <https://github.com/nvarner/typst-lsp/refs/heads/master/editors/vscode/package.json>
 - volar <https://github.com/vuejs/language-tools/tree/master/extensions/vscode/package.json>
 - vtsls <https://github.com/yioneko/vtsls/tree/main/packages/service/configuration.schema.json>
 - vuels <https://github.com/vuejs/vetur/tree/master/package.json>
-- wgls_analyzer <https://github.com/wgsl-analyzer/wgsl-analyzer/tree/main/editors/code/package.json>
+- wgls_analyzer <https://github.com/wgsl-analyzer/wgsl-analyzer/tree/master/editors/code/package.json>
 - yamlls <https://github.com/redhat-developer/vscode-yaml/tree/master/package.json>
-- zeta_note <https://github.com/artempyanykh/zeta-note-vscode/tree/main/package.json>
+- zeta_note <https://github.com/artempyanykh/zeta-note-vscode/tree/master/package.json>
 - zls <https://github.com/zigtools/zls-vscode/tree/master/package.json>
 
 ==============================================================================
