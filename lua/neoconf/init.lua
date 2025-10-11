@@ -1,3 +1,4 @@
+-- neoconf/init.lua
 local Settings = require("neoconf.settings")
 local Util = require("neoconf.util")
 
@@ -20,6 +21,124 @@ end
 ---@return T
 function M.get(key, defaults, opts)
   return require("neoconf.workspace").get(opts).settings:get(key, { defaults = defaults })
+end
+
+--- Set a value at a JSON path in neoconf settings, creating intermediate objects as needed.
+---
+--- Examples:
+---   require("neoconf").set("editor.formatOnSave", true)
+---   require("neoconf").set("lsp.inlay_hint", false)
+---   require("neoconf").set("lspconfig.lua_ls.settings.telemetry.enable", vim.NIL) -- writes `null`
+---   require("neoconf").set("my.list", { "a", "b", "c" })
+---
+--- Notes:
+---   • By default writes to the *local* settings file (e.g. `<root>/.neoconf.json`).
+---   • Pass opts.scope = "global" to write to the global file (e.g. `<stdpath('config')>/neoconf.json`).
+---   • Value must be JSON-encodable by Neovim (`vim.json.encode`). `vim.NIL` becomes JSON `null`.
+---
+--- @param path string Dot-separated JSON path (e.g. "a.b.c")
+--- @param value any JSON-encodable Lua value (string|number|boolean|table|vim.NIL|nil)
+--- @param opts? { scope?: "local"|"global" }
+--- @return boolean|nil ok  true on success, nil on failure
+--- @return string|nil err  error message when ok == nil
+function M.set(path, value, opts)
+  opts = opts or {}
+  local scope = opts.scope or "local"
+
+  if type(path) ~= "string" or path == "" then
+    return nil, "path must be a non-empty string"
+  end
+
+  -- Validate that the value is JSON-encodable by Neovim.
+  do
+    local ok, enc_err = pcall(vim.json.encode, value)
+    if not ok then
+      return nil, ("value is not JSON-serializable: %s"):format(enc_err)
+    end
+  end
+
+  local Config = require("neoconf.config")
+  local Workspace = require("neoconf.workspace")
+  local JsonUtil = require("neoconf.utils.json")
+  local Commands = require("neoconf.commands")
+
+  -- Resolve target file and current content
+  local target_file, current
+  if scope == "global" then
+    target_file = Util.config_path() .. "/" .. Config.options.global_settings
+    local read_tbl = select(1, JsonUtil.read(target_file))
+    current = read_tbl or vim.empty_dict() -- force object for empty
+  else
+    local root_dir = Workspace.find_root({})
+    target_file = root_dir .. "/" .. Config.options.local_settings
+    current = Settings.get_local(root_dir):get() or vim.empty_dict()
+  end
+
+  if type(current) ~= "table" then
+    -- If the existing file content is not an object, replace with an empty object.
+    current = vim.empty_dict()
+  end
+
+  -- Build/ensure the path
+  local parts = Settings.path(path)
+  if #parts == 0 then
+    return nil, "invalid path"
+  end
+
+  local node = current
+  for i = 1, #parts - 1 do
+    local key = parts[i]
+    -- Ensure every intermediate node is an object. Override non-tables/lists.
+    if type(node[key]) ~= "table" or Util.islist(node[key]) then
+      node[key] = vim.empty_dict() -- use empty_dict to force '{}' in JSON, not '[]'
+    end
+    node = node[key]
+  end
+
+  -- Assign leaf
+  node[parts[#parts]] = value
+
+  -- Prepare enhanced on_write event info (mirrors BufWritePost handler)
+  local previous_content = Config.get_previous_content(target_file)
+  if not Config._previous_content[target_file] then
+    Config.init_previous_content(target_file)
+    previous_content = Config.get_previous_content(target_file)
+  end
+
+  -- Persist changes
+  local ok, err
+  if scope == "global" then
+    ok, err = JsonUtil.write(target_file, current, { sort = true, format = false })
+  else
+    ok = Settings.write_local(current) -- sorts keys; no pretty format to keep diffs small
+    if not ok then
+      err = "failed to write local settings"
+    end
+  end
+
+  if not ok then
+    return nil, err or "failed to write settings"
+  end
+
+  -- Fire user callback and refresh caches similarly to our autocmd path
+  local event = {
+    file = target_file,
+    is_global = (scope == "global"),
+    current_content = current,
+    previous_content = previous_content,
+    lsp_settings_changed = Commands.detect_lsp_changes(previous_content, current),
+    raw_event = { match = target_file, via_set_api = true },
+  }
+  pcall(Config.options.on_write, event)
+
+  -- Track new previous content for future diffs
+  Config.update_previous_content(target_file, current)
+
+  -- Clear settings cache for the changed file and notify plugins
+  Settings.clear(target_file)
+  require("neoconf.plugins").fire("on_update", target_file)
+
+  return true
 end
 
 ---Toggle a boolean value at a specific settings path
@@ -141,7 +260,13 @@ function M.toggle_inlay_hints()
   end
 
   -- 5. Set the new value in the local settings table
-  local_settings_table.lsp.inlay_hint = new_state
+  local local_ok, local_err = pcall(function()
+    local_settings_table.lsp.inlay_hint = new_state
+  end)
+  if not local_ok then
+    Util.error("Failed to update inlay_hint in memory: " .. (local_err or "Unknown error"))
+    return nil
+  end
 
   -- 6. Write the updated local settings back to the file
   local success, write_err = pcall(Settings.write_local, local_settings_table)
