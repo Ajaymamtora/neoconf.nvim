@@ -26,7 +26,7 @@ end
 ---@param path string The dot-separated path to the setting
 ---@return boolean|nil new_value The new value after toggling
 ---@return string|nil error
-function M.toggle(path)
+function M.toggle_boolean(path)
   -- Get current settings first
   local current_settings = Settings.get_local(vim.uv.cwd()):get() or {}
   local current = Settings.get_local(vim.uv.cwd()):get(path)
@@ -171,7 +171,7 @@ end
 ---Helper function to toggle autoformatting
 ---@return boolean|nil new_state
 function M.toggle_autoformat()
-  local new_state = M.toggle("autoformat")
+  local new_state = M.toggle_boolean("autoformat")
   if new_state ~= nil then
     Util.info("Autoformat " .. (new_state and "enabled" or "disabled"))
   end
