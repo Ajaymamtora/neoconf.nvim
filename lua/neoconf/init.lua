@@ -71,7 +71,9 @@ function M.set(path, value, opts)
   else
     local root_dir = Workspace.find_root({})
     target_file = root_dir .. "/" .. Config.options.local_settings
-    current = Settings.get_local(root_dir):get() or vim.empty_dict()
+    -- Read raw local file content, not merged settings from multiple files
+    local read_tbl = select(1, JsonUtil.read(target_file))
+    current = read_tbl or vim.empty_dict()
   end
 
   if type(current) ~= "table" then
@@ -85,17 +87,20 @@ function M.set(path, value, opts)
     return nil, "invalid path"
   end
 
+  -- Create intermediate objects for the path
   local node = current
   for i = 1, #parts - 1 do
     local key = parts[i]
-    -- Ensure every intermediate node is an object. Override non-tables/lists.
-    if type(node[key]) ~= "table" or Util.islist(node[key]) then
+    local existing = node[key]
+    -- Ensure every intermediate node is a proper object (not array, not nil, not empty table without metatable)
+    -- Empty tables from JSON decode might not have vim.empty_dict() metatable, so we convert them
+    if type(existing) ~= "table" or Util.islist(existing) or (vim.tbl_isempty(existing) and getmetatable(existing) == nil) then
       node[key] = vim.empty_dict() -- use empty_dict to force '{}' in JSON, not '[]'
     end
     node = node[key]
   end
 
-  -- Assign leaf
+  -- Assign leaf (nil removes the key in Lua, which is the desired behavior for unsetting)
   node[parts[#parts]] = value
 
   -- Prepare enhanced on_write event info (mirrors BufWritePost handler)
@@ -136,6 +141,7 @@ function M.set(path, value, opts)
 
   -- Clear settings cache for the changed file and notify plugins
   Settings.clear(target_file)
+  Settings.refresh() -- Also refresh global settings cache to ensure subsequent reads get fresh data
   require("neoconf.plugins").fire("on_update", target_file)
 
   return true
