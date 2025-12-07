@@ -41,7 +41,7 @@ FEATURES                                  *neoconf.nvim-neoconf.nvim-features*
 - Programmatic API to read **and write** settings:
     - `require("neoconf").get(...)`
     - `require("neoconf").set(path, value[, { scope = "local"|"global" }])`
-    - helpers like `toggle_inlay_hints()`, `toggle_boolean()`, etc.
+    - helpers like `toggle_boolean()`, `toggle_string_in_table()`, etc.
 - Simple UI helpers to view/modify merged settings
 
 REQUIREMENTS                          *neoconf.nvim-neoconf.nvim-requirements*
@@ -243,7 +243,7 @@ Common top-level keys you may use:
 
 - **`lsp`** *(object, optional)* — convenience bucket used by some helpers in
   this plugin. Example keys:
-  - `inlay_hint` *(boolean)* — toggled by |neoconf.nvim-toggle_inlay_hints|.
+  - `inlay_hint` *(boolean)* — can be set via the `set()` API.
 
 >json
     { "lsp": { "inlay_hint": true } }
@@ -265,7 +265,7 @@ Common top-level keys you may use:
 <
 
 - **Other keys** — you can store arbitrary values your own config consumes.
-  For instance, |neoconf.nvim-toggle_autoformat| writes an `autoformat` key.
+  For instance, you can store an `autoformat` key for format-on-save.
 
 IMPORT SOURCES (read-only) ~
 
@@ -402,28 +402,6 @@ Toggle a string inside a list (add/remove):   *neoconf.nvim-toggle_string_in_tab
 >lua
     ---@return boolean|nil success, string|nil error
     require("neoconf").toggle_string_in_table("typescript", "features.languages")
-<
-
-Toggle LSP inlay hints:                         *neoconf.nvim-toggle_inlay_hints*
-
-- Computes the current effective state (prefers explicit `lsp.inlay_hint` in
-  neoconf, otherwise asks the active LSP).
-- Writes the new value to **local** `.neoconf.json` under `lsp.inlay_hint`.
-- Tries to apply the change immediately via `vim.lsp.inlay_hint.enable`.
-
->lua
-    ---@return boolean|nil new_state
-    require("neoconf").toggle_inlay_hints()
-<
-
-Toggle a generic `autoformat` flag:          *neoconf.nvim-toggle_autoformat*
-
-- Convenience helper that toggles a top-level `autoformat` key in local
-  settings. Many configs check this flag to enable/disable format-on-save.
-
->lua
-    ---@return boolean|nil new_state
-    require("neoconf").toggle_autoformat()
 <
 
 Print the current state of a setting:    *neoconf.nvim-print_property_state*
