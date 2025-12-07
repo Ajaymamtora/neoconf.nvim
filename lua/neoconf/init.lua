@@ -60,7 +60,6 @@ function M.set(path, value, opts)
   local Config = require("neoconf.config")
   local Workspace = require("neoconf.workspace")
   local JsonUtil = require("neoconf.utils.json")
-  local Commands = require("neoconf.commands")
 
   -- Resolve target file and current content
   local target_file, current
@@ -103,12 +102,6 @@ function M.set(path, value, opts)
   -- Assign leaf (nil removes the key in Lua, which is the desired behavior for unsetting)
   node[parts[#parts]] = value
 
-  -- Prepare enhanced on_write event info (mirrors BufWritePost handler)
-  local previous_content = Config.get_previous_content(target_file)
-  if not Config._previous_content[target_file] then
-    Config.init_previous_content(target_file)
-    previous_content = Config.get_previous_content(target_file)
-  end
 
   -- Persist changes
   local ok, err
@@ -125,19 +118,6 @@ function M.set(path, value, opts)
     return nil, err or "failed to write settings"
   end
 
-  -- Fire user callback and refresh caches similarly to our autocmd path
-  local event = {
-    file = target_file,
-    is_global = (scope == "global"),
-    current_content = current,
-    previous_content = previous_content,
-    lsp_settings_changed = Commands.detect_lsp_changes(previous_content, current),
-    raw_event = { match = target_file, via_set_api = true },
-  }
-  pcall(Config.options.on_write, event)
-
-  -- Track new previous content for future diffs
-  Config.update_previous_content(target_file, current)
 
   -- Clear settings cache for the changed file and notify plugins
   Settings.clear(target_file)

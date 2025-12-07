@@ -11,9 +11,6 @@ local M = {}
 
 ---@param opts WorkspaceFindOptions
 function M.find_root(opts)
-  if Config.options.root_use_cwd then
-    return tostring(vim.uv.cwd())
-  end
   opts = opts or {}
 
   local buf = opts.buffer ~= 0 and opts.buffer or vim.api.nvim_get_current_buf()

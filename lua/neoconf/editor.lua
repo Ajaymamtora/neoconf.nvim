@@ -59,7 +59,7 @@ function M.open(settings, opts)
   vim.api.nvim_buf_set_option(buf, "bufhidden", "wipe")
 
   -- Save keymap
-  local save_keymap = Config.get().save_keymap or "<leader>s"
+  local save_keymap = "<leader>s"
   vim.keymap.set("n", save_keymap, function()
     M.save_current_buffer()
     opts.on_save()
@@ -103,35 +103,6 @@ function M.save_current_buffer()
   local success = Settings.write_local(decoded)
   if success then
     Util.info("Settings saved successfully")
-    
-    -- Call the on_write callback like BufWritePost would
-    local Config = require("neoconf.config")
-    if Config.options.on_write then
-      local root_dir = require("neoconf.workspace").find_root({})
-      local local_file = root_dir .. "/" .. Config.options.local_settings
-      
-      -- Get previous content from our tracking (initialize if new file)
-      local previous_content = Config.get_previous_content(local_file)
-      if not Config._previous_content[local_file] then
-        Config.init_previous_content(local_file)
-        previous_content = Config.get_previous_content(local_file)
-      end
-      
-      -- Create enhanced event info (similar to commands.lua)
-      local enhanced_event = {
-        file = local_file,
-        is_global = false,
-        current_content = decoded,
-        previous_content = previous_content,
-        lsp_settings_changed = require("neoconf.commands").detect_lsp_changes(previous_content, decoded),
-        raw_event = { match = local_file, via_editor = true }
-      }
-      
-      pcall(Config.options.on_write, enhanced_event)
-      
-      -- Update previous content for next time
-      Config.update_previous_content(local_file, decoded)
-    end
     
     Settings.refresh()
     vim.api.nvim_buf_delete(buf, { force = true })
