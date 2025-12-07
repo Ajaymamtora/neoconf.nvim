@@ -1,4 +1,4 @@
-*neoconf.nvim.txt*           For Neovim          Last change: 2025 October 11
+*neoconf.nvim.txt*                                           neoconf.nvim docs
 
 ==============================================================================
 Table of Contents                             *neoconf.nvim-table-of-contents*
@@ -207,6 +207,16 @@ The final LSP client settings merge order is:
 5. Local  `lspconfig.SERVER` from neoconf
 
 USAGE                                        *neoconf.nvim-neoconf.nvim-usage*
+
+
+THE :NEOCONF COMMAND ~
+
+- `:Neoconf`: will show a ui to select one of the local/global json config files to edit
+- `:Neoconf local`: will show a ui to select one of the local json config files to edit
+- `:Neoconf global`: will show a ui to select one of the global json config files to edit
+- `:Neoconf show`: opens a floating window with the merged config
+- `:Neoconf lsp`: opens a floating window with your merged lsp config
+
 
 COMPLETION AND VALIDATION FOR YOUR JSON SETTINGS FILES ~
 
