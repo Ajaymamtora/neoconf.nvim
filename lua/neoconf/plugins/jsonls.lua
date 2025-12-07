@@ -36,7 +36,7 @@ function M.on_new_config(config, root_dir)
       json = {
         schemas = schemas,
         validate = {
-          enable = true,
+          enable = options.plugins.jsonls.validate,
         },
       },
     })

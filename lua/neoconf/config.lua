@@ -30,6 +30,8 @@ M.defaults = {
       enabled = true,
       -- only show completion in json settings for configured lsp servers
       configured_servers_only = true,
+      -- enable workspace validation (schema validation for neoconf json files)
+      validate = true,
     },
     -- configures lua_ls to get completion of lspconfig server settings
     lua_ls = {
