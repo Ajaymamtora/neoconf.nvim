@@ -6710,6 +6710,17 @@
 -- default = true
 -- ```
 ---@field enable boolean
+-- List of trusted domains for downloading JSON schemas over http(s). Use '*' to trust all domains. '*' can also be used as a wildcard in domain names.
+-- 
+-- ```lua
+-- default = {
+--   ["https://json-schema.org/"] = true,
+--   ["https://raw.githubusercontent.com/"] = true,
+--   ["https://schemastore.azurewebsites.net/"] = true,
+--   ["https://www.schemastore.org/"] = true
+-- }
+-- ```
+---@field trustedDomains table
 
 ---@class _.lspconfig.settings.jsonls.Trace
 -- Traces the communication between VS Code and the JSON language server.
@@ -19730,7 +19741,7 @@
 -- Naga version used for validation.
 -- 
 -- ```lua
--- default = "0.27"
+-- default = "0.28"
 -- ```
 ---@field nagaVersion "0.22" | "0.27" | "main"
 -- Controls whether to show type errors.
