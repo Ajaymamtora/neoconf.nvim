@@ -17632,7 +17632,7 @@
 ---@class _.lspconfig.settings.ts_ls.ReferencesCodeLens
 -- Enable/disable references CodeLens in JavaScript and TypeScript files. This CodeLens shows the number of references for classes and exported functions and allows you to peek or navigate to them.
 ---@field enabled boolean
--- Enable/disable the references CodeLens on all functions in JavaScript and TypeScript files.
+-- Enable/disable the [references CodeLens](#js/ts.referencesCodeLens.enabled) on all functions in JavaScript and TypeScript files.
 ---@field showOnAllFunctions boolean
 
 ---@class _.lspconfig.settings.ts_ls.ClassMemberSnippets
@@ -17759,11 +17759,11 @@
 ---@field maximumLength number
 
 ---@class _.lspconfig.settings.ts_ls.ImplementationsCodeLens
--- Enable/disable implementations CodeLens in TypeScript files. This CodeLens shows the implementers of a TypeScript interface.
+-- Enable/disable implementations CodeLens in TypeScript files. This CodeLens shows the implementers of TypeScript interfaces.
 ---@field enabled boolean
--- Enable/disable showing implementations CodeLens above all TypeScript class methods instead of only on abstract methods.
+-- Enable/disable showing [implementations CodeLens](#js/ts.implementationsCodeLens.enabled) above all TypeScript class methods instead of only on abstract methods.
 ---@field showOnAllClassMethods boolean
--- Enable/disable implementations CodeLens on TypeScript interface methods.
+-- Enable/disable [implementations CodeLens](#js/ts.implementationsCodeLens.enabled) on TypeScript interface methods.
 ---@field showOnInterfaceMethods boolean
 
 ---@class _.lspconfig.settings.ts_ls.ImplicitProjectConfig
@@ -17802,16 +17802,114 @@
 -- ```
 ---@field target "ES3" | "ES5" | "ES6" | "ES2015" | "ES2016" | "ES2017" | "ES2018" | "ES2019" | "ES2020" | "ES2021" | "ES2022" | "ES2023" | "ES2024" | "ESNext"
 
+---@class _.lspconfig.settings.ts_ls.EnumMemberValues
+-- Enable/disable inlay hints for member values in enum declarations:
+-- ```typescript
+-- 
+-- enum MyValue {
+-- 	A /* = 0 */;
+-- 	B /* = 1 */;
+-- }
+--  
+-- ```
+-- 
+-- The text inside the ``` block is code and should not be localized.
+---@field enabled boolean
+
+---@class _.lspconfig.settings.ts_ls.FunctionLikeReturnTypes
+-- Enable/disable inlay hints for implicit return types on function signatures:
+-- ```typescript
+-- 
+-- function foo() /* :number */ {
+-- 	return Date.now();
+-- } 
+--  
+-- ```
+-- 
+-- The text inside the ``` block is code and should not be localized.
+---@field enabled boolean
+
+---@class _.lspconfig.settings.ts_ls.ParameterNames
+-- Enable/disable inlay hints for parameter names:
+-- ```typescript
+-- 
+-- parseInt(/* str: */ '123', /* radix: */ 8)
+--  
+-- ```
+-- 
+-- The text inside the ``` block is code and should not be localized.
+-- 
+-- ```lua
+-- default = "none"
+-- ```
+---@field enabled "none" | "literals" | "all"
+-- Suppress parameter name hints on arguments whose text is identical to the parameter name.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field suppressWhenArgumentMatchesName boolean
+
+---@class _.lspconfig.settings.ts_ls.ParameterTypes
+-- Enable/disable inlay hints for implicit parameter types:
+-- ```typescript
+-- 
+-- el.addEventListener('click', e /* :MouseEvent */ => ...)
+--  
+-- ```
+-- 
+-- The text inside the ``` block is code and should not be localized.
+---@field enabled boolean
+
+---@class _.lspconfig.settings.ts_ls.PropertyDeclarationTypes
+-- Enable/disable inlay hints for implicit types on property declarations:
+-- ```typescript
+-- 
+-- class Foo {
+-- 	prop /* :number */ = Date.now();
+-- }
+--  
+-- ```
+-- 
+-- The text inside the ``` block is code and should not be localized.
+---@field enabled boolean
+
+---@class _.lspconfig.settings.ts_ls.VariableTypes
+-- Enable/disable inlay hints for implicit variable types:
+-- ```typescript
+-- 
+-- const foo /* :number */ = Date.now();
+--  
+-- ```
+-- 
+-- The text inside the ``` block is code and should not be localized.
+---@field enabled boolean
+-- Suppress type hints on variables whose name is identical to the type name.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field suppressWhenTypeMatchesName boolean
+
+---@class _.lspconfig.settings.ts_ls.InlayHints
+---@field enumMemberValues _.lspconfig.settings.ts_ls.EnumMemberValues
+---@field functionLikeReturnTypes _.lspconfig.settings.ts_ls.FunctionLikeReturnTypes
+---@field parameterNames _.lspconfig.settings.ts_ls.ParameterNames
+---@field parameterTypes _.lspconfig.settings.ts_ls.ParameterTypes
+---@field propertyDeclarationTypes _.lspconfig.settings.ts_ls.PropertyDeclarationTypes
+---@field variableTypes _.lspconfig.settings.ts_ls.VariableTypes
+
 ---@class _.lspconfig.settings.ts_ls.ReferencesCodeLens
 -- Enable/disable references CodeLens in JavaScript and TypeScript files. This CodeLens shows the number of references for classes and exported functions and allows you to peek or navigate to them.
 ---@field enabled boolean
--- Enable/disable the references CodeLens on all functions in JavaScript and TypeScript files.
+-- Enable/disable the [references CodeLens](#js/ts.referencesCodeLens.enabled) on all functions in JavaScript and TypeScript files.
 ---@field showOnAllFunctions boolean
 
 ---@class _.lspconfig.settings.ts_ls.Js/ts
 ---@field hover _.lspconfig.settings.ts_ls.Hover
 ---@field implementationsCodeLens _.lspconfig.settings.ts_ls.ImplementationsCodeLens
 ---@field implicitProjectConfig _.lspconfig.settings.ts_ls.ImplicitProjectConfig
+---@field inlayHints _.lspconfig.settings.ts_ls.InlayHints
 ---@field referencesCodeLens _.lspconfig.settings.ts_ls.ReferencesCodeLens
 
 ---@class _.lspconfig.settings.ts_ls.Check
@@ -17907,11 +18005,11 @@
 ---@field semicolons "ignore" | "insert" | "remove"
 
 ---@class _.lspconfig.settings.ts_ls.ImplementationsCodeLens
--- Enable/disable implementations CodeLens in TypeScript files. This CodeLens shows the implementers of a TypeScript interface.
+-- Enable/disable implementations CodeLens in TypeScript files. This CodeLens shows the implementers of TypeScript interfaces.
 ---@field enabled boolean
--- Enable/disable showing implementations CodeLens above all TypeScript class methods instead of only on abstract methods.
+-- Enable/disable showing [implementations CodeLens](#js/ts.implementationsCodeLens.enabled) above all TypeScript class methods instead of only on abstract methods.
 ---@field showOnAllClassMethods boolean
--- Enable/disable implementations CodeLens on TypeScript interface methods.
+-- Enable/disable [implementations CodeLens](#js/ts.implementationsCodeLens.enabled) on TypeScript interface methods.
 ---@field showOnInterfaceMethods boolean
 
 ---@class _.lspconfig.settings.ts_ls.EnumMemberValues
@@ -18104,7 +18202,7 @@
 ---@class _.lspconfig.settings.ts_ls.ReferencesCodeLens
 -- Enable/disable references CodeLens in JavaScript and TypeScript files. This CodeLens shows the number of references for classes and exported functions and allows you to peek or navigate to them.
 ---@field enabled boolean
--- Enable/disable the references CodeLens on all functions in JavaScript and TypeScript files.
+-- Enable/disable the [references CodeLens](#js/ts.referencesCodeLens.enabled) on all functions in JavaScript and TypeScript files.
 ---@field showOnAllFunctions boolean
 
 ---@class _.lspconfig.settings.ts_ls.ClassMemberSnippets
