@@ -17905,12 +17905,95 @@
 -- Enable/disable the [references CodeLens](#js/ts.referencesCodeLens.enabled) on all functions in JavaScript and TypeScript files.
 ---@field showOnAllFunctions boolean
 
+---@class _.lspconfig.settings.ts_ls.ClassMemberSnippets
+-- Enable/disable snippet completions for class members.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enabled boolean
+
+---@class _.lspconfig.settings.ts_ls.Jsdoc
+-- Enable/disable generating `@returns` annotations for JSDoc templates.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field generateReturns boolean
+
+---@class _.lspconfig.settings.ts_ls.ObjectLiteralMethodSnippets
+-- Enable/disable snippet completions for methods in object literals.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enabled boolean
+
+---@class _.lspconfig.settings.ts_ls.Suggest
+-- Enable/disable auto import suggestions.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field autoImports boolean
+---@field classMemberSnippets _.lspconfig.settings.ts_ls.ClassMemberSnippets
+-- Complete functions with their parameter signature.
+---@field completeFunctionCalls boolean
+-- Enable/disable suggestion to complete JSDoc comments.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field completeJSDocs boolean
+-- Enable/disable autocomplete suggestions.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enabled boolean
+-- Enable/disable showing completions on potentially undefined values that insert an optional chain call. Requires strict null checks to be enabled.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field includeAutomaticOptionalChainCompletions boolean
+-- Enable/disable auto-import-style completions on partially-typed import statements.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field includeCompletionsForImportStatements boolean
+---@field jsdoc _.lspconfig.settings.ts_ls.Jsdoc
+-- Enable/disable including unique names from the file in JavaScript suggestions. Note that name suggestions are always disabled in JavaScript code that is semantically checked using `@ts-check` or `checkJs`.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field names boolean
+---@field objectLiteralMethodSnippets _.lspconfig.settings.ts_ls.ObjectLiteralMethodSnippets
+-- Enable/disable suggestions for paths in import statements and require calls.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field paths boolean
+
+---@class _.lspconfig.settings.ts_ls.SuggestionActions
+-- Enable/disable suggestion diagnostics for JavaScript and TypeScript files in the editor.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field enabled boolean
+
 ---@class _.lspconfig.settings.ts_ls.Js/ts
 ---@field hover _.lspconfig.settings.ts_ls.Hover
 ---@field implementationsCodeLens _.lspconfig.settings.ts_ls.ImplementationsCodeLens
 ---@field implicitProjectConfig _.lspconfig.settings.ts_ls.ImplicitProjectConfig
 ---@field inlayHints _.lspconfig.settings.ts_ls.InlayHints
 ---@field referencesCodeLens _.lspconfig.settings.ts_ls.ReferencesCodeLens
+---@field suggest _.lspconfig.settings.ts_ls.Suggest
+---@field suggestionActions _.lspconfig.settings.ts_ls.SuggestionActions
 
 ---@class _.lspconfig.settings.ts_ls.Check
 -- Check if npm is installed for [Automatic Type Acquisition](https://code.visualstudio.com/docs/nodejs/working-with-javascript#_typings-and-automatic-type-acquisition).

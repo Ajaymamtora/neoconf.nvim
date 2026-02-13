@@ -388,53 +388,62 @@
     "javascript.suggest.autoImports": {
       "default": true,
       "description": "Enable/disable auto import suggestions.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.autoImports#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "javascript.suggest.classMemberSnippets.enabled": {
       "default": true,
       "description": "Enable/disable snippet completions for class members.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.classMemberSnippets.enabled#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "javascript.suggest.completeFunctionCalls": {
       "default": false,
       "description": "Complete functions with their parameter signature.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.completeFunctionCalls#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "javascript.suggest.completeJSDocs": {
       "default": true,
       "description": "Enable/disable suggestion to complete JSDoc comments.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.completeJSDocs#` instead.",
       "scope": "language-overridable",
       "type": "boolean"
     },
     "javascript.suggest.enabled": {
       "default": true,
       "description": "Enable/disable autocomplete suggestions.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.enabled#` instead.",
       "scope": "language-overridable",
       "type": "boolean"
     },
     "javascript.suggest.includeAutomaticOptionalChainCompletions": {
       "default": true,
       "description": "Enable/disable showing completions on potentially undefined values that insert an optional chain call. Requires strict null checks to be enabled.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.includeAutomaticOptionalChainCompletions#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "javascript.suggest.includeCompletionsForImportStatements": {
       "default": true,
       "description": "Enable/disable auto-import-style completions on partially-typed import statements.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.includeCompletionsForImportStatements#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "javascript.suggest.jsdoc.generateReturns": {
       "default": true,
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.jsdoc.generateReturns#` instead.",
       "markdownDescription": "Enable/disable generating `@returns` annotations for JSDoc templates.",
       "scope": "language-overridable",
       "type": "boolean"
     },
     "javascript.suggest.names": {
       "default": true,
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.names#` instead.",
       "markdownDescription": "Enable/disable including unique names from the file in JavaScript suggestions. Note that name suggestions are always disabled in JavaScript code that is semantically checked using `@ts-check` or `checkJs`.",
       "scope": "resource",
       "type": "boolean"
@@ -442,12 +451,14 @@
     "javascript.suggest.paths": {
       "default": true,
       "description": "Enable/disable suggestions for paths in import statements and require calls.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.paths#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "javascript.suggestionActions.enabled": {
       "default": true,
       "description": "Enable/disable suggestion diagnostics for JavaScript files in the editor.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggestionActions.enabled#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
@@ -686,6 +697,124 @@
     "js/ts.referencesCodeLens.showOnAllFunctions": {
       "default": false,
       "markdownDescription": "Enable/disable the [references CodeLens](#js/ts.referencesCodeLens.enabled) on all functions in JavaScript and TypeScript files.",
+      "scope": "language-overridable",
+      "tags": [
+        "JavaScript",
+        "TypeScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggest.autoImports": {
+      "default": true,
+      "description": "Enable/disable auto import suggestions.",
+      "scope": "language-overridable",
+      "tags": [
+        "JavaScript",
+        "TypeScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggest.classMemberSnippets.enabled": {
+      "default": true,
+      "description": "Enable/disable snippet completions for class members.",
+      "scope": "language-overridable",
+      "tags": [
+        "JavaScript",
+        "TypeScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggest.completeFunctionCalls": {
+      "default": false,
+      "description": "Complete functions with their parameter signature.",
+      "scope": "language-overridable",
+      "tags": [
+        "JavaScript",
+        "TypeScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggest.completeJSDocs": {
+      "default": true,
+      "description": "Enable/disable suggestion to complete JSDoc comments.",
+      "scope": "language-overridable",
+      "tags": [
+        "JavaScript",
+        "TypeScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggest.enabled": {
+      "default": true,
+      "description": "Enable/disable autocomplete suggestions.",
+      "scope": "language-overridable",
+      "tags": [
+        "JavaScript",
+        "TypeScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggest.includeAutomaticOptionalChainCompletions": {
+      "default": true,
+      "description": "Enable/disable showing completions on potentially undefined values that insert an optional chain call. Requires strict null checks to be enabled.",
+      "scope": "language-overridable",
+      "tags": [
+        "JavaScript",
+        "TypeScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggest.includeCompletionsForImportStatements": {
+      "default": true,
+      "description": "Enable/disable auto-import-style completions on partially-typed import statements.",
+      "scope": "language-overridable",
+      "tags": [
+        "JavaScript",
+        "TypeScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggest.jsdoc.generateReturns": {
+      "default": true,
+      "markdownDescription": "Enable/disable generating `@returns` annotations for JSDoc templates.",
+      "scope": "language-overridable",
+      "tags": [
+        "JavaScript",
+        "TypeScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggest.names": {
+      "default": true,
+      "markdownDescription": "Enable/disable including unique names from the file in JavaScript suggestions. Note that name suggestions are always disabled in JavaScript code that is semantically checked using `@ts-check` or `checkJs`.",
+      "scope": "language-overridable",
+      "tags": [
+        "JavaScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggest.objectLiteralMethodSnippets.enabled": {
+      "default": true,
+      "description": "Enable/disable snippet completions for methods in object literals.",
+      "scope": "language-overridable",
+      "tags": [
+        "TypeScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggest.paths": {
+      "default": true,
+      "description": "Enable/disable suggestions for paths in import statements and require calls.",
+      "scope": "language-overridable",
+      "tags": [
+        "JavaScript",
+        "TypeScript"
+      ],
+      "type": "boolean"
+    },
+    "js/ts.suggestionActions.enabled": {
+      "default": true,
+      "description": "Enable/disable suggestion diagnostics for JavaScript and TypeScript files in the editor.",
       "scope": "language-overridable",
       "tags": [
         "JavaScript",
@@ -1208,47 +1337,55 @@
     "typescript.suggest.autoImports": {
       "default": true,
       "description": "Enable/disable auto import suggestions.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.autoImports#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "typescript.suggest.classMemberSnippets.enabled": {
       "default": true,
       "description": "Enable/disable snippet completions for class members.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.classMemberSnippets.enabled#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "typescript.suggest.completeFunctionCalls": {
       "default": false,
       "description": "Complete functions with their parameter signature.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.completeFunctionCalls#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "typescript.suggest.completeJSDocs": {
       "default": true,
       "description": "Enable/disable suggestion to complete JSDoc comments.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.completeJSDocs#` instead.",
       "scope": "language-overridable",
       "type": "boolean"
     },
     "typescript.suggest.enabled": {
       "default": true,
       "description": "Enable/disable autocomplete suggestions.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.enabled#` instead.",
       "scope": "language-overridable",
       "type": "boolean"
     },
     "typescript.suggest.includeAutomaticOptionalChainCompletions": {
       "default": true,
       "description": "Enable/disable showing completions on potentially undefined values that insert an optional chain call. Requires strict null checks to be enabled.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.includeAutomaticOptionalChainCompletions#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "typescript.suggest.includeCompletionsForImportStatements": {
       "default": true,
       "description": "Enable/disable auto-import-style completions on partially-typed import statements.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.includeCompletionsForImportStatements#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "typescript.suggest.jsdoc.generateReturns": {
       "default": true,
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.jsdoc.generateReturns#` instead.",
       "markdownDescription": "Enable/disable generating `@returns` annotations for JSDoc templates.",
       "scope": "language-overridable",
       "type": "boolean"
@@ -1256,18 +1393,21 @@
     "typescript.suggest.objectLiteralMethodSnippets.enabled": {
       "default": true,
       "description": "Enable/disable snippet completions for methods in object literals.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.objectLiteralMethodSnippets.enabled#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "typescript.suggest.paths": {
       "default": true,
       "description": "Enable/disable suggestions for paths in import statements and require calls.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.paths#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
     "typescript.suggestionActions.enabled": {
       "default": true,
       "description": "Enable/disable suggestion diagnostics for TypeScript files in the editor.",
+      "markdownDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggestionActions.enabled#` instead.",
       "scope": "resource",
       "type": "boolean"
     },
