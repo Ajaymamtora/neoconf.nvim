@@ -5517,6 +5517,14 @@
 -- default = true
 -- ```
 ---@field enable boolean
+-- A map of globs to diagnostic codes to be excluded for the matching files. Use `*` as a value in the array to exclude all diagnostics. By default the vendor directory is excluded. You can override this by setting `**/vendor/**` to an empty array.
+-- 
+-- ```lua
+-- default = {
+--   ["**/vendor/**"] = { "*" }
+-- }
+-- ```
+---@field exclude table
 -- Enables reporting of problems associated with method and class implementations. For example, unimplemented methods or method signature incompatibilities.
 -- 
 -- ```lua
@@ -5553,6 +5561,16 @@
 -- default = "onType"
 -- ```
 ---@field run "onType" | "onSave"
+-- Sets the severity level for each diagnostic code.
+---@field severity table
+-- When enabled, type checks will be performed as if a `declare(strict_types=1)` directive is present in all files.
+---@field strictTypes boolean
+-- Suppresses undefined property and method errors when `__get` or `__call` magic methods are declared.
+-- 
+-- ```lua
+-- default = true
+-- ```
+---@field suppressUndefinedMembersWhenMagicMethodDeclared boolean
 -- Enables diagnostics on type compatibility of arguments, property assignments, and return statements where types have been declared.
 -- 
 -- ```lua
