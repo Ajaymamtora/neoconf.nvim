@@ -16200,6 +16200,8 @@
 -- Disable automatic running of `swift package resolve` whenever the `Package.swift` or `Package.resolved` files are updated. This will also disable searching for command plugins and the initial test discovery process.
 ---@field disableAutoResolve boolean
 -- Disable sandboxing when running SwiftPM commands. In most cases you should keep the sandbox enabled and leave this setting set to `false`
+---@field disableSandbox boolean
+-- Disable sandboxing when running SwiftPM commands. In most cases you should keep the sandbox enabled and leave this setting set to `false`
 ---@field disableSandox boolean
 -- Disables automated Build Tasks, Package Dependency view, Launch configuration generation and TestExplorer.
 ---@field disableSwiftPackageManagerIntegration boolean
@@ -18270,6 +18272,21 @@
 -- Enables project wide error reporting.
 ---@field enableProjectDiagnostics boolean
 
+-- Configures heap profiling for TypeScript server.
+-- 
+-- ```lua
+-- default = {
+--   enabled = false
+-- }
+-- ```
+---@class _.lspconfig.settings.ts_ls.HeapProfile
+-- Directory where TypeScript server writes heap profiles by passing `--heap-prof-dir`.
+---@field dir string
+-- Enable heap profiling for TypeScript server by passing `--heap-prof`.
+---@field enabled boolean
+-- Sampling interval in bytes for TypeScript server heap profiling by passing `--heap-prof-interval`.
+---@field interval number
+
 ---@class _.lspconfig.settings.ts_ls.Node
 -- Run TS Server on a custom Node installation. This can be a path to a Node executable, or 'node' if you want VS Code to detect a Node installation.
 ---@field path string
@@ -18312,7 +18329,23 @@
 -- default = true
 -- ```
 ---@field checkNpmIsInstalled boolean
+-- Directory where TypeScript server writes Node diagnostic output by passing `--diagnostic-dir`.
+---@field diagnosticDir string
 ---@field experimental _.lspconfig.settings.ts_ls.Experimental
+-- Configures heap profiling for TypeScript server.
+-- 
+-- ```lua
+-- default = {
+--   enabled = false
+-- }
+-- ```
+---@field heapProfile _.lspconfig.settings.ts_ls.HeapProfile
+-- Controls how many near-heap-limit snapshots TypeScript server writes by passing `--heapsnapshot-near-heap-limit`. Set to `0` to disable.
+-- 
+-- ```lua
+-- default = 0
+-- ```
+---@field heapSnapshot number
 -- Enables logging of the TS server to a file. This log can be used to diagnose TS Server issues. The log may contain file paths, source code, and other potentially sensitive information from your project.
 -- 
 -- ```lua
